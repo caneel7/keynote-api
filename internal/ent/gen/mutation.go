@@ -722,6 +722,8 @@ type ProjectMutation struct {
 	clearedworkspace bool
 	state            *uuid.UUID
 	clearedstate     bool
+	creator          *uuid.UUID
+	clearedcreator   bool
 	done             bool
 	oldValue         func(context.Context) (*Project, error)
 	predicates       []predicate.Project
@@ -975,6 +977,42 @@ func (m *ProjectMutation) ResetStatusID() {
 	m.state = nil
 }
 
+// SetCreatedBy sets the "created_by" field.
+func (m *ProjectMutation) SetCreatedBy(u uuid.UUID) {
+	m.creator = &u
+}
+
+// CreatedBy returns the value of the "created_by" field in the mutation.
+func (m *ProjectMutation) CreatedBy() (r uuid.UUID, exists bool) {
+	v := m.creator
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCreatedBy returns the old "created_by" field's value of the Project entity.
+// If the Project object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ProjectMutation) OldCreatedBy(ctx context.Context) (v uuid.UUID, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCreatedBy is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCreatedBy requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCreatedBy: %w", err)
+	}
+	return oldValue.CreatedBy, nil
+}
+
+// ResetCreatedBy resets all changes to the "created_by" field.
+func (m *ProjectMutation) ResetCreatedBy() {
+	m.creator = nil
+}
+
 // SetCreatedAt sets the "created_at" field.
 func (m *ProjectMutation) SetCreatedAt(t time.Time) {
 	m.created_at = &t
@@ -1190,6 +1228,46 @@ func (m *ProjectMutation) ResetState() {
 	m.clearedstate = false
 }
 
+// SetCreatorID sets the "creator" edge to the User entity by id.
+func (m *ProjectMutation) SetCreatorID(id uuid.UUID) {
+	m.creator = &id
+}
+
+// ClearCreator clears the "creator" edge to the User entity.
+func (m *ProjectMutation) ClearCreator() {
+	m.clearedcreator = true
+	m.clearedFields[project.FieldCreatedBy] = struct{}{}
+}
+
+// CreatorCleared reports if the "creator" edge to the User entity was cleared.
+func (m *ProjectMutation) CreatorCleared() bool {
+	return m.clearedcreator
+}
+
+// CreatorID returns the "creator" edge ID in the mutation.
+func (m *ProjectMutation) CreatorID() (id uuid.UUID, exists bool) {
+	if m.creator != nil {
+		return *m.creator, true
+	}
+	return
+}
+
+// CreatorIDs returns the "creator" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// CreatorID instead. It exists only for internal usage by the builders.
+func (m *ProjectMutation) CreatorIDs() (ids []uuid.UUID) {
+	if id := m.creator; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetCreator resets all changes to the "creator" edge.
+func (m *ProjectMutation) ResetCreator() {
+	m.creator = nil
+	m.clearedcreator = false
+}
+
 // Where appends a list predicates to the ProjectMutation builder.
 func (m *ProjectMutation) Where(ps ...predicate.Project) {
 	m.predicates = append(m.predicates, ps...)
@@ -1224,7 +1302,7 @@ func (m *ProjectMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *ProjectMutation) Fields() []string {
-	fields := make([]string, 0, 7)
+	fields := make([]string, 0, 8)
 	if m.tenant != nil {
 		fields = append(fields, project.FieldTenantID)
 	}
@@ -1236,6 +1314,9 @@ func (m *ProjectMutation) Fields() []string {
 	}
 	if m.state != nil {
 		fields = append(fields, project.FieldStatusID)
+	}
+	if m.creator != nil {
+		fields = append(fields, project.FieldCreatedBy)
 	}
 	if m.created_at != nil {
 		fields = append(fields, project.FieldCreatedAt)
@@ -1262,6 +1343,8 @@ func (m *ProjectMutation) Field(name string) (ent.Value, bool) {
 		return m.Name()
 	case project.FieldStatusID:
 		return m.StatusID()
+	case project.FieldCreatedBy:
+		return m.CreatedBy()
 	case project.FieldCreatedAt:
 		return m.CreatedAt()
 	case project.FieldUpdatedAt:
@@ -1285,6 +1368,8 @@ func (m *ProjectMutation) OldField(ctx context.Context, name string) (ent.Value,
 		return m.OldName(ctx)
 	case project.FieldStatusID:
 		return m.OldStatusID(ctx)
+	case project.FieldCreatedBy:
+		return m.OldCreatedBy(ctx)
 	case project.FieldCreatedAt:
 		return m.OldCreatedAt(ctx)
 	case project.FieldUpdatedAt:
@@ -1327,6 +1412,13 @@ func (m *ProjectMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetStatusID(v)
+		return nil
+	case project.FieldCreatedBy:
+		v, ok := value.(uuid.UUID)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCreatedBy(v)
 		return nil
 	case project.FieldCreatedAt:
 		v, ok := value.(time.Time)
@@ -1419,6 +1511,9 @@ func (m *ProjectMutation) ResetField(name string) error {
 	case project.FieldStatusID:
 		m.ResetStatusID()
 		return nil
+	case project.FieldCreatedBy:
+		m.ResetCreatedBy()
+		return nil
 	case project.FieldCreatedAt:
 		m.ResetCreatedAt()
 		return nil
@@ -1434,7 +1529,7 @@ func (m *ProjectMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *ProjectMutation) AddedEdges() []string {
-	edges := make([]string, 0, 3)
+	edges := make([]string, 0, 4)
 	if m.tenant != nil {
 		edges = append(edges, project.EdgeTenant)
 	}
@@ -1443,6 +1538,9 @@ func (m *ProjectMutation) AddedEdges() []string {
 	}
 	if m.state != nil {
 		edges = append(edges, project.EdgeState)
+	}
+	if m.creator != nil {
+		edges = append(edges, project.EdgeCreator)
 	}
 	return edges
 }
@@ -1463,13 +1561,17 @@ func (m *ProjectMutation) AddedIDs(name string) []ent.Value {
 		if id := m.state; id != nil {
 			return []ent.Value{*id}
 		}
+	case project.EdgeCreator:
+		if id := m.creator; id != nil {
+			return []ent.Value{*id}
+		}
 	}
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *ProjectMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 3)
+	edges := make([]string, 0, 4)
 	return edges
 }
 
@@ -1481,7 +1583,7 @@ func (m *ProjectMutation) RemovedIDs(name string) []ent.Value {
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *ProjectMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 3)
+	edges := make([]string, 0, 4)
 	if m.clearedtenant {
 		edges = append(edges, project.EdgeTenant)
 	}
@@ -1490,6 +1592,9 @@ func (m *ProjectMutation) ClearedEdges() []string {
 	}
 	if m.clearedstate {
 		edges = append(edges, project.EdgeState)
+	}
+	if m.clearedcreator {
+		edges = append(edges, project.EdgeCreator)
 	}
 	return edges
 }
@@ -1504,6 +1609,8 @@ func (m *ProjectMutation) EdgeCleared(name string) bool {
 		return m.clearedworkspace
 	case project.EdgeState:
 		return m.clearedstate
+	case project.EdgeCreator:
+		return m.clearedcreator
 	}
 	return false
 }
@@ -1521,6 +1628,9 @@ func (m *ProjectMutation) ClearEdge(name string) error {
 	case project.EdgeState:
 		m.ClearState()
 		return nil
+	case project.EdgeCreator:
+		m.ClearCreator()
+		return nil
 	}
 	return fmt.Errorf("unknown Project unique edge %s", name)
 }
@@ -1537,6 +1647,9 @@ func (m *ProjectMutation) ResetEdge(name string) error {
 		return nil
 	case project.EdgeState:
 		m.ResetState()
+		return nil
+	case project.EdgeCreator:
+		m.ResetCreator()
 		return nil
 	}
 	return fmt.Errorf("unknown Project edge %s", name)
@@ -3518,29 +3631,32 @@ func (m *TenantMutation) ResetEdge(name string) error {
 // UserMutation represents an operation that mutates the User nodes in the graph.
 type UserMutation struct {
 	config
-	op                 Op
-	typ                string
-	id                 *uuid.UUID
-	email              *string
-	created_at         *time.Time
-	updated_at         *time.Time
-	deleted_at         *time.Time
-	clearedFields      map[string]struct{}
-	credentials        *uuid.UUID
-	clearedcredentials bool
-	sessions           map[uuid.UUID]struct{}
-	removedsessions    map[uuid.UUID]struct{}
-	clearedsessions    bool
-	state              *uuid.UUID
-	clearedstate       bool
-	tenant             *uuid.UUID
-	clearedtenant      bool
-	creator            map[uuid.UUID]struct{}
-	removedcreator     map[uuid.UUID]struct{}
-	clearedcreator     bool
-	done               bool
-	oldValue           func(context.Context) (*User, error)
-	predicates         []predicate.User
+	op                    Op
+	typ                   string
+	id                    *uuid.UUID
+	email                 *string
+	created_at            *time.Time
+	updated_at            *time.Time
+	deleted_at            *time.Time
+	clearedFields         map[string]struct{}
+	credentials           *uuid.UUID
+	clearedcredentials    bool
+	sessions              map[uuid.UUID]struct{}
+	removedsessions       map[uuid.UUID]struct{}
+	clearedsessions       bool
+	state                 *uuid.UUID
+	clearedstate          bool
+	tenant                *uuid.UUID
+	clearedtenant         bool
+	creator               map[uuid.UUID]struct{}
+	removedcreator        map[uuid.UUID]struct{}
+	clearedcreator        bool
+	projectcreator        map[uuid.UUID]struct{}
+	removedprojectcreator map[uuid.UUID]struct{}
+	clearedprojectcreator bool
+	done                  bool
+	oldValue              func(context.Context) (*User, error)
+	predicates            []predicate.User
 }
 
 var _ ent.Mutation = (*UserMutation)(nil)
@@ -4066,6 +4182,60 @@ func (m *UserMutation) ResetCreator() {
 	m.removedcreator = nil
 }
 
+// AddProjectcreatorIDs adds the "projectcreator" edge to the Project entity by ids.
+func (m *UserMutation) AddProjectcreatorIDs(ids ...uuid.UUID) {
+	if m.projectcreator == nil {
+		m.projectcreator = make(map[uuid.UUID]struct{})
+	}
+	for i := range ids {
+		m.projectcreator[ids[i]] = struct{}{}
+	}
+}
+
+// ClearProjectcreator clears the "projectcreator" edge to the Project entity.
+func (m *UserMutation) ClearProjectcreator() {
+	m.clearedprojectcreator = true
+}
+
+// ProjectcreatorCleared reports if the "projectcreator" edge to the Project entity was cleared.
+func (m *UserMutation) ProjectcreatorCleared() bool {
+	return m.clearedprojectcreator
+}
+
+// RemoveProjectcreatorIDs removes the "projectcreator" edge to the Project entity by IDs.
+func (m *UserMutation) RemoveProjectcreatorIDs(ids ...uuid.UUID) {
+	if m.removedprojectcreator == nil {
+		m.removedprojectcreator = make(map[uuid.UUID]struct{})
+	}
+	for i := range ids {
+		delete(m.projectcreator, ids[i])
+		m.removedprojectcreator[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedProjectcreator returns the removed IDs of the "projectcreator" edge to the Project entity.
+func (m *UserMutation) RemovedProjectcreatorIDs() (ids []uuid.UUID) {
+	for id := range m.removedprojectcreator {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ProjectcreatorIDs returns the "projectcreator" edge IDs in the mutation.
+func (m *UserMutation) ProjectcreatorIDs() (ids []uuid.UUID) {
+	for id := range m.projectcreator {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetProjectcreator resets all changes to the "projectcreator" edge.
+func (m *UserMutation) ResetProjectcreator() {
+	m.projectcreator = nil
+	m.clearedprojectcreator = false
+	m.removedprojectcreator = nil
+}
+
 // Where appends a list predicates to the UserMutation builder.
 func (m *UserMutation) Where(ps ...predicate.User) {
 	m.predicates = append(m.predicates, ps...)
@@ -4276,7 +4446,7 @@ func (m *UserMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *UserMutation) AddedEdges() []string {
-	edges := make([]string, 0, 5)
+	edges := make([]string, 0, 6)
 	if m.credentials != nil {
 		edges = append(edges, user.EdgeCredentials)
 	}
@@ -4291,6 +4461,9 @@ func (m *UserMutation) AddedEdges() []string {
 	}
 	if m.creator != nil {
 		edges = append(edges, user.EdgeCreator)
+	}
+	if m.projectcreator != nil {
+		edges = append(edges, user.EdgeProjectcreator)
 	}
 	return edges
 }
@@ -4323,18 +4496,27 @@ func (m *UserMutation) AddedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case user.EdgeProjectcreator:
+		ids := make([]ent.Value, 0, len(m.projectcreator))
+		for id := range m.projectcreator {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *UserMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 5)
+	edges := make([]string, 0, 6)
 	if m.removedsessions != nil {
 		edges = append(edges, user.EdgeSessions)
 	}
 	if m.removedcreator != nil {
 		edges = append(edges, user.EdgeCreator)
+	}
+	if m.removedprojectcreator != nil {
+		edges = append(edges, user.EdgeProjectcreator)
 	}
 	return edges
 }
@@ -4355,13 +4537,19 @@ func (m *UserMutation) RemovedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case user.EdgeProjectcreator:
+		ids := make([]ent.Value, 0, len(m.removedprojectcreator))
+		for id := range m.removedprojectcreator {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *UserMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 5)
+	edges := make([]string, 0, 6)
 	if m.clearedcredentials {
 		edges = append(edges, user.EdgeCredentials)
 	}
@@ -4376,6 +4564,9 @@ func (m *UserMutation) ClearedEdges() []string {
 	}
 	if m.clearedcreator {
 		edges = append(edges, user.EdgeCreator)
+	}
+	if m.clearedprojectcreator {
+		edges = append(edges, user.EdgeProjectcreator)
 	}
 	return edges
 }
@@ -4394,6 +4585,8 @@ func (m *UserMutation) EdgeCleared(name string) bool {
 		return m.clearedtenant
 	case user.EdgeCreator:
 		return m.clearedcreator
+	case user.EdgeProjectcreator:
+		return m.clearedprojectcreator
 	}
 	return false
 }
@@ -4433,6 +4626,9 @@ func (m *UserMutation) ResetEdge(name string) error {
 		return nil
 	case user.EdgeCreator:
 		m.ResetCreator()
+		return nil
+	case user.EdgeProjectcreator:
+		m.ResetProjectcreator()
 		return nil
 	}
 	return fmt.Errorf("unknown User edge %s", name)

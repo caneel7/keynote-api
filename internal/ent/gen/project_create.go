@@ -13,6 +13,7 @@ import (
 	"github.com/caneel7/keynote-api/internal/ent/gen/project"
 	"github.com/caneel7/keynote-api/internal/ent/gen/statedefinitions"
 	"github.com/caneel7/keynote-api/internal/ent/gen/tenant"
+	"github.com/caneel7/keynote-api/internal/ent/gen/user"
 	"github.com/caneel7/keynote-api/internal/ent/gen/workspace"
 	"github.com/google/uuid"
 )
@@ -45,6 +46,12 @@ func (_c *ProjectCreate) SetName(v string) *ProjectCreate {
 // SetStatusID sets the "status_id" field.
 func (_c *ProjectCreate) SetStatusID(v uuid.UUID) *ProjectCreate {
 	_c.mutation.SetStatusID(v)
+	return _c
+}
+
+// SetCreatedBy sets the "created_by" field.
+func (_c *ProjectCreate) SetCreatedBy(v uuid.UUID) *ProjectCreate {
+	_c.mutation.SetCreatedBy(v)
 	return _c
 }
 
@@ -125,6 +132,17 @@ func (_c *ProjectCreate) SetState(v *StateDefinitions) *ProjectCreate {
 	return _c.SetStateID(v.ID)
 }
 
+// SetCreatorID sets the "creator" edge to the User entity by ID.
+func (_c *ProjectCreate) SetCreatorID(id uuid.UUID) *ProjectCreate {
+	_c.mutation.SetCreatorID(id)
+	return _c
+}
+
+// SetCreator sets the "creator" edge to the User entity.
+func (_c *ProjectCreate) SetCreator(v *User) *ProjectCreate {
+	return _c.SetCreatorID(v.ID)
+}
+
 // Mutation returns the ProjectMutation object of the builder.
 func (_c *ProjectCreate) Mutation() *ProjectMutation {
 	return _c.mutation
@@ -193,6 +211,9 @@ func (_c *ProjectCreate) check() error {
 	if _, ok := _c.mutation.StatusID(); !ok {
 		return &ValidationError{Name: "status_id", err: errors.New(`gen: missing required field "Project.status_id"`)}
 	}
+	if _, ok := _c.mutation.CreatedBy(); !ok {
+		return &ValidationError{Name: "created_by", err: errors.New(`gen: missing required field "Project.created_by"`)}
+	}
 	if _, ok := _c.mutation.CreatedAt(); !ok {
 		return &ValidationError{Name: "created_at", err: errors.New(`gen: missing required field "Project.created_at"`)}
 	}
@@ -207,6 +228,9 @@ func (_c *ProjectCreate) check() error {
 	}
 	if len(_c.mutation.StateIDs()) == 0 {
 		return &ValidationError{Name: "state", err: errors.New(`gen: missing required edge "Project.state"`)}
+	}
+	if len(_c.mutation.CreatorIDs()) == 0 {
+		return &ValidationError{Name: "creator", err: errors.New(`gen: missing required edge "Project.creator"`)}
 	}
 	return nil
 }
@@ -308,6 +332,23 @@ func (_c *ProjectCreate) createSpec() (*Project, *sqlgraph.CreateSpec) {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
 		_node.StatusID = nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := _c.mutation.CreatorIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   project.CreatorTable,
+			Columns: []string{project.CreatorColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeUUID),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.CreatedBy = nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec

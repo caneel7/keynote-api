@@ -411,6 +411,29 @@ func HasCreatorWith(preds ...predicate.Workspace) predicate.User {
 	})
 }
 
+// HasProjectcreator applies the HasEdge predicate on the "projectcreator" edge.
+func HasProjectcreator() predicate.User {
+	return predicate.User(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, ProjectcreatorTable, ProjectcreatorColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasProjectcreatorWith applies the HasEdge predicate on the "projectcreator" edge with a given conditions (other predicates).
+func HasProjectcreatorWith(preds ...predicate.Project) predicate.User {
+	return predicate.User(func(s *sql.Selector) {
+		step := newProjectcreatorStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
 // And groups predicates with the AND operator between them.
 func And(predicates ...predicate.User) predicate.User {
 	return predicate.User(sql.AndPredicates(predicates...))

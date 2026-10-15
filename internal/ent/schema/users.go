@@ -32,5 +32,6 @@ func (User) Edges () []ent.Edge {
 		edge.From("state",StateDefinitions.Type).Field("status_id").Ref("user").Unique().Required(),
 		edge.To("tenant",Tenant.Type).Unique(),
 		edge.To("creator",Workspace.Type),
+		edge.To("projectcreator",Project.Type),
 	}
 }

@@ -13,6 +13,7 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/caneel7/keynote-api/internal/ent/gen/predicate"
+	"github.com/caneel7/keynote-api/internal/ent/gen/project"
 	"github.com/caneel7/keynote-api/internal/ent/gen/statedefinitions"
 	"github.com/caneel7/keynote-api/internal/ent/gen/tenant"
 	"github.com/caneel7/keynote-api/internal/ent/gen/user"
@@ -25,15 +26,16 @@ import (
 // UserQuery is the builder for querying User entities.
 type UserQuery struct {
 	config
-	ctx             *QueryContext
-	order           []user.OrderOption
-	inters          []Interceptor
-	predicates      []predicate.User
-	withCredentials *UserCredentialQuery
-	withSessions    *UserSessionQuery
-	withState       *StateDefinitionsQuery
-	withTenant      *TenantQuery
-	withCreator     *WorkspaceQuery
+	ctx                *QueryContext
+	order              []user.OrderOption
+	inters             []Interceptor
+	predicates         []predicate.User
+	withCredentials    *UserCredentialQuery
+	withSessions       *UserSessionQuery
+	withState          *StateDefinitionsQuery
+	withTenant         *TenantQuery
+	withCreator        *WorkspaceQuery
+	withProjectcreator *ProjectQuery
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -173,6 +175,28 @@ func (_q *UserQuery) QueryCreator() *WorkspaceQuery {
 			sqlgraph.From(user.Table, user.FieldID, selector),
 			sqlgraph.To(workspace.Table, workspace.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, user.CreatorTable, user.CreatorColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(_q.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryProjectcreator chains the current query on the "projectcreator" edge.
+func (_q *UserQuery) QueryProjectcreator() *ProjectQuery {
+	query := (&ProjectClient{config: _q.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := _q.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := _q.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(user.Table, user.FieldID, selector),
+			sqlgraph.To(project.Table, project.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, user.ProjectcreatorTable, user.ProjectcreatorColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(_q.driver.Dialect(), step)
 		return fromU, nil
@@ -367,16 +391,17 @@ func (_q *UserQuery) Clone() *UserQuery {
 		return nil
 	}
 	return &UserQuery{
-		config:          _q.config,
-		ctx:             _q.ctx.Clone(),
-		order:           append([]user.OrderOption{}, _q.order...),
-		inters:          append([]Interceptor{}, _q.inters...),
-		predicates:      append([]predicate.User{}, _q.predicates...),
-		withCredentials: _q.withCredentials.Clone(),
-		withSessions:    _q.withSessions.Clone(),
-		withState:       _q.withState.Clone(),
-		withTenant:      _q.withTenant.Clone(),
-		withCreator:     _q.withCreator.Clone(),
+		config:             _q.config,
+		ctx:                _q.ctx.Clone(),
+		order:              append([]user.OrderOption{}, _q.order...),
+		inters:             append([]Interceptor{}, _q.inters...),
+		predicates:         append([]predicate.User{}, _q.predicates...),
+		withCredentials:    _q.withCredentials.Clone(),
+		withSessions:       _q.withSessions.Clone(),
+		withState:          _q.withState.Clone(),
+		withTenant:         _q.withTenant.Clone(),
+		withCreator:        _q.withCreator.Clone(),
+		withProjectcreator: _q.withProjectcreator.Clone(),
 		// clone intermediate query.
 		sql:  _q.sql.Clone(),
 		path: _q.path,
@@ -435,6 +460,17 @@ func (_q *UserQuery) WithCreator(opts ...func(*WorkspaceQuery)) *UserQuery {
 		opt(query)
 	}
 	_q.withCreator = query
+	return _q
+}
+
+// WithProjectcreator tells the query-builder to eager-load the nodes that are connected to
+// the "projectcreator" edge. The optional arguments are used to configure the query builder of the edge.
+func (_q *UserQuery) WithProjectcreator(opts ...func(*ProjectQuery)) *UserQuery {
+	query := (&ProjectClient{config: _q.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	_q.withProjectcreator = query
 	return _q
 }
 
@@ -516,12 +552,13 @@ func (_q *UserQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*User, e
 	var (
 		nodes       = []*User{}
 		_spec       = _q.querySpec()
-		loadedTypes = [5]bool{
+		loadedTypes = [6]bool{
 			_q.withCredentials != nil,
 			_q.withSessions != nil,
 			_q.withState != nil,
 			_q.withTenant != nil,
 			_q.withCreator != nil,
+			_q.withProjectcreator != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]any, error) {
@@ -571,6 +608,13 @@ func (_q *UserQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*User, e
 		if err := _q.loadCreator(ctx, query, nodes,
 			func(n *User) { n.Edges.Creator = []*Workspace{} },
 			func(n *User, e *Workspace) { n.Edges.Creator = append(n.Edges.Creator, e) }); err != nil {
+			return nil, err
+		}
+	}
+	if query := _q.withProjectcreator; query != nil {
+		if err := _q.loadProjectcreator(ctx, query, nodes,
+			func(n *User) { n.Edges.Projectcreator = []*Project{} },
+			func(n *User, e *Project) { n.Edges.Projectcreator = append(n.Edges.Projectcreator, e) }); err != nil {
 			return nil, err
 		}
 	}
@@ -705,6 +749,36 @@ func (_q *UserQuery) loadCreator(ctx context.Context, query *WorkspaceQuery, nod
 	}
 	query.Where(predicate.Workspace(func(s *sql.Selector) {
 		s.Where(sql.InValues(s.C(user.CreatorColumn), fks...))
+	}))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		fk := n.CreatedBy
+		node, ok := nodeids[fk]
+		if !ok {
+			return fmt.Errorf(`unexpected referenced foreign-key "created_by" returned %v for node %v`, fk, n.ID)
+		}
+		assign(node, n)
+	}
+	return nil
+}
+func (_q *UserQuery) loadProjectcreator(ctx context.Context, query *ProjectQuery, nodes []*User, init func(*User), assign func(*User, *Project)) error {
+	fks := make([]driver.Value, 0, len(nodes))
+	nodeids := make(map[uuid.UUID]*User)
+	for i := range nodes {
+		fks = append(fks, nodes[i].ID)
+		nodeids[nodes[i].ID] = nodes[i]
+		if init != nil {
+			init(nodes[i])
+		}
+	}
+	if len(query.ctx.Fields) > 0 {
+		query.ctx.AppendFieldOnce(project.FieldCreatedBy)
+	}
+	query.Where(predicate.Project(func(s *sql.Selector) {
+		s.Where(sql.InValues(s.C(user.ProjectcreatorColumn), fks...))
 	}))
 	neighbors, err := query.All(ctx)
 	if err != nil {

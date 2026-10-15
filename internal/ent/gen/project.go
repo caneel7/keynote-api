@@ -12,6 +12,7 @@ import (
 	"github.com/caneel7/keynote-api/internal/ent/gen/project"
 	"github.com/caneel7/keynote-api/internal/ent/gen/statedefinitions"
 	"github.com/caneel7/keynote-api/internal/ent/gen/tenant"
+	"github.com/caneel7/keynote-api/internal/ent/gen/user"
 	"github.com/caneel7/keynote-api/internal/ent/gen/workspace"
 	"github.com/google/uuid"
 )
@@ -29,6 +30,8 @@ type Project struct {
 	Name string `json:"name,omitempty"`
 	// StatusID holds the value of the "status_id" field.
 	StatusID uuid.UUID `json:"status_id,omitempty"`
+	// CreatedBy holds the value of the "created_by" field.
+	CreatedBy uuid.UUID `json:"created_by,omitempty"`
 	// CreatedAt holds the value of the "created_at" field.
 	CreatedAt time.Time `json:"created_at,omitempty"`
 	// UpdatedAt holds the value of the "updated_at" field.
@@ -49,9 +52,11 @@ type ProjectEdges struct {
 	Workspace *Workspace `json:"workspace,omitempty"`
 	// State holds the value of the state edge.
 	State *StateDefinitions `json:"state,omitempty"`
+	// Creator holds the value of the creator edge.
+	Creator *User `json:"creator,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [3]bool
+	loadedTypes [4]bool
 }
 
 // TenantOrErr returns the Tenant value or an error if the edge
@@ -87,6 +92,17 @@ func (e ProjectEdges) StateOrErr() (*StateDefinitions, error) {
 	return nil, &NotLoadedError{edge: "state"}
 }
 
+// CreatorOrErr returns the Creator value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e ProjectEdges) CreatorOrErr() (*User, error) {
+	if e.Creator != nil {
+		return e.Creator, nil
+	} else if e.loadedTypes[3] {
+		return nil, &NotFoundError{label: user.Label}
+	}
+	return nil, &NotLoadedError{edge: "creator"}
+}
+
 // scanValues returns the types for scanning values from sql.Rows.
 func (*Project) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
@@ -96,7 +112,7 @@ func (*Project) scanValues(columns []string) ([]any, error) {
 			values[i] = new(sql.NullString)
 		case project.FieldCreatedAt, project.FieldUpdatedAt, project.FieldDeletedAt:
 			values[i] = new(sql.NullTime)
-		case project.FieldID, project.FieldTenantID, project.FieldWorkspaceID, project.FieldStatusID:
+		case project.FieldID, project.FieldTenantID, project.FieldWorkspaceID, project.FieldStatusID, project.FieldCreatedBy:
 			values[i] = new(uuid.UUID)
 		default:
 			values[i] = new(sql.UnknownType)
@@ -142,6 +158,12 @@ func (_m *Project) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field status_id", values[i])
 			} else if value != nil {
 				_m.StatusID = *value
+			}
+		case project.FieldCreatedBy:
+			if value, ok := values[i].(*uuid.UUID); !ok {
+				return fmt.Errorf("unexpected type %T for field created_by", values[i])
+			} else if value != nil {
+				_m.CreatedBy = *value
 			}
 		case project.FieldCreatedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
@@ -190,6 +212,11 @@ func (_m *Project) QueryState() *StateDefinitionsQuery {
 	return NewProjectClient(_m.config).QueryState(_m)
 }
 
+// QueryCreator queries the "creator" edge of the Project entity.
+func (_m *Project) QueryCreator() *UserQuery {
+	return NewProjectClient(_m.config).QueryCreator(_m)
+}
+
 // Update returns a builder for updating this Project.
 // Note that you need to call Project.Unwrap() before calling this method if this Project
 // was returned from a transaction, and the transaction was committed or rolled back.
@@ -224,6 +251,9 @@ func (_m *Project) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("status_id=")
 	builder.WriteString(fmt.Sprintf("%v", _m.StatusID))
+	builder.WriteString(", ")
+	builder.WriteString("created_by=")
+	builder.WriteString(fmt.Sprintf("%v", _m.CreatedBy))
 	builder.WriteString(", ")
 	builder.WriteString("created_at=")
 	builder.WriteString(_m.CreatedAt.Format(time.ANSIC))

@@ -21,7 +21,7 @@ type TenantCreator interface {
 
 type CreateTenantRequest struct {
 	Body struct {
-		Name string `json:"name" minLegnth:"3" maxLenght:"128"`
+		Name string `json:"name" minLength:"3" maxLength:"128"`
 	}
 }
 

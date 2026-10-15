@@ -10,6 +10,7 @@ import (
 	"github.com/caneel7/keynote-api/internal/common/tokens"
 	"github.com/caneel7/keynote-api/internal/constants"
 	"github.com/caneel7/keynote-api/internal/ent/gen"
+	"github.com/caneel7/keynote-api/internal/errors"
 	appError "github.com/caneel7/keynote-api/internal/errors"
 	"github.com/caneel7/keynote-api/internal/features/auth/login"
 )
@@ -47,7 +48,7 @@ func (s *Service) Register(
 
 	tx, err := s.db.Tx(ctx)
 	if err != nil {
-		return output,nil
+		return output,errors.New(appError.KindInternal,err.Error())
 	}
 	defer tx.Rollback()
 

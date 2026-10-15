@@ -49,9 +49,11 @@ type UserEdges struct {
 	Tenant *Tenant `json:"tenant,omitempty"`
 	// Creator holds the value of the creator edge.
 	Creator []*Workspace `json:"creator,omitempty"`
+	// Projectcreator holds the value of the projectcreator edge.
+	Projectcreator []*Project `json:"projectcreator,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [5]bool
+	loadedTypes [6]bool
 }
 
 // CredentialsOrErr returns the Credentials value or an error if the edge
@@ -103,6 +105,15 @@ func (e UserEdges) CreatorOrErr() ([]*Workspace, error) {
 		return e.Creator, nil
 	}
 	return nil, &NotLoadedError{edge: "creator"}
+}
+
+// ProjectcreatorOrErr returns the Projectcreator value or an error if the edge
+// was not loaded in eager-loading.
+func (e UserEdges) ProjectcreatorOrErr() ([]*Project, error) {
+	if e.loadedTypes[5] {
+		return e.Projectcreator, nil
+	}
+	return nil, &NotLoadedError{edge: "projectcreator"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -204,6 +215,11 @@ func (_m *User) QueryTenant() *TenantQuery {
 // QueryCreator queries the "creator" edge of the User entity.
 func (_m *User) QueryCreator() *WorkspaceQuery {
 	return NewUserClient(_m.config).QueryCreator(_m)
+}
+
+// QueryProjectcreator queries the "projectcreator" edge of the User entity.
+func (_m *User) QueryProjectcreator() *ProjectQuery {
+	return NewUserClient(_m.config).QueryProjectcreator(_m)
 }
 
 // Update returns a builder for updating this User.

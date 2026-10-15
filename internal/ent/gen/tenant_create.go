@@ -223,6 +223,11 @@ func (_c *TenantCreate) check() error {
 	if _, ok := _c.mutation.Slug(); !ok {
 		return &ValidationError{Name: "slug", err: errors.New(`gen: missing required field "Tenant.slug"`)}
 	}
+	if v, ok := _c.mutation.Slug(); ok {
+		if err := tenant.SlugValidator(v); err != nil {
+			return &ValidationError{Name: "slug", err: fmt.Errorf(`gen: validator failed for field "Tenant.slug": %w`, err)}
+		}
+	}
 	if _, ok := _c.mutation.StatusID(); !ok {
 		return &ValidationError{Name: "status_id", err: errors.New(`gen: missing required field "Tenant.status_id"`)}
 	}
