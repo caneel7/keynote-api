@@ -26,12 +26,13 @@ var (
 	// ProjectsColumns holds the columns for the "projects" table.
 	ProjectsColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeUUID},
-		{Name: "name", Type: field.TypeString},
+		{Name: "name", Type: field.TypeString, SchemaType: map[string]string{"postgres": "citext"}},
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "updated_at", Type: field.TypeTime},
 		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
 		{Name: "status_id", Type: field.TypeUUID},
 		{Name: "tenant_id", Type: field.TypeUUID},
+		{Name: "created_by", Type: field.TypeUUID},
 		{Name: "workspace_id", Type: field.TypeUUID},
 	}
 	// ProjectsTable holds the schema information for the "projects" table.
@@ -53,10 +54,28 @@ var (
 				OnDelete:   schema.NoAction,
 			},
 			{
-				Symbol:     "projects_workspaces_projects",
+				Symbol:     "projects_users_projectcreator",
 				Columns:    []*schema.Column{ProjectsColumns[7]},
+				RefColumns: []*schema.Column{UsersColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+			{
+				Symbol:     "projects_workspaces_projects",
+				Columns:    []*schema.Column{ProjectsColumns[8]},
 				RefColumns: []*schema.Column{WorkspacesColumns[0]},
 				OnDelete:   schema.NoAction,
+			},
+		},
+		Indexes: []*schema.Index{
+			{
+				Name:    "project_tenant_id_workspace_id",
+				Unique:  false,
+				Columns: []*schema.Column{ProjectsColumns[6], ProjectsColumns[8]},
+			},
+			{
+				Name:    "project_tenant_id_workspace_id_name",
+				Unique:  false,
+				Columns: []*schema.Column{ProjectsColumns[6], ProjectsColumns[8], ProjectsColumns[1]},
 			},
 		},
 	}
@@ -94,8 +113,8 @@ var (
 	// TenantsColumns holds the columns for the "tenants" table.
 	TenantsColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeUUID},
-		{Name: "name", Type: field.TypeString},
-		{Name: "slug", Type: field.TypeString, Unique: true},
+		{Name: "name", Type: field.TypeString, SchemaType: map[string]string{"postgres": "citext"}},
+		{Name: "slug", Type: field.TypeString, Unique: true, SchemaType: map[string]string{"postgres": "citext"}},
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "updated_at", Type: field.TypeTime},
 		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
@@ -203,7 +222,7 @@ var (
 	// WorkspacesColumns holds the columns for the "workspaces" table.
 	WorkspacesColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeUUID},
-		{Name: "name", Type: field.TypeString},
+		{Name: "name", Type: field.TypeString, SchemaType: map[string]string{"postgres": "citext"}},
 		{Name: "slug", Type: field.TypeString},
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "updated_at", Type: field.TypeTime},
@@ -237,6 +256,18 @@ var (
 				OnDelete:   schema.NoAction,
 			},
 		},
+		Indexes: []*schema.Index{
+			{
+				Name:    "workspace_tenant_id_id",
+				Unique:  true,
+				Columns: []*schema.Column{WorkspacesColumns[7], WorkspacesColumns[0]},
+			},
+			{
+				Name:    "workspace_tenant_id_name",
+				Unique:  true,
+				Columns: []*schema.Column{WorkspacesColumns[7], WorkspacesColumns[1]},
+			},
+		},
 	}
 	// Tables holds all the tables in the schema.
 	Tables = []*schema.Table{
@@ -254,7 +285,8 @@ var (
 func init() {
 	ProjectsTable.ForeignKeys[0].RefTable = StateDefinitionsTable
 	ProjectsTable.ForeignKeys[1].RefTable = TenantsTable
-	ProjectsTable.ForeignKeys[2].RefTable = WorkspacesTable
+	ProjectsTable.ForeignKeys[2].RefTable = UsersTable
+	ProjectsTable.ForeignKeys[3].RefTable = WorkspacesTable
 	StateDefinitionsTable.ForeignKeys[0].RefTable = EntityKindsTable
 	TenantsTable.ForeignKeys[0].RefTable = StateDefinitionsTable
 	TenantsTable.ForeignKeys[1].RefTable = UsersTable

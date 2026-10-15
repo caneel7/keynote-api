@@ -35,6 +35,8 @@ const (
 	EdgeTenant = "tenant"
 	// EdgeCreator holds the string denoting the creator edge name in mutations.
 	EdgeCreator = "creator"
+	// EdgeProjectcreator holds the string denoting the projectcreator edge name in mutations.
+	EdgeProjectcreator = "projectcreator"
 	// Table holds the table name of the user in the database.
 	Table = "users"
 	// CredentialsTable is the table that holds the credentials relation/edge.
@@ -72,6 +74,13 @@ const (
 	CreatorInverseTable = "workspaces"
 	// CreatorColumn is the table column denoting the creator relation/edge.
 	CreatorColumn = "created_by"
+	// ProjectcreatorTable is the table that holds the projectcreator relation/edge.
+	ProjectcreatorTable = "projects"
+	// ProjectcreatorInverseTable is the table name for the Project entity.
+	// It exists in this package in order to avoid circular dependency with the "project" package.
+	ProjectcreatorInverseTable = "projects"
+	// ProjectcreatorColumn is the table column denoting the projectcreator relation/edge.
+	ProjectcreatorColumn = "created_by"
 )
 
 // Columns holds all SQL columns for user fields.
@@ -188,6 +197,20 @@ func ByCreator(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
 		sqlgraph.OrderByNeighborTerms(s, newCreatorStep(), append([]sql.OrderTerm{term}, terms...)...)
 	}
 }
+
+// ByProjectcreatorCount orders the results by projectcreator count.
+func ByProjectcreatorCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newProjectcreatorStep(), opts...)
+	}
+}
+
+// ByProjectcreator orders the results by projectcreator terms.
+func ByProjectcreator(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newProjectcreatorStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
 func newCredentialsStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
@@ -221,5 +244,12 @@ func newCreatorStep() *sqlgraph.Step {
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(CreatorInverseTable, FieldID),
 		sqlgraph.Edge(sqlgraph.O2M, false, CreatorTable, CreatorColumn),
+	)
+}
+func newProjectcreatorStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(ProjectcreatorInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, false, ProjectcreatorTable, ProjectcreatorColumn),
 	)
 }

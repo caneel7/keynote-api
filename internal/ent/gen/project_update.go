@@ -15,6 +15,7 @@ import (
 	"github.com/caneel7/keynote-api/internal/ent/gen/project"
 	"github.com/caneel7/keynote-api/internal/ent/gen/statedefinitions"
 	"github.com/caneel7/keynote-api/internal/ent/gen/tenant"
+	"github.com/caneel7/keynote-api/internal/ent/gen/user"
 	"github.com/caneel7/keynote-api/internal/ent/gen/workspace"
 	"github.com/google/uuid"
 )
@@ -88,6 +89,20 @@ func (_u *ProjectUpdate) SetNillableStatusID(v *uuid.UUID) *ProjectUpdate {
 	return _u
 }
 
+// SetCreatedBy sets the "created_by" field.
+func (_u *ProjectUpdate) SetCreatedBy(v uuid.UUID) *ProjectUpdate {
+	_u.mutation.SetCreatedBy(v)
+	return _u
+}
+
+// SetNillableCreatedBy sets the "created_by" field if the given value is not nil.
+func (_u *ProjectUpdate) SetNillableCreatedBy(v *uuid.UUID) *ProjectUpdate {
+	if v != nil {
+		_u.SetCreatedBy(*v)
+	}
+	return _u
+}
+
 // SetUpdatedAt sets the "updated_at" field.
 func (_u *ProjectUpdate) SetUpdatedAt(v time.Time) *ProjectUpdate {
 	_u.mutation.SetUpdatedAt(v)
@@ -135,6 +150,17 @@ func (_u *ProjectUpdate) SetState(v *StateDefinitions) *ProjectUpdate {
 	return _u.SetStateID(v.ID)
 }
 
+// SetCreatorID sets the "creator" edge to the User entity by ID.
+func (_u *ProjectUpdate) SetCreatorID(id uuid.UUID) *ProjectUpdate {
+	_u.mutation.SetCreatorID(id)
+	return _u
+}
+
+// SetCreator sets the "creator" edge to the User entity.
+func (_u *ProjectUpdate) SetCreator(v *User) *ProjectUpdate {
+	return _u.SetCreatorID(v.ID)
+}
+
 // Mutation returns the ProjectMutation object of the builder.
 func (_u *ProjectUpdate) Mutation() *ProjectMutation {
 	return _u.mutation
@@ -155,6 +181,12 @@ func (_u *ProjectUpdate) ClearWorkspace() *ProjectUpdate {
 // ClearState clears the "state" edge to the StateDefinitions entity.
 func (_u *ProjectUpdate) ClearState() *ProjectUpdate {
 	_u.mutation.ClearState()
+	return _u
+}
+
+// ClearCreator clears the "creator" edge to the User entity.
+func (_u *ProjectUpdate) ClearCreator() *ProjectUpdate {
+	_u.mutation.ClearCreator()
 	return _u
 }
 
@@ -209,6 +241,9 @@ func (_u *ProjectUpdate) check() error {
 	}
 	if _u.mutation.StateCleared() && len(_u.mutation.StateIDs()) > 0 {
 		return errors.New(`gen: clearing a required unique edge "Project.state"`)
+	}
+	if _u.mutation.CreatorCleared() && len(_u.mutation.CreatorIDs()) > 0 {
+		return errors.New(`gen: clearing a required unique edge "Project.creator"`)
 	}
 	return nil
 }
@@ -324,6 +359,35 @@ func (_u *ProjectUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if _u.mutation.CreatorCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   project.CreatorTable,
+			Columns: []string{project.CreatorColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeUUID),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.CreatorIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   project.CreatorTable,
+			Columns: []string{project.CreatorColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeUUID),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if _node, err = sqlgraph.UpdateNodes(ctx, _u.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{project.Label}
@@ -400,6 +464,20 @@ func (_u *ProjectUpdateOne) SetNillableStatusID(v *uuid.UUID) *ProjectUpdateOne 
 	return _u
 }
 
+// SetCreatedBy sets the "created_by" field.
+func (_u *ProjectUpdateOne) SetCreatedBy(v uuid.UUID) *ProjectUpdateOne {
+	_u.mutation.SetCreatedBy(v)
+	return _u
+}
+
+// SetNillableCreatedBy sets the "created_by" field if the given value is not nil.
+func (_u *ProjectUpdateOne) SetNillableCreatedBy(v *uuid.UUID) *ProjectUpdateOne {
+	if v != nil {
+		_u.SetCreatedBy(*v)
+	}
+	return _u
+}
+
 // SetUpdatedAt sets the "updated_at" field.
 func (_u *ProjectUpdateOne) SetUpdatedAt(v time.Time) *ProjectUpdateOne {
 	_u.mutation.SetUpdatedAt(v)
@@ -447,6 +525,17 @@ func (_u *ProjectUpdateOne) SetState(v *StateDefinitions) *ProjectUpdateOne {
 	return _u.SetStateID(v.ID)
 }
 
+// SetCreatorID sets the "creator" edge to the User entity by ID.
+func (_u *ProjectUpdateOne) SetCreatorID(id uuid.UUID) *ProjectUpdateOne {
+	_u.mutation.SetCreatorID(id)
+	return _u
+}
+
+// SetCreator sets the "creator" edge to the User entity.
+func (_u *ProjectUpdateOne) SetCreator(v *User) *ProjectUpdateOne {
+	return _u.SetCreatorID(v.ID)
+}
+
 // Mutation returns the ProjectMutation object of the builder.
 func (_u *ProjectUpdateOne) Mutation() *ProjectMutation {
 	return _u.mutation
@@ -467,6 +556,12 @@ func (_u *ProjectUpdateOne) ClearWorkspace() *ProjectUpdateOne {
 // ClearState clears the "state" edge to the StateDefinitions entity.
 func (_u *ProjectUpdateOne) ClearState() *ProjectUpdateOne {
 	_u.mutation.ClearState()
+	return _u
+}
+
+// ClearCreator clears the "creator" edge to the User entity.
+func (_u *ProjectUpdateOne) ClearCreator() *ProjectUpdateOne {
+	_u.mutation.ClearCreator()
 	return _u
 }
 
@@ -534,6 +629,9 @@ func (_u *ProjectUpdateOne) check() error {
 	}
 	if _u.mutation.StateCleared() && len(_u.mutation.StateIDs()) > 0 {
 		return errors.New(`gen: clearing a required unique edge "Project.state"`)
+	}
+	if _u.mutation.CreatorCleared() && len(_u.mutation.CreatorIDs()) > 0 {
+		return errors.New(`gen: clearing a required unique edge "Project.creator"`)
 	}
 	return nil
 }
@@ -659,6 +757,35 @@ func (_u *ProjectUpdateOne) sqlSave(ctx context.Context) (_node *Project, err er
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(statedefinitions.FieldID, field.TypeUUID),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if _u.mutation.CreatorCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   project.CreatorTable,
+			Columns: []string{project.CreatorColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeUUID),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.CreatorIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   project.CreatorTable,
+			Columns: []string{project.CreatorColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeUUID),
 			},
 		}
 		for _, k := range nodes {

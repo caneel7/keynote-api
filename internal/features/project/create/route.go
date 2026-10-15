@@ -22,8 +22,8 @@ type ProjectCreator interface {
 }
 
 type CreateProjectRequest struct {
-	TenantID string `header:"X-Tenant-Id" required:"true"`
-	WorkspaceID string `header:"X-Workspace-Id" required:"true"`
+	TenantID string `header:"X-Tenant-Id" required:"true" format:"uuid"`
+	WorkspaceID string `header:"X-Workspace-Id" required:"true" format:"uuid"`
 	Body struct {
 		Name string `json:"name" minLength:"3" maxLength:"128"`
 	}

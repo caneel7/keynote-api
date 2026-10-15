@@ -10,6 +10,7 @@ import (
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/caneel7/keynote-api/internal/ent/gen/project"
 	"github.com/caneel7/keynote-api/internal/ent/gen/statedefinitions"
 	"github.com/caneel7/keynote-api/internal/ent/gen/tenant"
 	"github.com/caneel7/keynote-api/internal/ent/gen/user"
@@ -171,6 +172,21 @@ func (_c *UserCreate) AddCreator(v ...*Workspace) *UserCreate {
 		ids[i] = v[i].ID
 	}
 	return _c.AddCreatorIDs(ids...)
+}
+
+// AddProjectcreatorIDs adds the "projectcreator" edge to the Project entity by IDs.
+func (_c *UserCreate) AddProjectcreatorIDs(ids ...uuid.UUID) *UserCreate {
+	_c.mutation.AddProjectcreatorIDs(ids...)
+	return _c
+}
+
+// AddProjectcreator adds the "projectcreator" edges to the Project entity.
+func (_c *UserCreate) AddProjectcreator(v ...*Project) *UserCreate {
+	ids := make([]uuid.UUID, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _c.AddProjectcreatorIDs(ids...)
 }
 
 // Mutation returns the UserMutation object of the builder.
@@ -369,6 +385,22 @@ func (_c *UserCreate) createSpec() (*User, *sqlgraph.CreateSpec) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(workspace.FieldID, field.TypeUUID),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := _c.mutation.ProjectcreatorIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.ProjectcreatorTable,
+			Columns: []string{user.ProjectcreatorColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(project.FieldID, field.TypeUUID),
 			},
 		}
 		for _, k := range nodes {

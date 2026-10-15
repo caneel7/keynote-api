@@ -258,6 +258,11 @@ func (_u *TenantUpdate) check() error {
 			return &ValidationError{Name: "name", err: fmt.Errorf(`gen: validator failed for field "Tenant.name": %w`, err)}
 		}
 	}
+	if v, ok := _u.mutation.Slug(); ok {
+		if err := tenant.SlugValidator(v); err != nil {
+			return &ValidationError{Name: "slug", err: fmt.Errorf(`gen: validator failed for field "Tenant.slug": %w`, err)}
+		}
+	}
 	if _u.mutation.StateCleared() && len(_u.mutation.StateIDs()) > 0 {
 		return errors.New(`gen: clearing a required unique edge "Tenant.state"`)
 	}
@@ -682,6 +687,11 @@ func (_u *TenantUpdateOne) check() error {
 	if v, ok := _u.mutation.Name(); ok {
 		if err := tenant.NameValidator(v); err != nil {
 			return &ValidationError{Name: "name", err: fmt.Errorf(`gen: validator failed for field "Tenant.name": %w`, err)}
+		}
+	}
+	if v, ok := _u.mutation.Slug(); ok {
+		if err := tenant.SlugValidator(v); err != nil {
+			return &ValidationError{Name: "slug", err: fmt.Errorf(`gen: validator failed for field "Tenant.slug": %w`, err)}
 		}
 	}
 	if _u.mutation.StateCleared() && len(_u.mutation.StateIDs()) > 0 {

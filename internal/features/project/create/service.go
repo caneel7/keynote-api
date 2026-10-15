@@ -27,11 +27,15 @@ func (s *Service) CreateProject(
 ) (gen.Project,error) {
 
 	exist, err := s.db.Project.Query().
-		Where(project.Name(name)).
+		Where(
+			project.Name(name),
+			project.TenantID(tenantID),
+			project.WorkspaceID(workspaceID),
+		).
 		Exist(ctx);
 
 	if err != nil {
-		return gen.Project{}, err
+		return gen.Project{}, errors.New(errors.KindInternal, err.Error())
 	}
 
 	if exist {
@@ -43,13 +47,14 @@ func (s *Service) CreateProject(
 		SetTenantID(tenantID).
 		SetWorkspaceID(workspaceID).
 		SetStateID(constants.StateIDs[constants.KindProject][constants.StateActive]).
+		SetCreatorID(userID).
 		Save(ctx)
 
 	if err != nil {
 		if gen.IsConstraintError(err){
 			return gen.Project{},errors.New(errors.KindConflict,err.Error())
 		}
-		return gen.Project{},errors.New(errors.KindConflict,"Project name already exists")
+		return gen.Project{}, errors.New(errors.KindInternal, "Failed to create project")
 	}
 
 	return *project,nil

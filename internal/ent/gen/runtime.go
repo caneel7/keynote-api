@@ -52,11 +52,11 @@ func init() {
 	// project.NameValidator is a validator for the "name" field. It is called by the builders before save.
 	project.NameValidator = projectDescName.Validators[0].(func(string) error)
 	// projectDescCreatedAt is the schema descriptor for created_at field.
-	projectDescCreatedAt := projectFields[5].Descriptor()
+	projectDescCreatedAt := projectFields[6].Descriptor()
 	// project.DefaultCreatedAt holds the default value on creation for the created_at field.
 	project.DefaultCreatedAt = projectDescCreatedAt.Default.(func() time.Time)
 	// projectDescUpdatedAt is the schema descriptor for updated_at field.
-	projectDescUpdatedAt := projectFields[6].Descriptor()
+	projectDescUpdatedAt := projectFields[7].Descriptor()
 	// project.DefaultUpdatedAt holds the default value on creation for the updated_at field.
 	project.DefaultUpdatedAt = projectDescUpdatedAt.Default.(func() time.Time)
 	// project.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
@@ -95,6 +95,10 @@ func init() {
 	tenantDescName := tenantFields[1].Descriptor()
 	// tenant.NameValidator is a validator for the "name" field. It is called by the builders before save.
 	tenant.NameValidator = tenantDescName.Validators[0].(func(string) error)
+	// tenantDescSlug is the schema descriptor for slug field.
+	tenantDescSlug := tenantFields[2].Descriptor()
+	// tenant.SlugValidator is a validator for the "slug" field. It is called by the builders before save.
+	tenant.SlugValidator = tenantDescSlug.Validators[0].(func(string) error)
 	// tenantDescCreatedAt is the schema descriptor for created_at field.
 	tenantDescCreatedAt := tenantFields[5].Descriptor()
 	// tenant.DefaultCreatedAt holds the default value on creation for the created_at field.
