@@ -6,7 +6,6 @@ import (
 	"strings"
 
 	argon "github.com/caneel7/keynote-api/internal/common/password"
-	"github.com/caneel7/keynote-api/internal/common/tokens"
 	"github.com/caneel7/keynote-api/internal/constants"
 	"github.com/caneel7/keynote-api/internal/ent/gen"
 	"github.com/caneel7/keynote-api/internal/ent/gen/user"
@@ -16,59 +15,51 @@ import (
 )
 
 type Service struct {
-	db     *gen.Client
-	signer *tokens.Signer
+	db       *gen.Client
+	sessions *sessions.Service
 }
 
-func NewService(db *gen.Client, signer *tokens.Signer) *Service {
-	return &Service{db: db, signer: signer}
+func NewService(db *gen.Client, sessions *sessions.Service) *Service {
+	return &Service{db: db, sessions: sessions}
 }
 
+var dummyHash = mustHash("keynote-dummy-password")
 
-var dummyHash = "dum"
+func mustHash(password string) string {
+	h, err := argon.HashPassword(password)
+	if err != nil {
+		panic(fmt.Sprintf("login: compute dummy hash: %v", err))
+	}
+	return h
+}
 
 func (s *Service) Login(
 	ctx context.Context,
 	email string,
 	password string,
-) (sessions.TokensAndSession, error) {
+) (sessions.Tokens, error) {
 
-	var output sessions.TokensAndSession
 	email = strings.ToLower(strings.TrimSpace(email))
 
-	u, err := s.db.UserCredential.Query().
+	cred, err := s.db.UserCredential.Query().
 		Where(usercredential.HasUsersWith(
 			user.Email(email),
 			user.DeletedAtIsNil(),
-			user.StatusIDIn(
-				constants.StateIDs[constants.KindUsers][constants.StateActive],
-			),
+			user.StatusID(constants.StateIDs[constants.KindUsers][constants.StateActive]),
 		)).
-		WithUsers().
 		Only(ctx)
-
 	if err != nil && !gen.IsNotFound(err) {
-		return output, appError.InvalidCredentials()
+		return sessions.Tokens{}, fmt.Errorf("find credential: %w", err)
 	}
 
-	if u == nil {
+	if cred == nil {
 		argon.VerifyPassword(password, dummyHash) // equalize timing
-		return output, appError.InvalidCredentials()
+		return sessions.Tokens{}, appError.InvalidCredentials()
 	}
 
-	user := u.Edges.Users
-
-	ok := argon.VerifyPassword(password, u.PasswordHash)
-	if !ok {
-		return output, appError.InvalidCredentials()
+	if !argon.VerifyPassword(password, cred.PasswordHash) {
+		return sessions.Tokens{}, appError.InvalidCredentials()
 	}
 
-	out, err := sessions.NewService(s.db, s.signer).CreateSessionAndTokens(ctx, user.ID)
-	if err != nil {
-		return output, fmt.Errorf("Login error : %v", err)
-	}
-
-	return out, nil
+	return s.sessions.Issue(ctx, s.db, cred.UserID)
 }
-
-

@@ -7,46 +7,42 @@ import (
 	"strings"
 
 	argon "github.com/caneel7/keynote-api/internal/common/password"
-	"github.com/caneel7/keynote-api/internal/common/tokens"
 	"github.com/caneel7/keynote-api/internal/constants"
 	"github.com/caneel7/keynote-api/internal/ent/gen"
-	"github.com/caneel7/keynote-api/internal/errors"
 	appError "github.com/caneel7/keynote-api/internal/errors"
 	"github.com/caneel7/keynote-api/internal/features/auth/sessions"
 )
 
 type Service struct {
-	db     *gen.Client
-	signer *tokens.Signer
+	db       *gen.Client
+	sessions *sessions.Service
 }
 
-func NewService(db *gen.Client, signer *tokens.Signer) *Service {
-	return &Service{db, signer}
+func NewService(db *gen.Client, sessions *sessions.Service) *Service {
+	return &Service{db: db, sessions: sessions}
 }
 
 func (s *Service) Register(
 	ctx context.Context,
 	email string,
 	password string,
-) (sessions.TokensAndSession, error) {
-
-	var output sessions.TokensAndSession
+) (sessions.Tokens, error) {
 
 	email = strings.ToLower(strings.TrimSpace(email))
 
 	addr, err := mail.ParseAddress(email)
 	if err != nil || addr.Address != email {
-		return output, appError.Invalid(map[string]string{"email": "invalid email"})
+		return sessions.Tokens{}, appError.Invalid(map[string]string{"email": "invalid email"})
 	}
 
 	hash, err := argon.HashPassword(password)
 	if err != nil {
-		return output, err
+		return sessions.Tokens{}, fmt.Errorf("hash password: %w", err)
 	}
 
 	tx, err := s.db.Tx(ctx)
 	if err != nil {
-		return output, errors.New(appError.KindInternal, err.Error())
+		return sessions.Tokens{}, fmt.Errorf("begin tx: %w", err)
 	}
 	defer tx.Rollback()
 
@@ -54,29 +50,25 @@ func (s *Service) Register(
 		SetEmail(email).
 		SetStateID(constants.StateIDs[constants.KindUsers][constants.StateActive]).
 		Save(ctx)
-
+	if gen.IsConstraintError(err) {
+		return sessions.Tokens{}, appError.New(appError.KindConflict, "Email Already Exists")
+	}
 	if err != nil {
-		if gen.IsConstraintError(err) {
-			return output, appError.New(
-				appError.KindConflict,
-				"Email Already Exists",
-			)
-		}
-		return output, fmt.Errorf("Error creating user : %v", err)
+		return sessions.Tokens{}, fmt.Errorf("create user: %w", err)
 	}
 
 	if _, err := tx.UserCredential.Create().SetUsers(user).SetPasswordHash(hash).Save(ctx); err != nil {
-		return output, fmt.Errorf("Error saving user credentials : %v", err)
+		return sessions.Tokens{}, fmt.Errorf("create user credential: %w", err)
+	}
+
+	t, err := s.sessions.Issue(ctx, tx.Client(), user.ID)
+	if err != nil {
+		return sessions.Tokens{}, err
 	}
 
 	if err := tx.Commit(); err != nil {
-		return output, fmt.Errorf("Error commiting to db : %v", err)
+		return sessions.Tokens{}, fmt.Errorf("commit: %w", err)
 	}
 
-	out, err := sessions.NewService(s.db,s.signer).CreateSessionAndTokens(ctx,user.ID)
-	if err != nil {
-		return output, err
-	}
-
-	return out, nil
+	return t, nil
 }
