@@ -8,7 +8,7 @@ import (
 	"github.com/caneel7/keynote-api/internal/ent/gen"
 	"github.com/caneel7/keynote-api/internal/ent/gen/usersession"
 	"github.com/caneel7/keynote-api/internal/errors"
-	login "github.com/caneel7/keynote-api/internal/features/auth/login"
+	"github.com/caneel7/keynote-api/internal/features/auth/sessions"
 )
 
 type Service struct {
@@ -23,13 +23,15 @@ func NewService(db *gen.Client, signer *tokens.Signer) *Service {
 func (s *Service) RefreshToken(
 	ctx context.Context,
 	refreshToken string,
-) (login.LoginOutput, error) {
+) (sessions.TokensAndSession, error) {
 
-	var output login.LoginOutput
+	var output sessions.TokensAndSession
 
 	sessionWithUser, err := s.db.UserSession.Query().
 		Where(
 			usersession.RefreshTokenHash(tokens.Hash(refreshToken)),
+			usersession.RevokedAtIsNil(),
+			usersession.ExpiresAtGT(time.Now()),
 		).
 		WithUser().
 		Only(ctx)

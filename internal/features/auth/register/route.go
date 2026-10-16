@@ -7,6 +7,7 @@ import (
 
 	httpError "github.com/caneel7/keynote-api/internal/errors"
 	"github.com/caneel7/keynote-api/internal/features/auth/login"
+	"github.com/caneel7/keynote-api/internal/features/auth/sessions"
 	"github.com/danielgtaylor/huma/v2"
 )
 
@@ -15,13 +16,13 @@ type Registrar interface {
 		ctx context.Context,
 		email string,
 		password string,
-	) (login.LoginOutput, error)
+	) (sessions.TokensAndSession, error)
 }
 
 type RegisterUserRequest struct {
 	Body struct {
 		Email    string `json:"email" format:"email" maxLength:"254"`
-		Password string `json:"password" minLenght:"8" maxLength:"128"`
+		Password string `json:"password" minLength:"8" maxLength:"128"`
 	}
 }
 

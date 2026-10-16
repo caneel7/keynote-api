@@ -63,7 +63,8 @@ func (s *Service) Create(
 		if gen.IsConstraintError(err) {
 			return newTenant,newWorkspace,errors.New(errors.KindConflict,err.Error())
 		}
-		return newTenant,newWorkspace, err
+		_ = fmt.Errorf("Error Creating project : %v",err.Error())
+		return newTenant,newWorkspace, errors.New(errors.KindInternal,"Error creating project. Please start again later")
 	}
 
 	workspace, err := tx.Workspace.Create().

@@ -6,6 +6,7 @@ import (
 	"time"
 
 	httpError "github.com/caneel7/keynote-api/internal/errors"
+	"github.com/caneel7/keynote-api/internal/features/auth/sessions"
 	"github.com/danielgtaylor/huma/v2"
 )
 
@@ -14,7 +15,7 @@ type Authenticate interface {
 		ctx context.Context,
 		email string,
 		password string,
-	) (LoginOutput, error)
+	) (sessions.TokensAndSession, error)
 }
 
 type LoginRequest struct {

@@ -7,11 +7,12 @@ import (
 
 	"github.com/caneel7/keynote-api/internal/errors"
 	login "github.com/caneel7/keynote-api/internal/features/auth/login"
+	"github.com/caneel7/keynote-api/internal/features/auth/sessions"
 	"github.com/danielgtaylor/huma/v2"
 )
 
 type Refresh interface {
-	RefreshToken(ctx context.Context,token string) (login.LoginOutput,error)
+	RefreshToken(ctx context.Context,token string) (sessions.TokensAndSession,error)
 }
 
 type RefreshTokenRequest struct {
@@ -41,8 +42,9 @@ func RefreshTokenRoute(api huma.API,svc Refresh) {
 			res.SetCookie = http.Cookie{
 				Name:     "refresh_token",
 				Value:    out.RefreshToken,
-				Path:     "/",
+				Path:     "/auth",
 				HttpOnly: true,
+				Secure:   true,
 				SameSite: http.SameSiteLaxMode,
 			}
 			res.Body.Token = out.AccessToken
