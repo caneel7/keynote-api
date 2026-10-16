@@ -52,8 +52,7 @@ func CreateProjectRoute(api huma.API,svc ProjectCreator) {
 		},
 		func (ctx context.Context,req *CreateProjectRequest) (*CreateProjectResponse,error) {
 
-			claims,_ := auth.ClaimFromContext(ctx)
-			userID, err := uuid.Parse(claims.Subject)
+			userID, err := auth.GetUserIDFromClaims(ctx)
 			if err != nil {
 				return &CreateProjectResponse{},errors.From(err)
 			}

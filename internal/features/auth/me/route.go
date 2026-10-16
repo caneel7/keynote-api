@@ -37,9 +37,7 @@ func GetMeRoute(api huma.API, svc GetMe) {
 			Description:   "Returns authenticated user via jwt",
 		},
 		func(ctx context.Context, input *struct{}) (*GetMeResponse, error) {
-			claims, _ := auth.ClaimFromContext(ctx)
-
-			userID, err := uuid.Parse(claims.Subject)
+			userID, err := auth.GetUserIDFromClaims(ctx)
 			if err != nil {
 				return &GetMeResponse{}, errors.From(err)
 			}

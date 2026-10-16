@@ -7,6 +7,7 @@ import (
 
 	tokens "github.com/caneel7/keynote-api/internal/common/tokens"
 	"github.com/danielgtaylor/huma/v2"
+	"github.com/google/uuid"
 )
 
 type contextKey string
@@ -17,6 +18,13 @@ func ClaimFromContext(ctx context.Context) (tokens.Claims,bool) {
 	claims, ok := ctx.Value(ClaimKey).(tokens.Claims)
 	return claims,ok
 }
+
+func GetUserIDFromClaims(ctx context.Context) (uuid.UUID,error) {
+	c, _ := ClaimFromContext(ctx)
+	p, err := uuid.Parse(c.ID)
+	return p, err
+}
+
 
 func VerifyJWT(api huma.API, signer *tokens.Signer) func(huma.Context, func(huma.Context)) {
 	return func(ctx huma.Context,next func(huma.Context)){

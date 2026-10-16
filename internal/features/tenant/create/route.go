@@ -53,10 +53,9 @@ func CreateTenantRoute(api huma.API, svc TenantCreator) {
 		},
 		func(ctx context.Context, r *CreateTenantRequest) (*CreateTenantResponse, error) {
 
-			claims, _ := auth.ClaimFromContext(ctx)
 			res := &CreateTenantResponse{}
 
-			userID, err := uuid.Parse(claims.Subject)
+			userID, err := auth.GetUserIDFromClaims(ctx)
 			if err != nil {
 				return &CreateTenantResponse{}, err
 			}
