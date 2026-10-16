@@ -12,3 +12,10 @@ ALTER TABLE "public"."projects" ALTER COLUMN "name" TYPE public.citext, ADD COLU
 CREATE INDEX "project_tenant_id_workspace_id" ON "public"."projects" ("tenant_id", "workspace_id");
 -- Create index "project_tenant_id_workspace_id_name" to table: "projects"
 CREATE INDEX "project_tenant_id_workspace_id_name" ON "public"."projects" ("tenant_id", "workspace_id", "name");
+-- create index to workspace as composite fk 
+ALTER TABLE "projects"
+  ADD CONSTRAINT "fk_projects_workspace_composite"
+  FOREIGN KEY ("tenant_id", "workspace_id")
+  REFERENCES "workspaces" ("tenant_id", "id")
+  ON UPDATE CASCADE
+  ON DELETE CASCADE;
