@@ -23,6 +23,8 @@ const (
 	FieldCost = "cost"
 	// FieldCurrency holds the string denoting the currency field in the database.
 	FieldCurrency = "currency"
+	// FieldDiscountPercentage holds the string denoting the discount_percentage field in the database.
+	FieldDiscountPercentage = "discount_percentage"
 	// FieldInterval holds the string denoting the interval field in the database.
 	FieldInterval = "interval"
 	// FieldPerks holds the string denoting the perks field in the database.
@@ -62,6 +64,7 @@ var Columns = []string{
 	FieldVersion,
 	FieldCost,
 	FieldCurrency,
+	FieldDiscountPercentage,
 	FieldInterval,
 	FieldPerks,
 	FieldCreatedAt,
@@ -86,6 +89,8 @@ var (
 	VersionValidator func(int) error
 	// DefaultCurrency holds the default value on creation for the "currency" field.
 	DefaultCurrency string
+	// DefaultDiscountPercentage holds the default value on creation for the "discount_percentage" field.
+	DefaultDiscountPercentage float64
 	// DefaultInterval holds the default value on creation for the "interval" field.
 	DefaultInterval int
 	// IntervalValidator is a validator for the "interval" field. It is called by the builders before save.
@@ -126,6 +131,11 @@ func ByCost(opts ...sql.OrderTermOption) OrderOption {
 // ByCurrency orders the results by the currency field.
 func ByCurrency(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldCurrency, opts...).ToFunc()
+}
+
+// ByDiscountPercentage orders the results by the discount_percentage field.
+func ByDiscountPercentage(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldDiscountPercentage, opts...).ToFunc()
 }
 
 // ByInterval orders the results by the interval field.

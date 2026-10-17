@@ -28,6 +28,8 @@ type PlanVersion struct {
 	Cost float64 `json:"cost,omitempty"`
 	// Currency holds the value of the "currency" field.
 	Currency string `json:"currency,omitempty"`
+	// DiscountPercentage holds the value of the "discount_percentage" field.
+	DiscountPercentage float64 `json:"discount_percentage,omitempty"`
 	// Interval holds the value of the "interval" field.
 	Interval int `json:"interval,omitempty"`
 	// Perks holds the value of the "perks" field.
@@ -82,7 +84,7 @@ func (*PlanVersion) scanValues(columns []string) ([]any, error) {
 		switch columns[i] {
 		case planversion.FieldPerks:
 			values[i] = new([]byte)
-		case planversion.FieldCost:
+		case planversion.FieldCost, planversion.FieldDiscountPercentage:
 			values[i] = new(sql.NullFloat64)
 		case planversion.FieldVersion, planversion.FieldInterval:
 			values[i] = new(sql.NullInt64)
@@ -136,6 +138,12 @@ func (_m *PlanVersion) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field currency", values[i])
 			} else if value.Valid {
 				_m.Currency = value.String
+			}
+		case planversion.FieldDiscountPercentage:
+			if value, ok := values[i].(*sql.NullFloat64); !ok {
+				return fmt.Errorf("unexpected type %T for field discount_percentage", values[i])
+			} else if value.Valid {
+				_m.DiscountPercentage = value.Float64
 			}
 		case planversion.FieldInterval:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
@@ -227,6 +235,9 @@ func (_m *PlanVersion) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("currency=")
 	builder.WriteString(_m.Currency)
+	builder.WriteString(", ")
+	builder.WriteString("discount_percentage=")
+	builder.WriteString(fmt.Sprintf("%v", _m.DiscountPercentage))
 	builder.WriteString(", ")
 	builder.WriteString("interval=")
 	builder.WriteString(fmt.Sprintf("%v", _m.Interval))

@@ -2965,29 +2965,31 @@ func (m *PlanMutation) ResetEdge(name string) error {
 // PlanVersionMutation represents an operation that mutates the PlanVersion nodes in the graph.
 type PlanVersionMutation struct {
 	config
-	op                  Op
-	typ                 string
-	id                  *uuid.UUID
-	version             *int
-	addversion          *int
-	cost                *float64
-	addcost             *float64
-	currency            *string
-	interval            *int
-	addinterval         *int
-	perks               *map[string]int
-	created_at          *time.Time
-	updated_at          *time.Time
-	deleted_at          *time.Time
-	clearedFields       map[string]struct{}
-	plan                *uuid.UUID
-	clearedplan         bool
-	subscription        map[uuid.UUID]struct{}
-	removedsubscription map[uuid.UUID]struct{}
-	clearedsubscription bool
-	done                bool
-	oldValue            func(context.Context) (*PlanVersion, error)
-	predicates          []predicate.PlanVersion
+	op                     Op
+	typ                    string
+	id                     *uuid.UUID
+	version                *int
+	addversion             *int
+	cost                   *float64
+	addcost                *float64
+	currency               *string
+	discount_percentage    *float64
+	adddiscount_percentage *float64
+	interval               *int
+	addinterval            *int
+	perks                  *map[string]int
+	created_at             *time.Time
+	updated_at             *time.Time
+	deleted_at             *time.Time
+	clearedFields          map[string]struct{}
+	plan                   *uuid.UUID
+	clearedplan            bool
+	subscription           map[uuid.UUID]struct{}
+	removedsubscription    map[uuid.UUID]struct{}
+	clearedsubscription    bool
+	done                   bool
+	oldValue               func(context.Context) (*PlanVersion, error)
+	predicates             []predicate.PlanVersion
 }
 
 var _ ent.Mutation = (*PlanVersionMutation)(nil)
@@ -3276,6 +3278,62 @@ func (m *PlanVersionMutation) OldCurrency(ctx context.Context) (v string, err er
 // ResetCurrency resets all changes to the "currency" field.
 func (m *PlanVersionMutation) ResetCurrency() {
 	m.currency = nil
+}
+
+// SetDiscountPercentage sets the "discount_percentage" field.
+func (m *PlanVersionMutation) SetDiscountPercentage(f float64) {
+	m.discount_percentage = &f
+	m.adddiscount_percentage = nil
+}
+
+// DiscountPercentage returns the value of the "discount_percentage" field in the mutation.
+func (m *PlanVersionMutation) DiscountPercentage() (r float64, exists bool) {
+	v := m.discount_percentage
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldDiscountPercentage returns the old "discount_percentage" field's value of the PlanVersion entity.
+// If the PlanVersion object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *PlanVersionMutation) OldDiscountPercentage(ctx context.Context) (v float64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldDiscountPercentage is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldDiscountPercentage requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldDiscountPercentage: %w", err)
+	}
+	return oldValue.DiscountPercentage, nil
+}
+
+// AddDiscountPercentage adds f to the "discount_percentage" field.
+func (m *PlanVersionMutation) AddDiscountPercentage(f float64) {
+	if m.adddiscount_percentage != nil {
+		*m.adddiscount_percentage += f
+	} else {
+		m.adddiscount_percentage = &f
+	}
+}
+
+// AddedDiscountPercentage returns the value that was added to the "discount_percentage" field in this mutation.
+func (m *PlanVersionMutation) AddedDiscountPercentage() (r float64, exists bool) {
+	v := m.adddiscount_percentage
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetDiscountPercentage resets all changes to the "discount_percentage" field.
+func (m *PlanVersionMutation) ResetDiscountPercentage() {
+	m.discount_percentage = nil
+	m.adddiscount_percentage = nil
 }
 
 // SetInterval sets the "interval" field.
@@ -3606,7 +3664,7 @@ func (m *PlanVersionMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *PlanVersionMutation) Fields() []string {
-	fields := make([]string, 0, 9)
+	fields := make([]string, 0, 10)
 	if m.plan != nil {
 		fields = append(fields, planversion.FieldPlanID)
 	}
@@ -3618,6 +3676,9 @@ func (m *PlanVersionMutation) Fields() []string {
 	}
 	if m.currency != nil {
 		fields = append(fields, planversion.FieldCurrency)
+	}
+	if m.discount_percentage != nil {
+		fields = append(fields, planversion.FieldDiscountPercentage)
 	}
 	if m.interval != nil {
 		fields = append(fields, planversion.FieldInterval)
@@ -3650,6 +3711,8 @@ func (m *PlanVersionMutation) Field(name string) (ent.Value, bool) {
 		return m.Cost()
 	case planversion.FieldCurrency:
 		return m.Currency()
+	case planversion.FieldDiscountPercentage:
+		return m.DiscountPercentage()
 	case planversion.FieldInterval:
 		return m.Interval()
 	case planversion.FieldPerks:
@@ -3677,6 +3740,8 @@ func (m *PlanVersionMutation) OldField(ctx context.Context, name string) (ent.Va
 		return m.OldCost(ctx)
 	case planversion.FieldCurrency:
 		return m.OldCurrency(ctx)
+	case planversion.FieldDiscountPercentage:
+		return m.OldDiscountPercentage(ctx)
 	case planversion.FieldInterval:
 		return m.OldInterval(ctx)
 	case planversion.FieldPerks:
@@ -3723,6 +3788,13 @@ func (m *PlanVersionMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetCurrency(v)
+		return nil
+	case planversion.FieldDiscountPercentage:
+		v, ok := value.(float64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetDiscountPercentage(v)
 		return nil
 	case planversion.FieldInterval:
 		v, ok := value.(int)
@@ -3773,6 +3845,9 @@ func (m *PlanVersionMutation) AddedFields() []string {
 	if m.addcost != nil {
 		fields = append(fields, planversion.FieldCost)
 	}
+	if m.adddiscount_percentage != nil {
+		fields = append(fields, planversion.FieldDiscountPercentage)
+	}
 	if m.addinterval != nil {
 		fields = append(fields, planversion.FieldInterval)
 	}
@@ -3788,6 +3863,8 @@ func (m *PlanVersionMutation) AddedField(name string) (ent.Value, bool) {
 		return m.AddedVersion()
 	case planversion.FieldCost:
 		return m.AddedCost()
+	case planversion.FieldDiscountPercentage:
+		return m.AddedDiscountPercentage()
 	case planversion.FieldInterval:
 		return m.AddedInterval()
 	}
@@ -3812,6 +3889,13 @@ func (m *PlanVersionMutation) AddField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.AddCost(v)
+		return nil
+	case planversion.FieldDiscountPercentage:
+		v, ok := value.(float64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddDiscountPercentage(v)
 		return nil
 	case planversion.FieldInterval:
 		v, ok := value.(int)
@@ -3867,6 +3951,9 @@ func (m *PlanVersionMutation) ResetField(name string) error {
 		return nil
 	case planversion.FieldCurrency:
 		m.ResetCurrency()
+		return nil
+	case planversion.FieldDiscountPercentage:
+		m.ResetDiscountPercentage()
 		return nil
 	case planversion.FieldInterval:
 		m.ResetInterval()

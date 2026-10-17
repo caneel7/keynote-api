@@ -73,7 +73,7 @@ var (
 	// PlansColumns holds the columns for the "plans" table.
 	PlansColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeUUID},
-		{Name: "name", Type: field.TypeString, Unique: true},
+		{Name: "name", Type: field.TypeString},
 		{Name: "key", Type: field.TypeString, Unique: true},
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "updated_at", Type: field.TypeTime},
@@ -91,6 +91,7 @@ var (
 		{Name: "version", Type: field.TypeInt, Default: 1},
 		{Name: "cost", Type: field.TypeFloat64},
 		{Name: "currency", Type: field.TypeString, Default: "usd"},
+		{Name: "discount_percentage", Type: field.TypeFloat64, Default: 0},
 		{Name: "interval", Type: field.TypeInt, Default: 30},
 		{Name: "perks", Type: field.TypeJSON},
 		{Name: "created_at", Type: field.TypeTime},
@@ -106,7 +107,7 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "plan_versions_plans_versions",
-				Columns:    []*schema.Column{PlanVersionsColumns[9]},
+				Columns:    []*schema.Column{PlanVersionsColumns[10]},
 				RefColumns: []*schema.Column{PlansColumns[0]},
 				OnDelete:   schema.NoAction,
 			},

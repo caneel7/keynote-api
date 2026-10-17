@@ -44,6 +44,27 @@ func (_u *PlanVersionUpdate) SetNillableCurrency(v *string) *PlanVersionUpdate {
 	return _u
 }
 
+// SetDiscountPercentage sets the "discount_percentage" field.
+func (_u *PlanVersionUpdate) SetDiscountPercentage(v float64) *PlanVersionUpdate {
+	_u.mutation.ResetDiscountPercentage()
+	_u.mutation.SetDiscountPercentage(v)
+	return _u
+}
+
+// SetNillableDiscountPercentage sets the "discount_percentage" field if the given value is not nil.
+func (_u *PlanVersionUpdate) SetNillableDiscountPercentage(v *float64) *PlanVersionUpdate {
+	if v != nil {
+		_u.SetDiscountPercentage(*v)
+	}
+	return _u
+}
+
+// AddDiscountPercentage adds value to the "discount_percentage" field.
+func (_u *PlanVersionUpdate) AddDiscountPercentage(v float64) *PlanVersionUpdate {
+	_u.mutation.AddDiscountPercentage(v)
+	return _u
+}
+
 // SetUpdatedAt sets the "updated_at" field.
 func (_u *PlanVersionUpdate) SetUpdatedAt(v time.Time) *PlanVersionUpdate {
 	_u.mutation.SetUpdatedAt(v)
@@ -170,6 +191,12 @@ func (_u *PlanVersionUpdate) sqlSave(ctx context.Context) (_node int, err error)
 	if value, ok := _u.mutation.Currency(); ok {
 		_spec.SetField(planversion.FieldCurrency, field.TypeString, value)
 	}
+	if value, ok := _u.mutation.DiscountPercentage(); ok {
+		_spec.SetField(planversion.FieldDiscountPercentage, field.TypeFloat64, value)
+	}
+	if value, ok := _u.mutation.AddedDiscountPercentage(); ok {
+		_spec.AddField(planversion.FieldDiscountPercentage, field.TypeFloat64, value)
+	}
 	if value, ok := _u.mutation.UpdatedAt(); ok {
 		_spec.SetField(planversion.FieldUpdatedAt, field.TypeTime, value)
 	}
@@ -255,6 +282,27 @@ func (_u *PlanVersionUpdateOne) SetNillableCurrency(v *string) *PlanVersionUpdat
 	if v != nil {
 		_u.SetCurrency(*v)
 	}
+	return _u
+}
+
+// SetDiscountPercentage sets the "discount_percentage" field.
+func (_u *PlanVersionUpdateOne) SetDiscountPercentage(v float64) *PlanVersionUpdateOne {
+	_u.mutation.ResetDiscountPercentage()
+	_u.mutation.SetDiscountPercentage(v)
+	return _u
+}
+
+// SetNillableDiscountPercentage sets the "discount_percentage" field if the given value is not nil.
+func (_u *PlanVersionUpdateOne) SetNillableDiscountPercentage(v *float64) *PlanVersionUpdateOne {
+	if v != nil {
+		_u.SetDiscountPercentage(*v)
+	}
+	return _u
+}
+
+// AddDiscountPercentage adds value to the "discount_percentage" field.
+func (_u *PlanVersionUpdateOne) AddDiscountPercentage(v float64) *PlanVersionUpdateOne {
+	_u.mutation.AddDiscountPercentage(v)
 	return _u
 }
 
@@ -413,6 +461,12 @@ func (_u *PlanVersionUpdateOne) sqlSave(ctx context.Context) (_node *PlanVersion
 	}
 	if value, ok := _u.mutation.Currency(); ok {
 		_spec.SetField(planversion.FieldCurrency, field.TypeString, value)
+	}
+	if value, ok := _u.mutation.DiscountPercentage(); ok {
+		_spec.SetField(planversion.FieldDiscountPercentage, field.TypeFloat64, value)
+	}
+	if value, ok := _u.mutation.AddedDiscountPercentage(); ok {
+		_spec.AddField(planversion.FieldDiscountPercentage, field.TypeFloat64, value)
 	}
 	if value, ok := _u.mutation.UpdatedAt(); ok {
 		_spec.SetField(planversion.FieldUpdatedAt, field.TypeTime, value)

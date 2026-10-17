@@ -63,6 +63,20 @@ func (_c *PlanVersionCreate) SetNillableCurrency(v *string) *PlanVersionCreate {
 	return _c
 }
 
+// SetDiscountPercentage sets the "discount_percentage" field.
+func (_c *PlanVersionCreate) SetDiscountPercentage(v float64) *PlanVersionCreate {
+	_c.mutation.SetDiscountPercentage(v)
+	return _c
+}
+
+// SetNillableDiscountPercentage sets the "discount_percentage" field if the given value is not nil.
+func (_c *PlanVersionCreate) SetNillableDiscountPercentage(v *float64) *PlanVersionCreate {
+	if v != nil {
+		_c.SetDiscountPercentage(*v)
+	}
+	return _c
+}
+
 // SetInterval sets the "interval" field.
 func (_c *PlanVersionCreate) SetInterval(v int) *PlanVersionCreate {
 	_c.mutation.SetInterval(v)
@@ -202,6 +216,10 @@ func (_c *PlanVersionCreate) defaults() {
 		v := planversion.DefaultCurrency
 		_c.mutation.SetCurrency(v)
 	}
+	if _, ok := _c.mutation.DiscountPercentage(); !ok {
+		v := planversion.DefaultDiscountPercentage
+		_c.mutation.SetDiscountPercentage(v)
+	}
 	if _, ok := _c.mutation.Interval(); !ok {
 		v := planversion.DefaultInterval
 		_c.mutation.SetInterval(v)
@@ -238,6 +256,9 @@ func (_c *PlanVersionCreate) check() error {
 	}
 	if _, ok := _c.mutation.Currency(); !ok {
 		return &ValidationError{Name: "currency", err: errors.New(`gen: missing required field "PlanVersion.currency"`)}
+	}
+	if _, ok := _c.mutation.DiscountPercentage(); !ok {
+		return &ValidationError{Name: "discount_percentage", err: errors.New(`gen: missing required field "PlanVersion.discount_percentage"`)}
 	}
 	if _, ok := _c.mutation.Interval(); !ok {
 		return &ValidationError{Name: "interval", err: errors.New(`gen: missing required field "PlanVersion.interval"`)}
@@ -305,6 +326,10 @@ func (_c *PlanVersionCreate) createSpec() (*PlanVersion, *sqlgraph.CreateSpec) {
 	if value, ok := _c.mutation.Currency(); ok {
 		_spec.SetField(planversion.FieldCurrency, field.TypeString, value)
 		_node.Currency = value
+	}
+	if value, ok := _c.mutation.DiscountPercentage(); ok {
+		_spec.SetField(planversion.FieldDiscountPercentage, field.TypeFloat64, value)
+		_node.DiscountPercentage = value
 	}
 	if value, ok := _c.mutation.Interval(); ok {
 		_spec.SetField(planversion.FieldInterval, field.TypeInt, value)

@@ -20,6 +20,7 @@ func (PlanVersion) Fields() []ent.Field {
 		field.Int("version").Default(1).NonNegative().Immutable(),
 		field.Float("cost").Immutable(),
 		field.String("currency").Default("usd"),
+		field.Float("discount_percentage").Default(0),
 		field.Int("interval").Default(30).NonNegative().Immutable(),
 		field.JSON("perks",map[string]int{}).Immutable(),
 		field.Time("created_at").Default(time.Now).Immutable(),

@@ -1,7 +1,9 @@
-h1:1Uq0MFlOpN7GJckI6/qfqvT9CPTrShKre/Q3T6fdJa8=
+h1:Az/Uk5A5AazEaag5iDV9qeQ40tgWZmgcLJBrHk7Fjpk=
 20261014123140_init.sql h1:ttSWHCPI7CX9QmumMgFqAfhu1C3/7HjUw+jVbYvn9TE=
 20261014130521_seed_roles_permissions.sql h1:RlKEpnZrEAwpnDYLQxw/NRKaOEOe12uvKc+XVq0Qis4=
 20261015181021_add_citext_extension.sql h1:GzxM7bn+ZhbLHkxlOKGY5/I5OyOjOCMRVxodOYX+8z0=
 20261015181057_project_workspace_indexes.sql h1:MQ+ZfLmGOur1L5IAjhSKOZ+mDpJLjiHecflEDzkP7vg=
 20261017093604_rbac_subscription.sql h1:wSsyIyuz6f53YWt6RLrlhAOqW+AXGdXhKfwwcj+SdEk=
 20261017093921_subscription_state_entity.sql h1:T2iqM9EfHopq3Yv87OenJ2I62VvQhu5xRL/OkE17xSw=
+20261017103640_planversion_discount_percentage.sql h1:OPCxNr6bJPiIdjSQKkhI6WOqDKz2pJhpwJenWUKyl8o=
+20261017103652_plan_seeder.sql h1:3kJWSaMwue0QrnyO28uy4i2/Es8PYRAdlo7p92wftbQ=

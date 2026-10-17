@@ -76,6 +76,11 @@ func Currency(v string) predicate.PlanVersion {
 	return predicate.PlanVersion(sql.FieldEQ(FieldCurrency, v))
 }
 
+// DiscountPercentage applies equality check predicate on the "discount_percentage" field. It's identical to DiscountPercentageEQ.
+func DiscountPercentage(v float64) predicate.PlanVersion {
+	return predicate.PlanVersion(sql.FieldEQ(FieldDiscountPercentage, v))
+}
+
 // Interval applies equality check predicate on the "interval" field. It's identical to IntervalEQ.
 func Interval(v int) predicate.PlanVersion {
 	return predicate.PlanVersion(sql.FieldEQ(FieldInterval, v))
@@ -259,6 +264,46 @@ func CurrencyEqualFold(v string) predicate.PlanVersion {
 // CurrencyContainsFold applies the ContainsFold predicate on the "currency" field.
 func CurrencyContainsFold(v string) predicate.PlanVersion {
 	return predicate.PlanVersion(sql.FieldContainsFold(FieldCurrency, v))
+}
+
+// DiscountPercentageEQ applies the EQ predicate on the "discount_percentage" field.
+func DiscountPercentageEQ(v float64) predicate.PlanVersion {
+	return predicate.PlanVersion(sql.FieldEQ(FieldDiscountPercentage, v))
+}
+
+// DiscountPercentageNEQ applies the NEQ predicate on the "discount_percentage" field.
+func DiscountPercentageNEQ(v float64) predicate.PlanVersion {
+	return predicate.PlanVersion(sql.FieldNEQ(FieldDiscountPercentage, v))
+}
+
+// DiscountPercentageIn applies the In predicate on the "discount_percentage" field.
+func DiscountPercentageIn(vs ...float64) predicate.PlanVersion {
+	return predicate.PlanVersion(sql.FieldIn(FieldDiscountPercentage, vs...))
+}
+
+// DiscountPercentageNotIn applies the NotIn predicate on the "discount_percentage" field.
+func DiscountPercentageNotIn(vs ...float64) predicate.PlanVersion {
+	return predicate.PlanVersion(sql.FieldNotIn(FieldDiscountPercentage, vs...))
+}
+
+// DiscountPercentageGT applies the GT predicate on the "discount_percentage" field.
+func DiscountPercentageGT(v float64) predicate.PlanVersion {
+	return predicate.PlanVersion(sql.FieldGT(FieldDiscountPercentage, v))
+}
+
+// DiscountPercentageGTE applies the GTE predicate on the "discount_percentage" field.
+func DiscountPercentageGTE(v float64) predicate.PlanVersion {
+	return predicate.PlanVersion(sql.FieldGTE(FieldDiscountPercentage, v))
+}
+
+// DiscountPercentageLT applies the LT predicate on the "discount_percentage" field.
+func DiscountPercentageLT(v float64) predicate.PlanVersion {
+	return predicate.PlanVersion(sql.FieldLT(FieldDiscountPercentage, v))
+}
+
+// DiscountPercentageLTE applies the LTE predicate on the "discount_percentage" field.
+func DiscountPercentageLTE(v float64) predicate.PlanVersion {
+	return predicate.PlanVersion(sql.FieldLTE(FieldDiscountPercentage, v))
 }
 
 // IntervalEQ applies the EQ predicate on the "interval" field.

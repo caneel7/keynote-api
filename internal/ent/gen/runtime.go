@@ -138,18 +138,22 @@ func init() {
 	planversionDescCurrency := planversionFields[4].Descriptor()
 	// planversion.DefaultCurrency holds the default value on creation for the currency field.
 	planversion.DefaultCurrency = planversionDescCurrency.Default.(string)
+	// planversionDescDiscountPercentage is the schema descriptor for discount_percentage field.
+	planversionDescDiscountPercentage := planversionFields[5].Descriptor()
+	// planversion.DefaultDiscountPercentage holds the default value on creation for the discount_percentage field.
+	planversion.DefaultDiscountPercentage = planversionDescDiscountPercentage.Default.(float64)
 	// planversionDescInterval is the schema descriptor for interval field.
-	planversionDescInterval := planversionFields[5].Descriptor()
+	planversionDescInterval := planversionFields[6].Descriptor()
 	// planversion.DefaultInterval holds the default value on creation for the interval field.
 	planversion.DefaultInterval = planversionDescInterval.Default.(int)
 	// planversion.IntervalValidator is a validator for the "interval" field. It is called by the builders before save.
 	planversion.IntervalValidator = planversionDescInterval.Validators[0].(func(int) error)
 	// planversionDescCreatedAt is the schema descriptor for created_at field.
-	planversionDescCreatedAt := planversionFields[7].Descriptor()
+	planversionDescCreatedAt := planversionFields[8].Descriptor()
 	// planversion.DefaultCreatedAt holds the default value on creation for the created_at field.
 	planversion.DefaultCreatedAt = planversionDescCreatedAt.Default.(func() time.Time)
 	// planversionDescUpdatedAt is the schema descriptor for updated_at field.
-	planversionDescUpdatedAt := planversionFields[8].Descriptor()
+	planversionDescUpdatedAt := planversionFields[9].Descriptor()
 	// planversion.DefaultUpdatedAt holds the default value on creation for the updated_at field.
 	planversion.DefaultUpdatedAt = planversionDescUpdatedAt.Default.(func() time.Time)
 	// planversion.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
