@@ -37,6 +37,10 @@ const (
 	EdgeCreator = "creator"
 	// EdgeProjectcreator holds the string denoting the projectcreator edge name in mutations.
 	EdgeProjectcreator = "projectcreator"
+	// EdgeTenantrole holds the string denoting the tenantrole edge name in mutations.
+	EdgeTenantrole = "tenantrole"
+	// EdgeProjectrole holds the string denoting the projectrole edge name in mutations.
+	EdgeProjectrole = "projectrole"
 	// Table holds the table name of the user in the database.
 	Table = "users"
 	// CredentialsTable is the table that holds the credentials relation/edge.
@@ -81,6 +85,20 @@ const (
 	ProjectcreatorInverseTable = "projects"
 	// ProjectcreatorColumn is the table column denoting the projectcreator relation/edge.
 	ProjectcreatorColumn = "created_by"
+	// TenantroleTable is the table that holds the tenantrole relation/edge.
+	TenantroleTable = "tenant_members"
+	// TenantroleInverseTable is the table name for the TenantMember entity.
+	// It exists in this package in order to avoid circular dependency with the "tenantmember" package.
+	TenantroleInverseTable = "tenant_members"
+	// TenantroleColumn is the table column denoting the tenantrole relation/edge.
+	TenantroleColumn = "user_id"
+	// ProjectroleTable is the table that holds the projectrole relation/edge.
+	ProjectroleTable = "project_members"
+	// ProjectroleInverseTable is the table name for the ProjectMember entity.
+	// It exists in this package in order to avoid circular dependency with the "projectmember" package.
+	ProjectroleInverseTable = "project_members"
+	// ProjectroleColumn is the table column denoting the projectrole relation/edge.
+	ProjectroleColumn = "user_id"
 )
 
 // Columns holds all SQL columns for user fields.
@@ -211,6 +229,34 @@ func ByProjectcreator(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
 		sqlgraph.OrderByNeighborTerms(s, newProjectcreatorStep(), append([]sql.OrderTerm{term}, terms...)...)
 	}
 }
+
+// ByTenantroleCount orders the results by tenantrole count.
+func ByTenantroleCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newTenantroleStep(), opts...)
+	}
+}
+
+// ByTenantrole orders the results by tenantrole terms.
+func ByTenantrole(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newTenantroleStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
+
+// ByProjectroleCount orders the results by projectrole count.
+func ByProjectroleCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newProjectroleStep(), opts...)
+	}
+}
+
+// ByProjectrole orders the results by projectrole terms.
+func ByProjectrole(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newProjectroleStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
 func newCredentialsStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
@@ -251,5 +297,19 @@ func newProjectcreatorStep() *sqlgraph.Step {
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(ProjectcreatorInverseTable, FieldID),
 		sqlgraph.Edge(sqlgraph.O2M, false, ProjectcreatorTable, ProjectcreatorColumn),
+	)
+}
+func newTenantroleStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(TenantroleInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, false, TenantroleTable, TenantroleColumn),
+	)
+}
+func newProjectroleStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(ProjectroleInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, false, ProjectroleTable, ProjectroleColumn),
 	)
 }

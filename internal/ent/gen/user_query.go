@@ -14,8 +14,10 @@ import (
 	"entgo.io/ent/schema/field"
 	"github.com/caneel7/keynote-api/internal/ent/gen/predicate"
 	"github.com/caneel7/keynote-api/internal/ent/gen/project"
+	"github.com/caneel7/keynote-api/internal/ent/gen/projectmember"
 	"github.com/caneel7/keynote-api/internal/ent/gen/statedefinitions"
 	"github.com/caneel7/keynote-api/internal/ent/gen/tenant"
+	"github.com/caneel7/keynote-api/internal/ent/gen/tenantmember"
 	"github.com/caneel7/keynote-api/internal/ent/gen/user"
 	"github.com/caneel7/keynote-api/internal/ent/gen/usercredential"
 	"github.com/caneel7/keynote-api/internal/ent/gen/usersession"
@@ -36,6 +38,8 @@ type UserQuery struct {
 	withTenant         *TenantQuery
 	withCreator        *WorkspaceQuery
 	withProjectcreator *ProjectQuery
+	withTenantrole     *TenantMemberQuery
+	withProjectrole    *ProjectMemberQuery
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -197,6 +201,50 @@ func (_q *UserQuery) QueryProjectcreator() *ProjectQuery {
 			sqlgraph.From(user.Table, user.FieldID, selector),
 			sqlgraph.To(project.Table, project.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, user.ProjectcreatorTable, user.ProjectcreatorColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(_q.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryTenantrole chains the current query on the "tenantrole" edge.
+func (_q *UserQuery) QueryTenantrole() *TenantMemberQuery {
+	query := (&TenantMemberClient{config: _q.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := _q.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := _q.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(user.Table, user.FieldID, selector),
+			sqlgraph.To(tenantmember.Table, tenantmember.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, user.TenantroleTable, user.TenantroleColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(_q.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryProjectrole chains the current query on the "projectrole" edge.
+func (_q *UserQuery) QueryProjectrole() *ProjectMemberQuery {
+	query := (&ProjectMemberClient{config: _q.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := _q.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := _q.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(user.Table, user.FieldID, selector),
+			sqlgraph.To(projectmember.Table, projectmember.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, user.ProjectroleTable, user.ProjectroleColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(_q.driver.Dialect(), step)
 		return fromU, nil
@@ -402,6 +450,8 @@ func (_q *UserQuery) Clone() *UserQuery {
 		withTenant:         _q.withTenant.Clone(),
 		withCreator:        _q.withCreator.Clone(),
 		withProjectcreator: _q.withProjectcreator.Clone(),
+		withTenantrole:     _q.withTenantrole.Clone(),
+		withProjectrole:    _q.withProjectrole.Clone(),
 		// clone intermediate query.
 		sql:  _q.sql.Clone(),
 		path: _q.path,
@@ -471,6 +521,28 @@ func (_q *UserQuery) WithProjectcreator(opts ...func(*ProjectQuery)) *UserQuery 
 		opt(query)
 	}
 	_q.withProjectcreator = query
+	return _q
+}
+
+// WithTenantrole tells the query-builder to eager-load the nodes that are connected to
+// the "tenantrole" edge. The optional arguments are used to configure the query builder of the edge.
+func (_q *UserQuery) WithTenantrole(opts ...func(*TenantMemberQuery)) *UserQuery {
+	query := (&TenantMemberClient{config: _q.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	_q.withTenantrole = query
+	return _q
+}
+
+// WithProjectrole tells the query-builder to eager-load the nodes that are connected to
+// the "projectrole" edge. The optional arguments are used to configure the query builder of the edge.
+func (_q *UserQuery) WithProjectrole(opts ...func(*ProjectMemberQuery)) *UserQuery {
+	query := (&ProjectMemberClient{config: _q.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	_q.withProjectrole = query
 	return _q
 }
 
@@ -552,13 +624,15 @@ func (_q *UserQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*User, e
 	var (
 		nodes       = []*User{}
 		_spec       = _q.querySpec()
-		loadedTypes = [6]bool{
+		loadedTypes = [8]bool{
 			_q.withCredentials != nil,
 			_q.withSessions != nil,
 			_q.withState != nil,
 			_q.withTenant != nil,
 			_q.withCreator != nil,
 			_q.withProjectcreator != nil,
+			_q.withTenantrole != nil,
+			_q.withProjectrole != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]any, error) {
@@ -615,6 +689,20 @@ func (_q *UserQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*User, e
 		if err := _q.loadProjectcreator(ctx, query, nodes,
 			func(n *User) { n.Edges.Projectcreator = []*Project{} },
 			func(n *User, e *Project) { n.Edges.Projectcreator = append(n.Edges.Projectcreator, e) }); err != nil {
+			return nil, err
+		}
+	}
+	if query := _q.withTenantrole; query != nil {
+		if err := _q.loadTenantrole(ctx, query, nodes,
+			func(n *User) { n.Edges.Tenantrole = []*TenantMember{} },
+			func(n *User, e *TenantMember) { n.Edges.Tenantrole = append(n.Edges.Tenantrole, e) }); err != nil {
+			return nil, err
+		}
+	}
+	if query := _q.withProjectrole; query != nil {
+		if err := _q.loadProjectrole(ctx, query, nodes,
+			func(n *User) { n.Edges.Projectrole = []*ProjectMember{} },
+			func(n *User, e *ProjectMember) { n.Edges.Projectrole = append(n.Edges.Projectrole, e) }); err != nil {
 			return nil, err
 		}
 	}
@@ -789,6 +877,66 @@ func (_q *UserQuery) loadProjectcreator(ctx context.Context, query *ProjectQuery
 		node, ok := nodeids[fk]
 		if !ok {
 			return fmt.Errorf(`unexpected referenced foreign-key "created_by" returned %v for node %v`, fk, n.ID)
+		}
+		assign(node, n)
+	}
+	return nil
+}
+func (_q *UserQuery) loadTenantrole(ctx context.Context, query *TenantMemberQuery, nodes []*User, init func(*User), assign func(*User, *TenantMember)) error {
+	fks := make([]driver.Value, 0, len(nodes))
+	nodeids := make(map[uuid.UUID]*User)
+	for i := range nodes {
+		fks = append(fks, nodes[i].ID)
+		nodeids[nodes[i].ID] = nodes[i]
+		if init != nil {
+			init(nodes[i])
+		}
+	}
+	if len(query.ctx.Fields) > 0 {
+		query.ctx.AppendFieldOnce(tenantmember.FieldUserID)
+	}
+	query.Where(predicate.TenantMember(func(s *sql.Selector) {
+		s.Where(sql.InValues(s.C(user.TenantroleColumn), fks...))
+	}))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		fk := n.UserID
+		node, ok := nodeids[fk]
+		if !ok {
+			return fmt.Errorf(`unexpected referenced foreign-key "user_id" returned %v for node %v`, fk, n.ID)
+		}
+		assign(node, n)
+	}
+	return nil
+}
+func (_q *UserQuery) loadProjectrole(ctx context.Context, query *ProjectMemberQuery, nodes []*User, init func(*User), assign func(*User, *ProjectMember)) error {
+	fks := make([]driver.Value, 0, len(nodes))
+	nodeids := make(map[uuid.UUID]*User)
+	for i := range nodes {
+		fks = append(fks, nodes[i].ID)
+		nodeids[nodes[i].ID] = nodes[i]
+		if init != nil {
+			init(nodes[i])
+		}
+	}
+	if len(query.ctx.Fields) > 0 {
+		query.ctx.AppendFieldOnce(projectmember.FieldUserID)
+	}
+	query.Where(predicate.ProjectMember(func(s *sql.Selector) {
+		s.Where(sql.InValues(s.C(user.ProjectroleColumn), fks...))
+	}))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		fk := n.UserID
+		node, ok := nodeids[fk]
+		if !ok {
+			return fmt.Errorf(`unexpected referenced foreign-key "user_id" returned %v for node %v`, fk, n.ID)
 		}
 		assign(node, n)
 	}

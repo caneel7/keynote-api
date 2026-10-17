@@ -37,5 +37,10 @@ func (Tenant) Edges() []ent.Edge {
 		edge.From("user", User.Type).Ref("tenant").Field("created_by").Unique().Required(),
 		edge.To("workspace", Workspace.Type).Unique(),
 		edge.To("projects", Project.Type),
+		edge.To("roles",Role.Type),
+		edge.To("rolepermissions",RolePermission.Type),
+		edge.To("tenantrole",TenantMember.Type),
+		edge.To("projectrole",ProjectMember.Type),
+		edge.To("subscription",Subscription.Type),
 	}
 }

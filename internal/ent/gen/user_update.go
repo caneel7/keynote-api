@@ -13,8 +13,10 @@ import (
 	"entgo.io/ent/schema/field"
 	"github.com/caneel7/keynote-api/internal/ent/gen/predicate"
 	"github.com/caneel7/keynote-api/internal/ent/gen/project"
+	"github.com/caneel7/keynote-api/internal/ent/gen/projectmember"
 	"github.com/caneel7/keynote-api/internal/ent/gen/statedefinitions"
 	"github.com/caneel7/keynote-api/internal/ent/gen/tenant"
+	"github.com/caneel7/keynote-api/internal/ent/gen/tenantmember"
 	"github.com/caneel7/keynote-api/internal/ent/gen/user"
 	"github.com/caneel7/keynote-api/internal/ent/gen/usercredential"
 	"github.com/caneel7/keynote-api/internal/ent/gen/usersession"
@@ -183,6 +185,36 @@ func (_u *UserUpdate) AddProjectcreator(v ...*Project) *UserUpdate {
 	return _u.AddProjectcreatorIDs(ids...)
 }
 
+// AddTenantroleIDs adds the "tenantrole" edge to the TenantMember entity by IDs.
+func (_u *UserUpdate) AddTenantroleIDs(ids ...int) *UserUpdate {
+	_u.mutation.AddTenantroleIDs(ids...)
+	return _u
+}
+
+// AddTenantrole adds the "tenantrole" edges to the TenantMember entity.
+func (_u *UserUpdate) AddTenantrole(v ...*TenantMember) *UserUpdate {
+	ids := make([]int, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.AddTenantroleIDs(ids...)
+}
+
+// AddProjectroleIDs adds the "projectrole" edge to the ProjectMember entity by IDs.
+func (_u *UserUpdate) AddProjectroleIDs(ids ...int) *UserUpdate {
+	_u.mutation.AddProjectroleIDs(ids...)
+	return _u
+}
+
+// AddProjectrole adds the "projectrole" edges to the ProjectMember entity.
+func (_u *UserUpdate) AddProjectrole(v ...*ProjectMember) *UserUpdate {
+	ids := make([]int, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.AddProjectroleIDs(ids...)
+}
+
 // Mutation returns the UserMutation object of the builder.
 func (_u *UserUpdate) Mutation() *UserMutation {
 	return _u.mutation
@@ -267,6 +299,48 @@ func (_u *UserUpdate) RemoveProjectcreator(v ...*Project) *UserUpdate {
 		ids[i] = v[i].ID
 	}
 	return _u.RemoveProjectcreatorIDs(ids...)
+}
+
+// ClearTenantrole clears all "tenantrole" edges to the TenantMember entity.
+func (_u *UserUpdate) ClearTenantrole() *UserUpdate {
+	_u.mutation.ClearTenantrole()
+	return _u
+}
+
+// RemoveTenantroleIDs removes the "tenantrole" edge to TenantMember entities by IDs.
+func (_u *UserUpdate) RemoveTenantroleIDs(ids ...int) *UserUpdate {
+	_u.mutation.RemoveTenantroleIDs(ids...)
+	return _u
+}
+
+// RemoveTenantrole removes "tenantrole" edges to TenantMember entities.
+func (_u *UserUpdate) RemoveTenantrole(v ...*TenantMember) *UserUpdate {
+	ids := make([]int, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.RemoveTenantroleIDs(ids...)
+}
+
+// ClearProjectrole clears all "projectrole" edges to the ProjectMember entity.
+func (_u *UserUpdate) ClearProjectrole() *UserUpdate {
+	_u.mutation.ClearProjectrole()
+	return _u
+}
+
+// RemoveProjectroleIDs removes the "projectrole" edge to ProjectMember entities by IDs.
+func (_u *UserUpdate) RemoveProjectroleIDs(ids ...int) *UserUpdate {
+	_u.mutation.RemoveProjectroleIDs(ids...)
+	return _u
+}
+
+// RemoveProjectrole removes "projectrole" edges to ProjectMember entities.
+func (_u *UserUpdate) RemoveProjectrole(v ...*ProjectMember) *UserUpdate {
+	ids := make([]int, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.RemoveProjectroleIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -564,6 +638,96 @@ func (_u *UserUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if _u.mutation.TenantroleCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.TenantroleTable,
+			Columns: []string{user.TenantroleColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(tenantmember.FieldID, field.TypeInt),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.RemovedTenantroleIDs(); len(nodes) > 0 && !_u.mutation.TenantroleCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.TenantroleTable,
+			Columns: []string{user.TenantroleColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(tenantmember.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.TenantroleIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.TenantroleTable,
+			Columns: []string{user.TenantroleColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(tenantmember.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if _u.mutation.ProjectroleCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.ProjectroleTable,
+			Columns: []string{user.ProjectroleColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(projectmember.FieldID, field.TypeInt),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.RemovedProjectroleIDs(); len(nodes) > 0 && !_u.mutation.ProjectroleCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.ProjectroleTable,
+			Columns: []string{user.ProjectroleColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(projectmember.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.ProjectroleIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.ProjectroleTable,
+			Columns: []string{user.ProjectroleColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(projectmember.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if _node, err = sqlgraph.UpdateNodes(ctx, _u.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{user.Label}
@@ -732,6 +896,36 @@ func (_u *UserUpdateOne) AddProjectcreator(v ...*Project) *UserUpdateOne {
 	return _u.AddProjectcreatorIDs(ids...)
 }
 
+// AddTenantroleIDs adds the "tenantrole" edge to the TenantMember entity by IDs.
+func (_u *UserUpdateOne) AddTenantroleIDs(ids ...int) *UserUpdateOne {
+	_u.mutation.AddTenantroleIDs(ids...)
+	return _u
+}
+
+// AddTenantrole adds the "tenantrole" edges to the TenantMember entity.
+func (_u *UserUpdateOne) AddTenantrole(v ...*TenantMember) *UserUpdateOne {
+	ids := make([]int, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.AddTenantroleIDs(ids...)
+}
+
+// AddProjectroleIDs adds the "projectrole" edge to the ProjectMember entity by IDs.
+func (_u *UserUpdateOne) AddProjectroleIDs(ids ...int) *UserUpdateOne {
+	_u.mutation.AddProjectroleIDs(ids...)
+	return _u
+}
+
+// AddProjectrole adds the "projectrole" edges to the ProjectMember entity.
+func (_u *UserUpdateOne) AddProjectrole(v ...*ProjectMember) *UserUpdateOne {
+	ids := make([]int, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.AddProjectroleIDs(ids...)
+}
+
 // Mutation returns the UserMutation object of the builder.
 func (_u *UserUpdateOne) Mutation() *UserMutation {
 	return _u.mutation
@@ -816,6 +1010,48 @@ func (_u *UserUpdateOne) RemoveProjectcreator(v ...*Project) *UserUpdateOne {
 		ids[i] = v[i].ID
 	}
 	return _u.RemoveProjectcreatorIDs(ids...)
+}
+
+// ClearTenantrole clears all "tenantrole" edges to the TenantMember entity.
+func (_u *UserUpdateOne) ClearTenantrole() *UserUpdateOne {
+	_u.mutation.ClearTenantrole()
+	return _u
+}
+
+// RemoveTenantroleIDs removes the "tenantrole" edge to TenantMember entities by IDs.
+func (_u *UserUpdateOne) RemoveTenantroleIDs(ids ...int) *UserUpdateOne {
+	_u.mutation.RemoveTenantroleIDs(ids...)
+	return _u
+}
+
+// RemoveTenantrole removes "tenantrole" edges to TenantMember entities.
+func (_u *UserUpdateOne) RemoveTenantrole(v ...*TenantMember) *UserUpdateOne {
+	ids := make([]int, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.RemoveTenantroleIDs(ids...)
+}
+
+// ClearProjectrole clears all "projectrole" edges to the ProjectMember entity.
+func (_u *UserUpdateOne) ClearProjectrole() *UserUpdateOne {
+	_u.mutation.ClearProjectrole()
+	return _u
+}
+
+// RemoveProjectroleIDs removes the "projectrole" edge to ProjectMember entities by IDs.
+func (_u *UserUpdateOne) RemoveProjectroleIDs(ids ...int) *UserUpdateOne {
+	_u.mutation.RemoveProjectroleIDs(ids...)
+	return _u
+}
+
+// RemoveProjectrole removes "projectrole" edges to ProjectMember entities.
+func (_u *UserUpdateOne) RemoveProjectrole(v ...*ProjectMember) *UserUpdateOne {
+	ids := make([]int, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.RemoveProjectroleIDs(ids...)
 }
 
 // Where appends a list predicates to the UserUpdate builder.
@@ -1136,6 +1372,96 @@ func (_u *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(project.FieldID, field.TypeUUID),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if _u.mutation.TenantroleCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.TenantroleTable,
+			Columns: []string{user.TenantroleColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(tenantmember.FieldID, field.TypeInt),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.RemovedTenantroleIDs(); len(nodes) > 0 && !_u.mutation.TenantroleCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.TenantroleTable,
+			Columns: []string{user.TenantroleColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(tenantmember.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.TenantroleIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.TenantroleTable,
+			Columns: []string{user.TenantroleColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(tenantmember.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if _u.mutation.ProjectroleCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.ProjectroleTable,
+			Columns: []string{user.ProjectroleColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(projectmember.FieldID, field.TypeInt),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.RemovedProjectroleIDs(); len(nodes) > 0 && !_u.mutation.ProjectroleCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.ProjectroleTable,
+			Columns: []string{user.ProjectroleColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(projectmember.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.ProjectroleIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.ProjectroleTable,
+			Columns: []string{user.ProjectroleColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(projectmember.FieldID, field.TypeInt),
 			},
 		}
 		for _, k := range nodes {

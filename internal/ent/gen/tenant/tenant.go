@@ -37,6 +37,16 @@ const (
 	EdgeWorkspace = "workspace"
 	// EdgeProjects holds the string denoting the projects edge name in mutations.
 	EdgeProjects = "projects"
+	// EdgeRoles holds the string denoting the roles edge name in mutations.
+	EdgeRoles = "roles"
+	// EdgeRolepermissions holds the string denoting the rolepermissions edge name in mutations.
+	EdgeRolepermissions = "rolepermissions"
+	// EdgeTenantrole holds the string denoting the tenantrole edge name in mutations.
+	EdgeTenantrole = "tenantrole"
+	// EdgeProjectrole holds the string denoting the projectrole edge name in mutations.
+	EdgeProjectrole = "projectrole"
+	// EdgeSubscription holds the string denoting the subscription edge name in mutations.
+	EdgeSubscription = "subscription"
 	// Table holds the table name of the tenant in the database.
 	Table = "tenants"
 	// StateTable is the table that holds the state relation/edge.
@@ -67,6 +77,41 @@ const (
 	ProjectsInverseTable = "projects"
 	// ProjectsColumn is the table column denoting the projects relation/edge.
 	ProjectsColumn = "tenant_id"
+	// RolesTable is the table that holds the roles relation/edge.
+	RolesTable = "roles"
+	// RolesInverseTable is the table name for the Role entity.
+	// It exists in this package in order to avoid circular dependency with the "role" package.
+	RolesInverseTable = "roles"
+	// RolesColumn is the table column denoting the roles relation/edge.
+	RolesColumn = "tenant_id"
+	// RolepermissionsTable is the table that holds the rolepermissions relation/edge.
+	RolepermissionsTable = "role_permissions"
+	// RolepermissionsInverseTable is the table name for the RolePermission entity.
+	// It exists in this package in order to avoid circular dependency with the "rolepermission" package.
+	RolepermissionsInverseTable = "role_permissions"
+	// RolepermissionsColumn is the table column denoting the rolepermissions relation/edge.
+	RolepermissionsColumn = "tenant_id"
+	// TenantroleTable is the table that holds the tenantrole relation/edge.
+	TenantroleTable = "tenant_members"
+	// TenantroleInverseTable is the table name for the TenantMember entity.
+	// It exists in this package in order to avoid circular dependency with the "tenantmember" package.
+	TenantroleInverseTable = "tenant_members"
+	// TenantroleColumn is the table column denoting the tenantrole relation/edge.
+	TenantroleColumn = "tenant_id"
+	// ProjectroleTable is the table that holds the projectrole relation/edge.
+	ProjectroleTable = "project_members"
+	// ProjectroleInverseTable is the table name for the ProjectMember entity.
+	// It exists in this package in order to avoid circular dependency with the "projectmember" package.
+	ProjectroleInverseTable = "project_members"
+	// ProjectroleColumn is the table column denoting the projectrole relation/edge.
+	ProjectroleColumn = "tenant_id"
+	// SubscriptionTable is the table that holds the subscription relation/edge.
+	SubscriptionTable = "subscriptions"
+	// SubscriptionInverseTable is the table name for the Subscription entity.
+	// It exists in this package in order to avoid circular dependency with the "subscription" package.
+	SubscriptionInverseTable = "subscriptions"
+	// SubscriptionColumn is the table column denoting the subscription relation/edge.
+	SubscriptionColumn = "tenant_id"
 )
 
 // Columns holds all SQL columns for tenant fields.
@@ -183,6 +228,76 @@ func ByProjects(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
 		sqlgraph.OrderByNeighborTerms(s, newProjectsStep(), append([]sql.OrderTerm{term}, terms...)...)
 	}
 }
+
+// ByRolesCount orders the results by roles count.
+func ByRolesCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newRolesStep(), opts...)
+	}
+}
+
+// ByRoles orders the results by roles terms.
+func ByRoles(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newRolesStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
+
+// ByRolepermissionsCount orders the results by rolepermissions count.
+func ByRolepermissionsCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newRolepermissionsStep(), opts...)
+	}
+}
+
+// ByRolepermissions orders the results by rolepermissions terms.
+func ByRolepermissions(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newRolepermissionsStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
+
+// ByTenantroleCount orders the results by tenantrole count.
+func ByTenantroleCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newTenantroleStep(), opts...)
+	}
+}
+
+// ByTenantrole orders the results by tenantrole terms.
+func ByTenantrole(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newTenantroleStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
+
+// ByProjectroleCount orders the results by projectrole count.
+func ByProjectroleCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newProjectroleStep(), opts...)
+	}
+}
+
+// ByProjectrole orders the results by projectrole terms.
+func ByProjectrole(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newProjectroleStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
+
+// BySubscriptionCount orders the results by subscription count.
+func BySubscriptionCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newSubscriptionStep(), opts...)
+	}
+}
+
+// BySubscription orders the results by subscription terms.
+func BySubscription(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newSubscriptionStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
 func newStateStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
@@ -209,5 +324,40 @@ func newProjectsStep() *sqlgraph.Step {
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(ProjectsInverseTable, FieldID),
 		sqlgraph.Edge(sqlgraph.O2M, false, ProjectsTable, ProjectsColumn),
+	)
+}
+func newRolesStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(RolesInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, false, RolesTable, RolesColumn),
+	)
+}
+func newRolepermissionsStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(RolepermissionsInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, false, RolepermissionsTable, RolepermissionsColumn),
+	)
+}
+func newTenantroleStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(TenantroleInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, false, TenantroleTable, TenantroleColumn),
+	)
+}
+func newProjectroleStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(ProjectroleInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, false, ProjectroleTable, ProjectroleColumn),
+	)
+}
+func newSubscriptionStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(SubscriptionInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, false, SubscriptionTable, SubscriptionColumn),
 	)
 }

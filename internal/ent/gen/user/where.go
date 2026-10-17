@@ -434,6 +434,52 @@ func HasProjectcreatorWith(preds ...predicate.Project) predicate.User {
 	})
 }
 
+// HasTenantrole applies the HasEdge predicate on the "tenantrole" edge.
+func HasTenantrole() predicate.User {
+	return predicate.User(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, TenantroleTable, TenantroleColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasTenantroleWith applies the HasEdge predicate on the "tenantrole" edge with a given conditions (other predicates).
+func HasTenantroleWith(preds ...predicate.TenantMember) predicate.User {
+	return predicate.User(func(s *sql.Selector) {
+		step := newTenantroleStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasProjectrole applies the HasEdge predicate on the "projectrole" edge.
+func HasProjectrole() predicate.User {
+	return predicate.User(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, ProjectroleTable, ProjectroleColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasProjectroleWith applies the HasEdge predicate on the "projectrole" edge with a given conditions (other predicates).
+func HasProjectroleWith(preds ...predicate.ProjectMember) predicate.User {
+	return predicate.User(func(s *sql.Selector) {
+		step := newProjectroleStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
 // And groups predicates with the AND operator between them.
 func And(predicates ...predicate.User) predicate.User {
 	return predicate.User(sql.AndPredicates(predicates...))

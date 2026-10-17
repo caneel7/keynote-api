@@ -51,9 +51,13 @@ type UserEdges struct {
 	Creator []*Workspace `json:"creator,omitempty"`
 	// Projectcreator holds the value of the projectcreator edge.
 	Projectcreator []*Project `json:"projectcreator,omitempty"`
+	// Tenantrole holds the value of the tenantrole edge.
+	Tenantrole []*TenantMember `json:"tenantrole,omitempty"`
+	// Projectrole holds the value of the projectrole edge.
+	Projectrole []*ProjectMember `json:"projectrole,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [6]bool
+	loadedTypes [8]bool
 }
 
 // CredentialsOrErr returns the Credentials value or an error if the edge
@@ -114,6 +118,24 @@ func (e UserEdges) ProjectcreatorOrErr() ([]*Project, error) {
 		return e.Projectcreator, nil
 	}
 	return nil, &NotLoadedError{edge: "projectcreator"}
+}
+
+// TenantroleOrErr returns the Tenantrole value or an error if the edge
+// was not loaded in eager-loading.
+func (e UserEdges) TenantroleOrErr() ([]*TenantMember, error) {
+	if e.loadedTypes[6] {
+		return e.Tenantrole, nil
+	}
+	return nil, &NotLoadedError{edge: "tenantrole"}
+}
+
+// ProjectroleOrErr returns the Projectrole value or an error if the edge
+// was not loaded in eager-loading.
+func (e UserEdges) ProjectroleOrErr() ([]*ProjectMember, error) {
+	if e.loadedTypes[7] {
+		return e.Projectrole, nil
+	}
+	return nil, &NotLoadedError{edge: "projectrole"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -220,6 +242,16 @@ func (_m *User) QueryCreator() *WorkspaceQuery {
 // QueryProjectcreator queries the "projectcreator" edge of the User entity.
 func (_m *User) QueryProjectcreator() *ProjectQuery {
 	return NewUserClient(_m.config).QueryProjectcreator(_m)
+}
+
+// QueryTenantrole queries the "tenantrole" edge of the User entity.
+func (_m *User) QueryTenantrole() *TenantMemberQuery {
+	return NewUserClient(_m.config).QueryTenantrole(_m)
+}
+
+// QueryProjectrole queries the "projectrole" edge of the User entity.
+func (_m *User) QueryProjectrole() *ProjectMemberQuery {
+	return NewUserClient(_m.config).QueryProjectrole(_m)
 }
 
 // Update returns a builder for updating this User.

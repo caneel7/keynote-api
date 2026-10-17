@@ -49,9 +49,11 @@ type StateDefinitionsEdges struct {
 	Workspace []*Workspace `json:"workspace,omitempty"`
 	// Projects holds the value of the projects edge.
 	Projects []*Project `json:"projects,omitempty"`
+	// Subscription holds the value of the subscription edge.
+	Subscription []*Subscription `json:"subscription,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [5]bool
+	loadedTypes [6]bool
 }
 
 // EntityKindOrErr returns the EntityKind value or an error if the edge
@@ -99,6 +101,15 @@ func (e StateDefinitionsEdges) ProjectsOrErr() ([]*Project, error) {
 		return e.Projects, nil
 	}
 	return nil, &NotLoadedError{edge: "projects"}
+}
+
+// SubscriptionOrErr returns the Subscription value or an error if the edge
+// was not loaded in eager-loading.
+func (e StateDefinitionsEdges) SubscriptionOrErr() ([]*Subscription, error) {
+	if e.loadedTypes[5] {
+		return e.Subscription, nil
+	}
+	return nil, &NotLoadedError{edge: "subscription"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -206,6 +217,11 @@ func (_m *StateDefinitions) QueryWorkspace() *WorkspaceQuery {
 // QueryProjects queries the "projects" edge of the StateDefinitions entity.
 func (_m *StateDefinitions) QueryProjects() *ProjectQuery {
 	return NewStateDefinitionsClient(_m.config).QueryProjects(_m)
+}
+
+// QuerySubscription queries the "subscription" edge of the StateDefinitions entity.
+func (_m *StateDefinitions) QuerySubscription() *SubscriptionQuery {
+	return NewStateDefinitionsClient(_m.config).QuerySubscription(_m)
 }
 
 // Update returns a builder for updating this StateDefinitions.

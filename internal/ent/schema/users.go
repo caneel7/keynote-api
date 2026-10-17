@@ -33,5 +33,7 @@ func (User) Edges () []ent.Edge {
 		edge.To("tenant",Tenant.Type).Unique(),
 		edge.To("creator",Workspace.Type),
 		edge.To("projectcreator",Project.Type),
+		edge.To("tenantrole",TenantMember.Type),
+		edge.To("projectrole",ProjectMember.Type),
 	}
 }

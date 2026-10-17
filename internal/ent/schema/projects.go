@@ -37,6 +37,8 @@ func (Project) Edges() []ent.Edge {
 		edge.From("workspace",Workspace.Type).Ref("projects").Field("workspace_id").Unique().Required(),
 		edge.From("state",StateDefinitions.Type).Ref("projects").Field("status_id").Unique().Required(),
 		edge.From("creator",User.Type).Ref("projectcreator").Field("created_by").Unique().Required(),
+		edge.To("projectrole",ProjectMember.Type),
+		edge.To("roles",Role.Type),
 	}
 }
 

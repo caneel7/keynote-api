@@ -11,8 +11,10 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/caneel7/keynote-api/internal/ent/gen/project"
+	"github.com/caneel7/keynote-api/internal/ent/gen/projectmember"
 	"github.com/caneel7/keynote-api/internal/ent/gen/statedefinitions"
 	"github.com/caneel7/keynote-api/internal/ent/gen/tenant"
+	"github.com/caneel7/keynote-api/internal/ent/gen/tenantmember"
 	"github.com/caneel7/keynote-api/internal/ent/gen/user"
 	"github.com/caneel7/keynote-api/internal/ent/gen/usercredential"
 	"github.com/caneel7/keynote-api/internal/ent/gen/usersession"
@@ -187,6 +189,36 @@ func (_c *UserCreate) AddProjectcreator(v ...*Project) *UserCreate {
 		ids[i] = v[i].ID
 	}
 	return _c.AddProjectcreatorIDs(ids...)
+}
+
+// AddTenantroleIDs adds the "tenantrole" edge to the TenantMember entity by IDs.
+func (_c *UserCreate) AddTenantroleIDs(ids ...int) *UserCreate {
+	_c.mutation.AddTenantroleIDs(ids...)
+	return _c
+}
+
+// AddTenantrole adds the "tenantrole" edges to the TenantMember entity.
+func (_c *UserCreate) AddTenantrole(v ...*TenantMember) *UserCreate {
+	ids := make([]int, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _c.AddTenantroleIDs(ids...)
+}
+
+// AddProjectroleIDs adds the "projectrole" edge to the ProjectMember entity by IDs.
+func (_c *UserCreate) AddProjectroleIDs(ids ...int) *UserCreate {
+	_c.mutation.AddProjectroleIDs(ids...)
+	return _c
+}
+
+// AddProjectrole adds the "projectrole" edges to the ProjectMember entity.
+func (_c *UserCreate) AddProjectrole(v ...*ProjectMember) *UserCreate {
+	ids := make([]int, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _c.AddProjectroleIDs(ids...)
 }
 
 // Mutation returns the UserMutation object of the builder.
@@ -401,6 +433,38 @@ func (_c *UserCreate) createSpec() (*User, *sqlgraph.CreateSpec) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(project.FieldID, field.TypeUUID),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := _c.mutation.TenantroleIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.TenantroleTable,
+			Columns: []string{user.TenantroleColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(tenantmember.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := _c.mutation.ProjectroleIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.ProjectroleTable,
+			Columns: []string{user.ProjectroleColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(projectmember.FieldID, field.TypeInt),
 			},
 		}
 		for _, k := range nodes {

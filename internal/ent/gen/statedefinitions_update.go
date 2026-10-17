@@ -15,6 +15,7 @@ import (
 	"github.com/caneel7/keynote-api/internal/ent/gen/predicate"
 	"github.com/caneel7/keynote-api/internal/ent/gen/project"
 	"github.com/caneel7/keynote-api/internal/ent/gen/statedefinitions"
+	"github.com/caneel7/keynote-api/internal/ent/gen/subscription"
 	"github.com/caneel7/keynote-api/internal/ent/gen/tenant"
 	"github.com/caneel7/keynote-api/internal/ent/gen/user"
 	"github.com/caneel7/keynote-api/internal/ent/gen/workspace"
@@ -173,6 +174,21 @@ func (_u *StateDefinitionsUpdate) AddProjects(v ...*Project) *StateDefinitionsUp
 	return _u.AddProjectIDs(ids...)
 }
 
+// AddSubscriptionIDs adds the "subscription" edge to the Subscription entity by IDs.
+func (_u *StateDefinitionsUpdate) AddSubscriptionIDs(ids ...uuid.UUID) *StateDefinitionsUpdate {
+	_u.mutation.AddSubscriptionIDs(ids...)
+	return _u
+}
+
+// AddSubscription adds the "subscription" edges to the Subscription entity.
+func (_u *StateDefinitionsUpdate) AddSubscription(v ...*Subscription) *StateDefinitionsUpdate {
+	ids := make([]uuid.UUID, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.AddSubscriptionIDs(ids...)
+}
+
 // Mutation returns the StateDefinitionsMutation object of the builder.
 func (_u *StateDefinitionsUpdate) Mutation() *StateDefinitionsMutation {
 	return _u.mutation
@@ -266,6 +282,27 @@ func (_u *StateDefinitionsUpdate) RemoveProjects(v ...*Project) *StateDefinition
 		ids[i] = v[i].ID
 	}
 	return _u.RemoveProjectIDs(ids...)
+}
+
+// ClearSubscription clears all "subscription" edges to the Subscription entity.
+func (_u *StateDefinitionsUpdate) ClearSubscription() *StateDefinitionsUpdate {
+	_u.mutation.ClearSubscription()
+	return _u
+}
+
+// RemoveSubscriptionIDs removes the "subscription" edge to Subscription entities by IDs.
+func (_u *StateDefinitionsUpdate) RemoveSubscriptionIDs(ids ...uuid.UUID) *StateDefinitionsUpdate {
+	_u.mutation.RemoveSubscriptionIDs(ids...)
+	return _u
+}
+
+// RemoveSubscription removes "subscription" edges to Subscription entities.
+func (_u *StateDefinitionsUpdate) RemoveSubscription(v ...*Subscription) *StateDefinitionsUpdate {
+	ids := make([]uuid.UUID, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.RemoveSubscriptionIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -558,6 +595,51 @@ func (_u *StateDefinitionsUpdate) sqlSave(ctx context.Context) (_node int, err e
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if _u.mutation.SubscriptionCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   statedefinitions.SubscriptionTable,
+			Columns: []string{statedefinitions.SubscriptionColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(subscription.FieldID, field.TypeUUID),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.RemovedSubscriptionIDs(); len(nodes) > 0 && !_u.mutation.SubscriptionCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   statedefinitions.SubscriptionTable,
+			Columns: []string{statedefinitions.SubscriptionColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(subscription.FieldID, field.TypeUUID),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.SubscriptionIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   statedefinitions.SubscriptionTable,
+			Columns: []string{statedefinitions.SubscriptionColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(subscription.FieldID, field.TypeUUID),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if _node, err = sqlgraph.UpdateNodes(ctx, _u.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{statedefinitions.Label}
@@ -717,6 +799,21 @@ func (_u *StateDefinitionsUpdateOne) AddProjects(v ...*Project) *StateDefinition
 	return _u.AddProjectIDs(ids...)
 }
 
+// AddSubscriptionIDs adds the "subscription" edge to the Subscription entity by IDs.
+func (_u *StateDefinitionsUpdateOne) AddSubscriptionIDs(ids ...uuid.UUID) *StateDefinitionsUpdateOne {
+	_u.mutation.AddSubscriptionIDs(ids...)
+	return _u
+}
+
+// AddSubscription adds the "subscription" edges to the Subscription entity.
+func (_u *StateDefinitionsUpdateOne) AddSubscription(v ...*Subscription) *StateDefinitionsUpdateOne {
+	ids := make([]uuid.UUID, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.AddSubscriptionIDs(ids...)
+}
+
 // Mutation returns the StateDefinitionsMutation object of the builder.
 func (_u *StateDefinitionsUpdateOne) Mutation() *StateDefinitionsMutation {
 	return _u.mutation
@@ -810,6 +907,27 @@ func (_u *StateDefinitionsUpdateOne) RemoveProjects(v ...*Project) *StateDefinit
 		ids[i] = v[i].ID
 	}
 	return _u.RemoveProjectIDs(ids...)
+}
+
+// ClearSubscription clears all "subscription" edges to the Subscription entity.
+func (_u *StateDefinitionsUpdateOne) ClearSubscription() *StateDefinitionsUpdateOne {
+	_u.mutation.ClearSubscription()
+	return _u
+}
+
+// RemoveSubscriptionIDs removes the "subscription" edge to Subscription entities by IDs.
+func (_u *StateDefinitionsUpdateOne) RemoveSubscriptionIDs(ids ...uuid.UUID) *StateDefinitionsUpdateOne {
+	_u.mutation.RemoveSubscriptionIDs(ids...)
+	return _u
+}
+
+// RemoveSubscription removes "subscription" edges to Subscription entities.
+func (_u *StateDefinitionsUpdateOne) RemoveSubscription(v ...*Subscription) *StateDefinitionsUpdateOne {
+	ids := make([]uuid.UUID, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.RemoveSubscriptionIDs(ids...)
 }
 
 // Where appends a list predicates to the StateDefinitionsUpdate builder.
@@ -1125,6 +1243,51 @@ func (_u *StateDefinitionsUpdateOne) sqlSave(ctx context.Context) (_node *StateD
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(project.FieldID, field.TypeUUID),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if _u.mutation.SubscriptionCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   statedefinitions.SubscriptionTable,
+			Columns: []string{statedefinitions.SubscriptionColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(subscription.FieldID, field.TypeUUID),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.RemovedSubscriptionIDs(); len(nodes) > 0 && !_u.mutation.SubscriptionCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   statedefinitions.SubscriptionTable,
+			Columns: []string{statedefinitions.SubscriptionColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(subscription.FieldID, field.TypeUUID),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.SubscriptionIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   statedefinitions.SubscriptionTable,
+			Columns: []string{statedefinitions.SubscriptionColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(subscription.FieldID, field.TypeUUID),
 			},
 		}
 		for _, k := range nodes {

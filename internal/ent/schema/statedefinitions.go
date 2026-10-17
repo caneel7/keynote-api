@@ -33,6 +33,7 @@ func (StateDefinitions) Edges() []ent.Edge {
 		edge.To("user",User.Type),
 		edge.To("workspace",Workspace.Type),
 		edge.To("projects",Project.Type),
+		edge.To("subscription",Subscription.Type),
 	}
 }
 

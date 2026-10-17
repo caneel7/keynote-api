@@ -481,6 +481,29 @@ func HasProjectsWith(preds ...predicate.Project) predicate.StateDefinitions {
 	})
 }
 
+// HasSubscription applies the HasEdge predicate on the "subscription" edge.
+func HasSubscription() predicate.StateDefinitions {
+	return predicate.StateDefinitions(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, SubscriptionTable, SubscriptionColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasSubscriptionWith applies the HasEdge predicate on the "subscription" edge with a given conditions (other predicates).
+func HasSubscriptionWith(preds ...predicate.Subscription) predicate.StateDefinitions {
+	return predicate.StateDefinitions(func(s *sql.Selector) {
+		step := newSubscriptionStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
 // And groups predicates with the AND operator between them.
 func And(predicates ...predicate.StateDefinitions) predicate.StateDefinitions {
 	return predicate.StateDefinitions(sql.AndPredicates(predicates...))

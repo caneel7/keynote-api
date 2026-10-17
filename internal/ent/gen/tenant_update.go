@@ -13,8 +13,13 @@ import (
 	"entgo.io/ent/schema/field"
 	"github.com/caneel7/keynote-api/internal/ent/gen/predicate"
 	"github.com/caneel7/keynote-api/internal/ent/gen/project"
+	"github.com/caneel7/keynote-api/internal/ent/gen/projectmember"
+	"github.com/caneel7/keynote-api/internal/ent/gen/role"
+	"github.com/caneel7/keynote-api/internal/ent/gen/rolepermission"
 	"github.com/caneel7/keynote-api/internal/ent/gen/statedefinitions"
+	"github.com/caneel7/keynote-api/internal/ent/gen/subscription"
 	"github.com/caneel7/keynote-api/internal/ent/gen/tenant"
+	"github.com/caneel7/keynote-api/internal/ent/gen/tenantmember"
 	"github.com/caneel7/keynote-api/internal/ent/gen/user"
 	"github.com/caneel7/keynote-api/internal/ent/gen/workspace"
 	"github.com/google/uuid"
@@ -171,6 +176,81 @@ func (_u *TenantUpdate) AddProjects(v ...*Project) *TenantUpdate {
 	return _u.AddProjectIDs(ids...)
 }
 
+// AddRoleIDs adds the "roles" edge to the Role entity by IDs.
+func (_u *TenantUpdate) AddRoleIDs(ids ...uuid.UUID) *TenantUpdate {
+	_u.mutation.AddRoleIDs(ids...)
+	return _u
+}
+
+// AddRoles adds the "roles" edges to the Role entity.
+func (_u *TenantUpdate) AddRoles(v ...*Role) *TenantUpdate {
+	ids := make([]uuid.UUID, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.AddRoleIDs(ids...)
+}
+
+// AddRolepermissionIDs adds the "rolepermissions" edge to the RolePermission entity by IDs.
+func (_u *TenantUpdate) AddRolepermissionIDs(ids ...uuid.UUID) *TenantUpdate {
+	_u.mutation.AddRolepermissionIDs(ids...)
+	return _u
+}
+
+// AddRolepermissions adds the "rolepermissions" edges to the RolePermission entity.
+func (_u *TenantUpdate) AddRolepermissions(v ...*RolePermission) *TenantUpdate {
+	ids := make([]uuid.UUID, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.AddRolepermissionIDs(ids...)
+}
+
+// AddTenantroleIDs adds the "tenantrole" edge to the TenantMember entity by IDs.
+func (_u *TenantUpdate) AddTenantroleIDs(ids ...int) *TenantUpdate {
+	_u.mutation.AddTenantroleIDs(ids...)
+	return _u
+}
+
+// AddTenantrole adds the "tenantrole" edges to the TenantMember entity.
+func (_u *TenantUpdate) AddTenantrole(v ...*TenantMember) *TenantUpdate {
+	ids := make([]int, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.AddTenantroleIDs(ids...)
+}
+
+// AddProjectroleIDs adds the "projectrole" edge to the ProjectMember entity by IDs.
+func (_u *TenantUpdate) AddProjectroleIDs(ids ...int) *TenantUpdate {
+	_u.mutation.AddProjectroleIDs(ids...)
+	return _u
+}
+
+// AddProjectrole adds the "projectrole" edges to the ProjectMember entity.
+func (_u *TenantUpdate) AddProjectrole(v ...*ProjectMember) *TenantUpdate {
+	ids := make([]int, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.AddProjectroleIDs(ids...)
+}
+
+// AddSubscriptionIDs adds the "subscription" edge to the Subscription entity by IDs.
+func (_u *TenantUpdate) AddSubscriptionIDs(ids ...uuid.UUID) *TenantUpdate {
+	_u.mutation.AddSubscriptionIDs(ids...)
+	return _u
+}
+
+// AddSubscription adds the "subscription" edges to the Subscription entity.
+func (_u *TenantUpdate) AddSubscription(v ...*Subscription) *TenantUpdate {
+	ids := make([]uuid.UUID, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.AddSubscriptionIDs(ids...)
+}
+
 // Mutation returns the TenantMutation object of the builder.
 func (_u *TenantUpdate) Mutation() *TenantMutation {
 	return _u.mutation
@@ -213,6 +293,111 @@ func (_u *TenantUpdate) RemoveProjects(v ...*Project) *TenantUpdate {
 		ids[i] = v[i].ID
 	}
 	return _u.RemoveProjectIDs(ids...)
+}
+
+// ClearRoles clears all "roles" edges to the Role entity.
+func (_u *TenantUpdate) ClearRoles() *TenantUpdate {
+	_u.mutation.ClearRoles()
+	return _u
+}
+
+// RemoveRoleIDs removes the "roles" edge to Role entities by IDs.
+func (_u *TenantUpdate) RemoveRoleIDs(ids ...uuid.UUID) *TenantUpdate {
+	_u.mutation.RemoveRoleIDs(ids...)
+	return _u
+}
+
+// RemoveRoles removes "roles" edges to Role entities.
+func (_u *TenantUpdate) RemoveRoles(v ...*Role) *TenantUpdate {
+	ids := make([]uuid.UUID, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.RemoveRoleIDs(ids...)
+}
+
+// ClearRolepermissions clears all "rolepermissions" edges to the RolePermission entity.
+func (_u *TenantUpdate) ClearRolepermissions() *TenantUpdate {
+	_u.mutation.ClearRolepermissions()
+	return _u
+}
+
+// RemoveRolepermissionIDs removes the "rolepermissions" edge to RolePermission entities by IDs.
+func (_u *TenantUpdate) RemoveRolepermissionIDs(ids ...uuid.UUID) *TenantUpdate {
+	_u.mutation.RemoveRolepermissionIDs(ids...)
+	return _u
+}
+
+// RemoveRolepermissions removes "rolepermissions" edges to RolePermission entities.
+func (_u *TenantUpdate) RemoveRolepermissions(v ...*RolePermission) *TenantUpdate {
+	ids := make([]uuid.UUID, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.RemoveRolepermissionIDs(ids...)
+}
+
+// ClearTenantrole clears all "tenantrole" edges to the TenantMember entity.
+func (_u *TenantUpdate) ClearTenantrole() *TenantUpdate {
+	_u.mutation.ClearTenantrole()
+	return _u
+}
+
+// RemoveTenantroleIDs removes the "tenantrole" edge to TenantMember entities by IDs.
+func (_u *TenantUpdate) RemoveTenantroleIDs(ids ...int) *TenantUpdate {
+	_u.mutation.RemoveTenantroleIDs(ids...)
+	return _u
+}
+
+// RemoveTenantrole removes "tenantrole" edges to TenantMember entities.
+func (_u *TenantUpdate) RemoveTenantrole(v ...*TenantMember) *TenantUpdate {
+	ids := make([]int, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.RemoveTenantroleIDs(ids...)
+}
+
+// ClearProjectrole clears all "projectrole" edges to the ProjectMember entity.
+func (_u *TenantUpdate) ClearProjectrole() *TenantUpdate {
+	_u.mutation.ClearProjectrole()
+	return _u
+}
+
+// RemoveProjectroleIDs removes the "projectrole" edge to ProjectMember entities by IDs.
+func (_u *TenantUpdate) RemoveProjectroleIDs(ids ...int) *TenantUpdate {
+	_u.mutation.RemoveProjectroleIDs(ids...)
+	return _u
+}
+
+// RemoveProjectrole removes "projectrole" edges to ProjectMember entities.
+func (_u *TenantUpdate) RemoveProjectrole(v ...*ProjectMember) *TenantUpdate {
+	ids := make([]int, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.RemoveProjectroleIDs(ids...)
+}
+
+// ClearSubscription clears all "subscription" edges to the Subscription entity.
+func (_u *TenantUpdate) ClearSubscription() *TenantUpdate {
+	_u.mutation.ClearSubscription()
+	return _u
+}
+
+// RemoveSubscriptionIDs removes the "subscription" edge to Subscription entities by IDs.
+func (_u *TenantUpdate) RemoveSubscriptionIDs(ids ...uuid.UUID) *TenantUpdate {
+	_u.mutation.RemoveSubscriptionIDs(ids...)
+	return _u
+}
+
+// RemoveSubscription removes "subscription" edges to Subscription entities.
+func (_u *TenantUpdate) RemoveSubscription(v ...*Subscription) *TenantUpdate {
+	ids := make([]uuid.UUID, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.RemoveSubscriptionIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -431,6 +616,231 @@ func (_u *TenantUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if _u.mutation.RolesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   tenant.RolesTable,
+			Columns: []string{tenant.RolesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(role.FieldID, field.TypeUUID),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.RemovedRolesIDs(); len(nodes) > 0 && !_u.mutation.RolesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   tenant.RolesTable,
+			Columns: []string{tenant.RolesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(role.FieldID, field.TypeUUID),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.RolesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   tenant.RolesTable,
+			Columns: []string{tenant.RolesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(role.FieldID, field.TypeUUID),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if _u.mutation.RolepermissionsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   tenant.RolepermissionsTable,
+			Columns: []string{tenant.RolepermissionsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(rolepermission.FieldID, field.TypeUUID),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.RemovedRolepermissionsIDs(); len(nodes) > 0 && !_u.mutation.RolepermissionsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   tenant.RolepermissionsTable,
+			Columns: []string{tenant.RolepermissionsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(rolepermission.FieldID, field.TypeUUID),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.RolepermissionsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   tenant.RolepermissionsTable,
+			Columns: []string{tenant.RolepermissionsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(rolepermission.FieldID, field.TypeUUID),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if _u.mutation.TenantroleCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   tenant.TenantroleTable,
+			Columns: []string{tenant.TenantroleColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(tenantmember.FieldID, field.TypeInt),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.RemovedTenantroleIDs(); len(nodes) > 0 && !_u.mutation.TenantroleCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   tenant.TenantroleTable,
+			Columns: []string{tenant.TenantroleColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(tenantmember.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.TenantroleIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   tenant.TenantroleTable,
+			Columns: []string{tenant.TenantroleColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(tenantmember.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if _u.mutation.ProjectroleCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   tenant.ProjectroleTable,
+			Columns: []string{tenant.ProjectroleColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(projectmember.FieldID, field.TypeInt),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.RemovedProjectroleIDs(); len(nodes) > 0 && !_u.mutation.ProjectroleCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   tenant.ProjectroleTable,
+			Columns: []string{tenant.ProjectroleColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(projectmember.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.ProjectroleIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   tenant.ProjectroleTable,
+			Columns: []string{tenant.ProjectroleColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(projectmember.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if _u.mutation.SubscriptionCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   tenant.SubscriptionTable,
+			Columns: []string{tenant.SubscriptionColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(subscription.FieldID, field.TypeUUID),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.RemovedSubscriptionIDs(); len(nodes) > 0 && !_u.mutation.SubscriptionCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   tenant.SubscriptionTable,
+			Columns: []string{tenant.SubscriptionColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(subscription.FieldID, field.TypeUUID),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.SubscriptionIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   tenant.SubscriptionTable,
+			Columns: []string{tenant.SubscriptionColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(subscription.FieldID, field.TypeUUID),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if _node, err = sqlgraph.UpdateNodes(ctx, _u.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{tenant.Label}
@@ -589,6 +999,81 @@ func (_u *TenantUpdateOne) AddProjects(v ...*Project) *TenantUpdateOne {
 	return _u.AddProjectIDs(ids...)
 }
 
+// AddRoleIDs adds the "roles" edge to the Role entity by IDs.
+func (_u *TenantUpdateOne) AddRoleIDs(ids ...uuid.UUID) *TenantUpdateOne {
+	_u.mutation.AddRoleIDs(ids...)
+	return _u
+}
+
+// AddRoles adds the "roles" edges to the Role entity.
+func (_u *TenantUpdateOne) AddRoles(v ...*Role) *TenantUpdateOne {
+	ids := make([]uuid.UUID, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.AddRoleIDs(ids...)
+}
+
+// AddRolepermissionIDs adds the "rolepermissions" edge to the RolePermission entity by IDs.
+func (_u *TenantUpdateOne) AddRolepermissionIDs(ids ...uuid.UUID) *TenantUpdateOne {
+	_u.mutation.AddRolepermissionIDs(ids...)
+	return _u
+}
+
+// AddRolepermissions adds the "rolepermissions" edges to the RolePermission entity.
+func (_u *TenantUpdateOne) AddRolepermissions(v ...*RolePermission) *TenantUpdateOne {
+	ids := make([]uuid.UUID, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.AddRolepermissionIDs(ids...)
+}
+
+// AddTenantroleIDs adds the "tenantrole" edge to the TenantMember entity by IDs.
+func (_u *TenantUpdateOne) AddTenantroleIDs(ids ...int) *TenantUpdateOne {
+	_u.mutation.AddTenantroleIDs(ids...)
+	return _u
+}
+
+// AddTenantrole adds the "tenantrole" edges to the TenantMember entity.
+func (_u *TenantUpdateOne) AddTenantrole(v ...*TenantMember) *TenantUpdateOne {
+	ids := make([]int, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.AddTenantroleIDs(ids...)
+}
+
+// AddProjectroleIDs adds the "projectrole" edge to the ProjectMember entity by IDs.
+func (_u *TenantUpdateOne) AddProjectroleIDs(ids ...int) *TenantUpdateOne {
+	_u.mutation.AddProjectroleIDs(ids...)
+	return _u
+}
+
+// AddProjectrole adds the "projectrole" edges to the ProjectMember entity.
+func (_u *TenantUpdateOne) AddProjectrole(v ...*ProjectMember) *TenantUpdateOne {
+	ids := make([]int, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.AddProjectroleIDs(ids...)
+}
+
+// AddSubscriptionIDs adds the "subscription" edge to the Subscription entity by IDs.
+func (_u *TenantUpdateOne) AddSubscriptionIDs(ids ...uuid.UUID) *TenantUpdateOne {
+	_u.mutation.AddSubscriptionIDs(ids...)
+	return _u
+}
+
+// AddSubscription adds the "subscription" edges to the Subscription entity.
+func (_u *TenantUpdateOne) AddSubscription(v ...*Subscription) *TenantUpdateOne {
+	ids := make([]uuid.UUID, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.AddSubscriptionIDs(ids...)
+}
+
 // Mutation returns the TenantMutation object of the builder.
 func (_u *TenantUpdateOne) Mutation() *TenantMutation {
 	return _u.mutation
@@ -631,6 +1116,111 @@ func (_u *TenantUpdateOne) RemoveProjects(v ...*Project) *TenantUpdateOne {
 		ids[i] = v[i].ID
 	}
 	return _u.RemoveProjectIDs(ids...)
+}
+
+// ClearRoles clears all "roles" edges to the Role entity.
+func (_u *TenantUpdateOne) ClearRoles() *TenantUpdateOne {
+	_u.mutation.ClearRoles()
+	return _u
+}
+
+// RemoveRoleIDs removes the "roles" edge to Role entities by IDs.
+func (_u *TenantUpdateOne) RemoveRoleIDs(ids ...uuid.UUID) *TenantUpdateOne {
+	_u.mutation.RemoveRoleIDs(ids...)
+	return _u
+}
+
+// RemoveRoles removes "roles" edges to Role entities.
+func (_u *TenantUpdateOne) RemoveRoles(v ...*Role) *TenantUpdateOne {
+	ids := make([]uuid.UUID, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.RemoveRoleIDs(ids...)
+}
+
+// ClearRolepermissions clears all "rolepermissions" edges to the RolePermission entity.
+func (_u *TenantUpdateOne) ClearRolepermissions() *TenantUpdateOne {
+	_u.mutation.ClearRolepermissions()
+	return _u
+}
+
+// RemoveRolepermissionIDs removes the "rolepermissions" edge to RolePermission entities by IDs.
+func (_u *TenantUpdateOne) RemoveRolepermissionIDs(ids ...uuid.UUID) *TenantUpdateOne {
+	_u.mutation.RemoveRolepermissionIDs(ids...)
+	return _u
+}
+
+// RemoveRolepermissions removes "rolepermissions" edges to RolePermission entities.
+func (_u *TenantUpdateOne) RemoveRolepermissions(v ...*RolePermission) *TenantUpdateOne {
+	ids := make([]uuid.UUID, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.RemoveRolepermissionIDs(ids...)
+}
+
+// ClearTenantrole clears all "tenantrole" edges to the TenantMember entity.
+func (_u *TenantUpdateOne) ClearTenantrole() *TenantUpdateOne {
+	_u.mutation.ClearTenantrole()
+	return _u
+}
+
+// RemoveTenantroleIDs removes the "tenantrole" edge to TenantMember entities by IDs.
+func (_u *TenantUpdateOne) RemoveTenantroleIDs(ids ...int) *TenantUpdateOne {
+	_u.mutation.RemoveTenantroleIDs(ids...)
+	return _u
+}
+
+// RemoveTenantrole removes "tenantrole" edges to TenantMember entities.
+func (_u *TenantUpdateOne) RemoveTenantrole(v ...*TenantMember) *TenantUpdateOne {
+	ids := make([]int, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.RemoveTenantroleIDs(ids...)
+}
+
+// ClearProjectrole clears all "projectrole" edges to the ProjectMember entity.
+func (_u *TenantUpdateOne) ClearProjectrole() *TenantUpdateOne {
+	_u.mutation.ClearProjectrole()
+	return _u
+}
+
+// RemoveProjectroleIDs removes the "projectrole" edge to ProjectMember entities by IDs.
+func (_u *TenantUpdateOne) RemoveProjectroleIDs(ids ...int) *TenantUpdateOne {
+	_u.mutation.RemoveProjectroleIDs(ids...)
+	return _u
+}
+
+// RemoveProjectrole removes "projectrole" edges to ProjectMember entities.
+func (_u *TenantUpdateOne) RemoveProjectrole(v ...*ProjectMember) *TenantUpdateOne {
+	ids := make([]int, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.RemoveProjectroleIDs(ids...)
+}
+
+// ClearSubscription clears all "subscription" edges to the Subscription entity.
+func (_u *TenantUpdateOne) ClearSubscription() *TenantUpdateOne {
+	_u.mutation.ClearSubscription()
+	return _u
+}
+
+// RemoveSubscriptionIDs removes the "subscription" edge to Subscription entities by IDs.
+func (_u *TenantUpdateOne) RemoveSubscriptionIDs(ids ...uuid.UUID) *TenantUpdateOne {
+	_u.mutation.RemoveSubscriptionIDs(ids...)
+	return _u
+}
+
+// RemoveSubscription removes "subscription" edges to Subscription entities.
+func (_u *TenantUpdateOne) RemoveSubscription(v ...*Subscription) *TenantUpdateOne {
+	ids := make([]uuid.UUID, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.RemoveSubscriptionIDs(ids...)
 }
 
 // Where appends a list predicates to the TenantUpdate builder.
@@ -872,6 +1462,231 @@ func (_u *TenantUpdateOne) sqlSave(ctx context.Context) (_node *Tenant, err erro
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(project.FieldID, field.TypeUUID),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if _u.mutation.RolesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   tenant.RolesTable,
+			Columns: []string{tenant.RolesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(role.FieldID, field.TypeUUID),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.RemovedRolesIDs(); len(nodes) > 0 && !_u.mutation.RolesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   tenant.RolesTable,
+			Columns: []string{tenant.RolesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(role.FieldID, field.TypeUUID),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.RolesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   tenant.RolesTable,
+			Columns: []string{tenant.RolesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(role.FieldID, field.TypeUUID),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if _u.mutation.RolepermissionsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   tenant.RolepermissionsTable,
+			Columns: []string{tenant.RolepermissionsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(rolepermission.FieldID, field.TypeUUID),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.RemovedRolepermissionsIDs(); len(nodes) > 0 && !_u.mutation.RolepermissionsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   tenant.RolepermissionsTable,
+			Columns: []string{tenant.RolepermissionsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(rolepermission.FieldID, field.TypeUUID),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.RolepermissionsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   tenant.RolepermissionsTable,
+			Columns: []string{tenant.RolepermissionsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(rolepermission.FieldID, field.TypeUUID),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if _u.mutation.TenantroleCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   tenant.TenantroleTable,
+			Columns: []string{tenant.TenantroleColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(tenantmember.FieldID, field.TypeInt),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.RemovedTenantroleIDs(); len(nodes) > 0 && !_u.mutation.TenantroleCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   tenant.TenantroleTable,
+			Columns: []string{tenant.TenantroleColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(tenantmember.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.TenantroleIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   tenant.TenantroleTable,
+			Columns: []string{tenant.TenantroleColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(tenantmember.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if _u.mutation.ProjectroleCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   tenant.ProjectroleTable,
+			Columns: []string{tenant.ProjectroleColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(projectmember.FieldID, field.TypeInt),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.RemovedProjectroleIDs(); len(nodes) > 0 && !_u.mutation.ProjectroleCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   tenant.ProjectroleTable,
+			Columns: []string{tenant.ProjectroleColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(projectmember.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.ProjectroleIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   tenant.ProjectroleTable,
+			Columns: []string{tenant.ProjectroleColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(projectmember.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if _u.mutation.SubscriptionCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   tenant.SubscriptionTable,
+			Columns: []string{tenant.SubscriptionColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(subscription.FieldID, field.TypeUUID),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.RemovedSubscriptionIDs(); len(nodes) > 0 && !_u.mutation.SubscriptionCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   tenant.SubscriptionTable,
+			Columns: []string{tenant.SubscriptionColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(subscription.FieldID, field.TypeUUID),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.SubscriptionIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   tenant.SubscriptionTable,
+			Columns: []string{tenant.SubscriptionColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(subscription.FieldID, field.TypeUUID),
 			},
 		}
 		for _, k := range nodes {

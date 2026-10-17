@@ -6,9 +6,18 @@ import (
 	"time"
 
 	"github.com/caneel7/keynote-api/internal/ent/gen/entitykind"
+	"github.com/caneel7/keynote-api/internal/ent/gen/module"
+	"github.com/caneel7/keynote-api/internal/ent/gen/permission"
+	"github.com/caneel7/keynote-api/internal/ent/gen/plan"
+	"github.com/caneel7/keynote-api/internal/ent/gen/planversion"
 	"github.com/caneel7/keynote-api/internal/ent/gen/project"
+	"github.com/caneel7/keynote-api/internal/ent/gen/projectmember"
+	"github.com/caneel7/keynote-api/internal/ent/gen/role"
+	"github.com/caneel7/keynote-api/internal/ent/gen/rolepermission"
 	"github.com/caneel7/keynote-api/internal/ent/gen/statedefinitions"
+	"github.com/caneel7/keynote-api/internal/ent/gen/subscription"
 	"github.com/caneel7/keynote-api/internal/ent/gen/tenant"
+	"github.com/caneel7/keynote-api/internal/ent/gen/tenantmember"
 	"github.com/caneel7/keynote-api/internal/ent/gen/user"
 	"github.com/caneel7/keynote-api/internal/ent/gen/usercredential"
 	"github.com/caneel7/keynote-api/internal/ent/gen/usersession"
@@ -45,6 +54,110 @@ func init() {
 	entitykindDescID := entitykindFields[0].Descriptor()
 	// entitykind.DefaultID holds the default value on creation for the id field.
 	entitykind.DefaultID = entitykindDescID.Default.(func() uuid.UUID)
+	moduleFields := schema.Module{}.Fields()
+	_ = moduleFields
+	// moduleDescName is the schema descriptor for name field.
+	moduleDescName := moduleFields[1].Descriptor()
+	// module.NameValidator is a validator for the "name" field. It is called by the builders before save.
+	module.NameValidator = moduleDescName.Validators[0].(func(string) error)
+	// moduleDescKey is the schema descriptor for key field.
+	moduleDescKey := moduleFields[2].Descriptor()
+	// module.KeyValidator is a validator for the "key" field. It is called by the builders before save.
+	module.KeyValidator = moduleDescKey.Validators[0].(func(string) error)
+	// moduleDescCreatedAt is the schema descriptor for created_at field.
+	moduleDescCreatedAt := moduleFields[4].Descriptor()
+	// module.DefaultCreatedAt holds the default value on creation for the created_at field.
+	module.DefaultCreatedAt = moduleDescCreatedAt.Default.(func() time.Time)
+	// moduleDescUpdatedAt is the schema descriptor for updated_at field.
+	moduleDescUpdatedAt := moduleFields[5].Descriptor()
+	// module.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	module.DefaultUpdatedAt = moduleDescUpdatedAt.Default.(func() time.Time)
+	// module.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	module.UpdateDefaultUpdatedAt = moduleDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// moduleDescID is the schema descriptor for id field.
+	moduleDescID := moduleFields[0].Descriptor()
+	// module.DefaultID holds the default value on creation for the id field.
+	module.DefaultID = moduleDescID.Default.(func() uuid.UUID)
+	permissionFields := schema.Permission{}.Fields()
+	_ = permissionFields
+	// permissionDescName is the schema descriptor for name field.
+	permissionDescName := permissionFields[2].Descriptor()
+	// permission.NameValidator is a validator for the "name" field. It is called by the builders before save.
+	permission.NameValidator = permissionDescName.Validators[0].(func(string) error)
+	// permissionDescKey is the schema descriptor for key field.
+	permissionDescKey := permissionFields[3].Descriptor()
+	// permission.KeyValidator is a validator for the "key" field. It is called by the builders before save.
+	permission.KeyValidator = permissionDescKey.Validators[0].(func(string) error)
+	// permissionDescCreatedAt is the schema descriptor for created_at field.
+	permissionDescCreatedAt := permissionFields[4].Descriptor()
+	// permission.DefaultCreatedAt holds the default value on creation for the created_at field.
+	permission.DefaultCreatedAt = permissionDescCreatedAt.Default.(func() time.Time)
+	// permissionDescUpdatedAt is the schema descriptor for updated_at field.
+	permissionDescUpdatedAt := permissionFields[5].Descriptor()
+	// permission.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	permission.DefaultUpdatedAt = permissionDescUpdatedAt.Default.(func() time.Time)
+	// permission.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	permission.UpdateDefaultUpdatedAt = permissionDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// permissionDescID is the schema descriptor for id field.
+	permissionDescID := permissionFields[0].Descriptor()
+	// permission.DefaultID holds the default value on creation for the id field.
+	permission.DefaultID = permissionDescID.Default.(func() uuid.UUID)
+	planFields := schema.Plan{}.Fields()
+	_ = planFields
+	// planDescName is the schema descriptor for name field.
+	planDescName := planFields[1].Descriptor()
+	// plan.NameValidator is a validator for the "name" field. It is called by the builders before save.
+	plan.NameValidator = planDescName.Validators[0].(func(string) error)
+	// planDescKey is the schema descriptor for key field.
+	planDescKey := planFields[2].Descriptor()
+	// plan.KeyValidator is a validator for the "key" field. It is called by the builders before save.
+	plan.KeyValidator = planDescKey.Validators[0].(func(string) error)
+	// planDescCreatedAt is the schema descriptor for created_at field.
+	planDescCreatedAt := planFields[3].Descriptor()
+	// plan.DefaultCreatedAt holds the default value on creation for the created_at field.
+	plan.DefaultCreatedAt = planDescCreatedAt.Default.(func() time.Time)
+	// planDescUpdatedAt is the schema descriptor for updated_at field.
+	planDescUpdatedAt := planFields[4].Descriptor()
+	// plan.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	plan.DefaultUpdatedAt = planDescUpdatedAt.Default.(func() time.Time)
+	// plan.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	plan.UpdateDefaultUpdatedAt = planDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// planDescID is the schema descriptor for id field.
+	planDescID := planFields[0].Descriptor()
+	// plan.DefaultID holds the default value on creation for the id field.
+	plan.DefaultID = planDescID.Default.(func() uuid.UUID)
+	planversionFields := schema.PlanVersion{}.Fields()
+	_ = planversionFields
+	// planversionDescVersion is the schema descriptor for version field.
+	planversionDescVersion := planversionFields[2].Descriptor()
+	// planversion.DefaultVersion holds the default value on creation for the version field.
+	planversion.DefaultVersion = planversionDescVersion.Default.(int)
+	// planversion.VersionValidator is a validator for the "version" field. It is called by the builders before save.
+	planversion.VersionValidator = planversionDescVersion.Validators[0].(func(int) error)
+	// planversionDescCurrency is the schema descriptor for currency field.
+	planversionDescCurrency := planversionFields[4].Descriptor()
+	// planversion.DefaultCurrency holds the default value on creation for the currency field.
+	planversion.DefaultCurrency = planversionDescCurrency.Default.(string)
+	// planversionDescInterval is the schema descriptor for interval field.
+	planversionDescInterval := planversionFields[5].Descriptor()
+	// planversion.DefaultInterval holds the default value on creation for the interval field.
+	planversion.DefaultInterval = planversionDescInterval.Default.(int)
+	// planversion.IntervalValidator is a validator for the "interval" field. It is called by the builders before save.
+	planversion.IntervalValidator = planversionDescInterval.Validators[0].(func(int) error)
+	// planversionDescCreatedAt is the schema descriptor for created_at field.
+	planversionDescCreatedAt := planversionFields[7].Descriptor()
+	// planversion.DefaultCreatedAt holds the default value on creation for the created_at field.
+	planversion.DefaultCreatedAt = planversionDescCreatedAt.Default.(func() time.Time)
+	// planversionDescUpdatedAt is the schema descriptor for updated_at field.
+	planversionDescUpdatedAt := planversionFields[8].Descriptor()
+	// planversion.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	planversion.DefaultUpdatedAt = planversionDescUpdatedAt.Default.(func() time.Time)
+	// planversion.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	planversion.UpdateDefaultUpdatedAt = planversionDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// planversionDescID is the schema descriptor for id field.
+	planversionDescID := planversionFields[0].Descriptor()
+	// planversion.DefaultID holds the default value on creation for the id field.
+	planversion.DefaultID = planversionDescID.Default.(func() uuid.UUID)
 	projectFields := schema.Project{}.Fields()
 	_ = projectFields
 	// projectDescName is the schema descriptor for name field.
@@ -65,6 +178,54 @@ func init() {
 	projectDescID := projectFields[0].Descriptor()
 	// project.DefaultID holds the default value on creation for the id field.
 	project.DefaultID = projectDescID.Default.(func() uuid.UUID)
+	projectmemberFields := schema.ProjectMember{}.Fields()
+	_ = projectmemberFields
+	// projectmemberDescCreatedAt is the schema descriptor for created_at field.
+	projectmemberDescCreatedAt := projectmemberFields[4].Descriptor()
+	// projectmember.DefaultCreatedAt holds the default value on creation for the created_at field.
+	projectmember.DefaultCreatedAt = projectmemberDescCreatedAt.Default.(func() time.Time)
+	// projectmemberDescUpdatedAt is the schema descriptor for updated_at field.
+	projectmemberDescUpdatedAt := projectmemberFields[5].Descriptor()
+	// projectmember.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	projectmember.DefaultUpdatedAt = projectmemberDescUpdatedAt.Default.(func() time.Time)
+	// projectmember.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	projectmember.UpdateDefaultUpdatedAt = projectmemberDescUpdatedAt.UpdateDefault.(func() time.Time)
+	roleFields := schema.Role{}.Fields()
+	_ = roleFields
+	// roleDescName is the schema descriptor for name field.
+	roleDescName := roleFields[3].Descriptor()
+	// role.NameValidator is a validator for the "name" field. It is called by the builders before save.
+	role.NameValidator = roleDescName.Validators[0].(func(string) error)
+	// roleDescCreatedAt is the schema descriptor for created_at field.
+	roleDescCreatedAt := roleFields[6].Descriptor()
+	// role.DefaultCreatedAt holds the default value on creation for the created_at field.
+	role.DefaultCreatedAt = roleDescCreatedAt.Default.(func() time.Time)
+	// roleDescUpdatedAt is the schema descriptor for updated_at field.
+	roleDescUpdatedAt := roleFields[7].Descriptor()
+	// role.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	role.DefaultUpdatedAt = roleDescUpdatedAt.Default.(func() time.Time)
+	// role.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	role.UpdateDefaultUpdatedAt = roleDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// roleDescID is the schema descriptor for id field.
+	roleDescID := roleFields[0].Descriptor()
+	// role.DefaultID holds the default value on creation for the id field.
+	role.DefaultID = roleDescID.Default.(func() uuid.UUID)
+	rolepermissionFields := schema.RolePermission{}.Fields()
+	_ = rolepermissionFields
+	// rolepermissionDescCreatedAt is the schema descriptor for created_at field.
+	rolepermissionDescCreatedAt := rolepermissionFields[4].Descriptor()
+	// rolepermission.DefaultCreatedAt holds the default value on creation for the created_at field.
+	rolepermission.DefaultCreatedAt = rolepermissionDescCreatedAt.Default.(func() time.Time)
+	// rolepermissionDescUpdatedAt is the schema descriptor for updated_at field.
+	rolepermissionDescUpdatedAt := rolepermissionFields[5].Descriptor()
+	// rolepermission.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	rolepermission.DefaultUpdatedAt = rolepermissionDescUpdatedAt.Default.(func() time.Time)
+	// rolepermission.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	rolepermission.UpdateDefaultUpdatedAt = rolepermissionDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// rolepermissionDescID is the schema descriptor for id field.
+	rolepermissionDescID := rolepermissionFields[0].Descriptor()
+	// rolepermission.DefaultID holds the default value on creation for the id field.
+	rolepermission.DefaultID = rolepermissionDescID.Default.(func() uuid.UUID)
 	statedefinitionsFields := schema.StateDefinitions{}.Fields()
 	_ = statedefinitionsFields
 	// statedefinitionsDescKey is the schema descriptor for key field.
@@ -89,6 +250,30 @@ func init() {
 	statedefinitionsDescID := statedefinitionsFields[0].Descriptor()
 	// statedefinitions.DefaultID holds the default value on creation for the id field.
 	statedefinitions.DefaultID = statedefinitionsDescID.Default.(func() uuid.UUID)
+	subscriptionFields := schema.Subscription{}.Fields()
+	_ = subscriptionFields
+	// subscriptionDescStartedAt is the schema descriptor for started_at field.
+	subscriptionDescStartedAt := subscriptionFields[5].Descriptor()
+	// subscription.DefaultStartedAt holds the default value on creation for the started_at field.
+	subscription.DefaultStartedAt = subscriptionDescStartedAt.Default.(func() time.Time)
+	// subscriptionDescCancelAtPeriodEnd is the schema descriptor for cancel_at_period_end field.
+	subscriptionDescCancelAtPeriodEnd := subscriptionFields[7].Descriptor()
+	// subscription.DefaultCancelAtPeriodEnd holds the default value on creation for the cancel_at_period_end field.
+	subscription.DefaultCancelAtPeriodEnd = subscriptionDescCancelAtPeriodEnd.Default.(bool)
+	// subscriptionDescCreatedAt is the schema descriptor for created_at field.
+	subscriptionDescCreatedAt := subscriptionFields[9].Descriptor()
+	// subscription.DefaultCreatedAt holds the default value on creation for the created_at field.
+	subscription.DefaultCreatedAt = subscriptionDescCreatedAt.Default.(func() time.Time)
+	// subscriptionDescUpdatedAt is the schema descriptor for updated_at field.
+	subscriptionDescUpdatedAt := subscriptionFields[10].Descriptor()
+	// subscription.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	subscription.DefaultUpdatedAt = subscriptionDescUpdatedAt.Default.(func() time.Time)
+	// subscription.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	subscription.UpdateDefaultUpdatedAt = subscriptionDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// subscriptionDescID is the schema descriptor for id field.
+	subscriptionDescID := subscriptionFields[0].Descriptor()
+	// subscription.DefaultID holds the default value on creation for the id field.
+	subscription.DefaultID = subscriptionDescID.Default.(func() uuid.UUID)
 	tenantFields := schema.Tenant{}.Fields()
 	_ = tenantFields
 	// tenantDescName is the schema descriptor for name field.
@@ -113,6 +298,18 @@ func init() {
 	tenantDescID := tenantFields[0].Descriptor()
 	// tenant.DefaultID holds the default value on creation for the id field.
 	tenant.DefaultID = tenantDescID.Default.(func() uuid.UUID)
+	tenantmemberFields := schema.TenantMember{}.Fields()
+	_ = tenantmemberFields
+	// tenantmemberDescCreatedAt is the schema descriptor for created_at field.
+	tenantmemberDescCreatedAt := tenantmemberFields[3].Descriptor()
+	// tenantmember.DefaultCreatedAt holds the default value on creation for the created_at field.
+	tenantmember.DefaultCreatedAt = tenantmemberDescCreatedAt.Default.(func() time.Time)
+	// tenantmemberDescUpdatedAt is the schema descriptor for updated_at field.
+	tenantmemberDescUpdatedAt := tenantmemberFields[4].Descriptor()
+	// tenantmember.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	tenantmember.DefaultUpdatedAt = tenantmemberDescUpdatedAt.Default.(func() time.Time)
+	// tenantmember.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	tenantmember.UpdateDefaultUpdatedAt = tenantmemberDescUpdatedAt.UpdateDefault.(func() time.Time)
 	userFields := schema.User{}.Fields()
 	_ = userFields
 	// userDescEmail is the schema descriptor for email field.

@@ -13,9 +13,18 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"github.com/caneel7/keynote-api/internal/ent/gen/entitykind"
+	"github.com/caneel7/keynote-api/internal/ent/gen/module"
+	"github.com/caneel7/keynote-api/internal/ent/gen/permission"
+	"github.com/caneel7/keynote-api/internal/ent/gen/plan"
+	"github.com/caneel7/keynote-api/internal/ent/gen/planversion"
 	"github.com/caneel7/keynote-api/internal/ent/gen/project"
+	"github.com/caneel7/keynote-api/internal/ent/gen/projectmember"
+	"github.com/caneel7/keynote-api/internal/ent/gen/role"
+	"github.com/caneel7/keynote-api/internal/ent/gen/rolepermission"
 	"github.com/caneel7/keynote-api/internal/ent/gen/statedefinitions"
+	"github.com/caneel7/keynote-api/internal/ent/gen/subscription"
 	"github.com/caneel7/keynote-api/internal/ent/gen/tenant"
+	"github.com/caneel7/keynote-api/internal/ent/gen/tenantmember"
 	"github.com/caneel7/keynote-api/internal/ent/gen/user"
 	"github.com/caneel7/keynote-api/internal/ent/gen/usercredential"
 	"github.com/caneel7/keynote-api/internal/ent/gen/usersession"
@@ -81,9 +90,18 @@ func checkColumn(t, c string) error {
 	initCheck.Do(func() {
 		columnCheck = sql.NewColumnCheck(map[string]func(string) bool{
 			entitykind.Table:       entitykind.ValidColumn,
+			module.Table:           module.ValidColumn,
+			permission.Table:       permission.ValidColumn,
+			plan.Table:             plan.ValidColumn,
+			planversion.Table:      planversion.ValidColumn,
 			project.Table:          project.ValidColumn,
+			projectmember.Table:    projectmember.ValidColumn,
+			role.Table:             role.ValidColumn,
+			rolepermission.Table:   rolepermission.ValidColumn,
 			statedefinitions.Table: statedefinitions.ValidColumn,
+			subscription.Table:     subscription.ValidColumn,
 			tenant.Table:           tenant.ValidColumn,
+			tenantmember.Table:     tenantmember.ValidColumn,
 			user.Table:             user.ValidColumn,
 			usercredential.Table:   usercredential.ValidColumn,
 			usersession.Table:      usersession.ValidColumn,

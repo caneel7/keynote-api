@@ -23,6 +23,95 @@ var (
 		Columns:    EntityKindsColumns,
 		PrimaryKey: []*schema.Column{EntityKindsColumns[0]},
 	}
+	// ModulesColumns holds the columns for the "modules" table.
+	ModulesColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeUUID},
+		{Name: "name", Type: field.TypeString, Unique: true},
+		{Name: "key", Type: field.TypeString, Unique: true},
+		{Name: "type", Type: field.TypeEnum, Enums: []string{"tenant", "project"}, Default: "tenant"},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
+	}
+	// ModulesTable holds the schema information for the "modules" table.
+	ModulesTable = &schema.Table{
+		Name:       "modules",
+		Columns:    ModulesColumns,
+		PrimaryKey: []*schema.Column{ModulesColumns[0]},
+	}
+	// PermissionsColumns holds the columns for the "permissions" table.
+	PermissionsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeUUID},
+		{Name: "name", Type: field.TypeString},
+		{Name: "key", Type: field.TypeString, Unique: true},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
+		{Name: "module_id", Type: field.TypeUUID},
+	}
+	// PermissionsTable holds the schema information for the "permissions" table.
+	PermissionsTable = &schema.Table{
+		Name:       "permissions",
+		Columns:    PermissionsColumns,
+		PrimaryKey: []*schema.Column{PermissionsColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "permissions_modules_permissions",
+				Columns:    []*schema.Column{PermissionsColumns[6]},
+				RefColumns: []*schema.Column{ModulesColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+		},
+		Indexes: []*schema.Index{
+			{
+				Name:    "permission_module_id",
+				Unique:  false,
+				Columns: []*schema.Column{PermissionsColumns[6]},
+			},
+		},
+	}
+	// PlansColumns holds the columns for the "plans" table.
+	PlansColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeUUID},
+		{Name: "name", Type: field.TypeString, Unique: true},
+		{Name: "key", Type: field.TypeString, Unique: true},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
+	}
+	// PlansTable holds the schema information for the "plans" table.
+	PlansTable = &schema.Table{
+		Name:       "plans",
+		Columns:    PlansColumns,
+		PrimaryKey: []*schema.Column{PlansColumns[0]},
+	}
+	// PlanVersionsColumns holds the columns for the "plan_versions" table.
+	PlanVersionsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeUUID},
+		{Name: "version", Type: field.TypeInt, Default: 1},
+		{Name: "cost", Type: field.TypeFloat64},
+		{Name: "currency", Type: field.TypeString, Default: "usd"},
+		{Name: "interval", Type: field.TypeInt, Default: 30},
+		{Name: "perks", Type: field.TypeJSON},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
+		{Name: "plan_id", Type: field.TypeUUID},
+	}
+	// PlanVersionsTable holds the schema information for the "plan_versions" table.
+	PlanVersionsTable = &schema.Table{
+		Name:       "plan_versions",
+		Columns:    PlanVersionsColumns,
+		PrimaryKey: []*schema.Column{PlanVersionsColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "plan_versions_plans_versions",
+				Columns:    []*schema.Column{PlanVersionsColumns[9]},
+				RefColumns: []*schema.Column{PlansColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+		},
+	}
 	// ProjectsColumns holds the columns for the "projects" table.
 	ProjectsColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeUUID},
@@ -79,6 +168,131 @@ var (
 			},
 		},
 	}
+	// ProjectMembersColumns holds the columns for the "project_members" table.
+	ProjectMembersColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
+		{Name: "project_id", Type: field.TypeUUID},
+		{Name: "role_id", Type: field.TypeUUID},
+		{Name: "tenant_id", Type: field.TypeUUID},
+		{Name: "user_id", Type: field.TypeUUID},
+	}
+	// ProjectMembersTable holds the schema information for the "project_members" table.
+	ProjectMembersTable = &schema.Table{
+		Name:       "project_members",
+		Columns:    ProjectMembersColumns,
+		PrimaryKey: []*schema.Column{ProjectMembersColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "project_members_projects_projectrole",
+				Columns:    []*schema.Column{ProjectMembersColumns[4]},
+				RefColumns: []*schema.Column{ProjectsColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+			{
+				Symbol:     "project_members_roles_projectrole",
+				Columns:    []*schema.Column{ProjectMembersColumns[5]},
+				RefColumns: []*schema.Column{RolesColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+			{
+				Symbol:     "project_members_tenants_projectrole",
+				Columns:    []*schema.Column{ProjectMembersColumns[6]},
+				RefColumns: []*schema.Column{TenantsColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+			{
+				Symbol:     "project_members_users_projectrole",
+				Columns:    []*schema.Column{ProjectMembersColumns[7]},
+				RefColumns: []*schema.Column{UsersColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+		},
+		Indexes: []*schema.Index{
+			{
+				Name:    "projectmember_tenant_id_project_id_user_id",
+				Unique:  true,
+				Columns: []*schema.Column{ProjectMembersColumns[6], ProjectMembersColumns[4], ProjectMembersColumns[7]},
+			},
+		},
+	}
+	// RolesColumns holds the columns for the "roles" table.
+	RolesColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeUUID},
+		{Name: "name", Type: field.TypeString},
+		{Name: "type", Type: field.TypeEnum, Enums: []string{"tenant", "project"}, Default: "tenant"},
+		{Name: "created_by", Type: field.TypeUUID},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
+		{Name: "project_id", Type: field.TypeUUID},
+		{Name: "tenant_id", Type: field.TypeUUID},
+	}
+	// RolesTable holds the schema information for the "roles" table.
+	RolesTable = &schema.Table{
+		Name:       "roles",
+		Columns:    RolesColumns,
+		PrimaryKey: []*schema.Column{RolesColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "roles_projects_roles",
+				Columns:    []*schema.Column{RolesColumns[7]},
+				RefColumns: []*schema.Column{ProjectsColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+			{
+				Symbol:     "roles_tenants_roles",
+				Columns:    []*schema.Column{RolesColumns[8]},
+				RefColumns: []*schema.Column{TenantsColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+		},
+	}
+	// RolePermissionsColumns holds the columns for the "role_permissions" table.
+	RolePermissionsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeUUID},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
+		{Name: "permission_id", Type: field.TypeUUID},
+		{Name: "role_id", Type: field.TypeUUID},
+		{Name: "tenant_id", Type: field.TypeUUID},
+	}
+	// RolePermissionsTable holds the schema information for the "role_permissions" table.
+	RolePermissionsTable = &schema.Table{
+		Name:       "role_permissions",
+		Columns:    RolePermissionsColumns,
+		PrimaryKey: []*schema.Column{RolePermissionsColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "role_permissions_permissions_rolepermissions",
+				Columns:    []*schema.Column{RolePermissionsColumns[4]},
+				RefColumns: []*schema.Column{PermissionsColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+			{
+				Symbol:     "role_permissions_roles_permissions",
+				Columns:    []*schema.Column{RolePermissionsColumns[5]},
+				RefColumns: []*schema.Column{RolesColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+			{
+				Symbol:     "role_permissions_tenants_rolepermissions",
+				Columns:    []*schema.Column{RolePermissionsColumns[6]},
+				RefColumns: []*schema.Column{TenantsColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+		},
+		Indexes: []*schema.Index{
+			{
+				Name:    "rolepermission_role_id_permission_id",
+				Unique:  true,
+				Columns: []*schema.Column{RolePermissionsColumns[5], RolePermissionsColumns[4]},
+			},
+		},
+	}
 	// StateDefinitionsColumns holds the columns for the "state_definitions" table.
 	StateDefinitionsColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeUUID},
@@ -110,6 +324,52 @@ var (
 			},
 		},
 	}
+	// SubscriptionsColumns holds the columns for the "subscriptions" table.
+	SubscriptionsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeUUID},
+		{Name: "started_at", Type: field.TypeTime},
+		{Name: "current_period_end", Type: field.TypeTime},
+		{Name: "cancel_at_period_end", Type: field.TypeBool, Default: false},
+		{Name: "canceled_at", Type: field.TypeTime, Nullable: true},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "plan_id", Type: field.TypeUUID},
+		{Name: "plan_version_id", Type: field.TypeUUID},
+		{Name: "status_id", Type: field.TypeUUID},
+		{Name: "tenant_id", Type: field.TypeUUID},
+	}
+	// SubscriptionsTable holds the schema information for the "subscriptions" table.
+	SubscriptionsTable = &schema.Table{
+		Name:       "subscriptions",
+		Columns:    SubscriptionsColumns,
+		PrimaryKey: []*schema.Column{SubscriptionsColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "subscriptions_plans_subscription",
+				Columns:    []*schema.Column{SubscriptionsColumns[7]},
+				RefColumns: []*schema.Column{PlansColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+			{
+				Symbol:     "subscriptions_plan_versions_subscription",
+				Columns:    []*schema.Column{SubscriptionsColumns[8]},
+				RefColumns: []*schema.Column{PlanVersionsColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+			{
+				Symbol:     "subscriptions_state_definitions_subscription",
+				Columns:    []*schema.Column{SubscriptionsColumns[9]},
+				RefColumns: []*schema.Column{StateDefinitionsColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+			{
+				Symbol:     "subscriptions_tenants_subscription",
+				Columns:    []*schema.Column{SubscriptionsColumns[10]},
+				RefColumns: []*schema.Column{TenantsColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+		},
+	}
 	// TenantsColumns holds the columns for the "tenants" table.
 	TenantsColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeUUID},
@@ -138,6 +398,49 @@ var (
 				Columns:    []*schema.Column{TenantsColumns[7]},
 				RefColumns: []*schema.Column{UsersColumns[0]},
 				OnDelete:   schema.NoAction,
+			},
+		},
+	}
+	// TenantMembersColumns holds the columns for the "tenant_members" table.
+	TenantMembersColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
+		{Name: "role_id", Type: field.TypeUUID},
+		{Name: "tenant_id", Type: field.TypeUUID},
+		{Name: "user_id", Type: field.TypeUUID},
+	}
+	// TenantMembersTable holds the schema information for the "tenant_members" table.
+	TenantMembersTable = &schema.Table{
+		Name:       "tenant_members",
+		Columns:    TenantMembersColumns,
+		PrimaryKey: []*schema.Column{TenantMembersColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "tenant_members_roles_tenantrole",
+				Columns:    []*schema.Column{TenantMembersColumns[4]},
+				RefColumns: []*schema.Column{RolesColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+			{
+				Symbol:     "tenant_members_tenants_tenantrole",
+				Columns:    []*schema.Column{TenantMembersColumns[5]},
+				RefColumns: []*schema.Column{TenantsColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+			{
+				Symbol:     "tenant_members_users_tenantrole",
+				Columns:    []*schema.Column{TenantMembersColumns[6]},
+				RefColumns: []*schema.Column{UsersColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+		},
+		Indexes: []*schema.Index{
+			{
+				Name:    "tenantmember_tenant_id_user_id",
+				Unique:  true,
+				Columns: []*schema.Column{TenantMembersColumns[5], TenantMembersColumns[6]},
 			},
 		},
 	}
@@ -272,9 +575,18 @@ var (
 	// Tables holds all the tables in the schema.
 	Tables = []*schema.Table{
 		EntityKindsTable,
+		ModulesTable,
+		PermissionsTable,
+		PlansTable,
+		PlanVersionsTable,
 		ProjectsTable,
+		ProjectMembersTable,
+		RolesTable,
+		RolePermissionsTable,
 		StateDefinitionsTable,
+		SubscriptionsTable,
 		TenantsTable,
+		TenantMembersTable,
 		UsersTable,
 		UserCredentialsTable,
 		UserSessionsTable,
@@ -283,13 +595,31 @@ var (
 )
 
 func init() {
+	PermissionsTable.ForeignKeys[0].RefTable = ModulesTable
+	PlanVersionsTable.ForeignKeys[0].RefTable = PlansTable
 	ProjectsTable.ForeignKeys[0].RefTable = StateDefinitionsTable
 	ProjectsTable.ForeignKeys[1].RefTable = TenantsTable
 	ProjectsTable.ForeignKeys[2].RefTable = UsersTable
 	ProjectsTable.ForeignKeys[3].RefTable = WorkspacesTable
+	ProjectMembersTable.ForeignKeys[0].RefTable = ProjectsTable
+	ProjectMembersTable.ForeignKeys[1].RefTable = RolesTable
+	ProjectMembersTable.ForeignKeys[2].RefTable = TenantsTable
+	ProjectMembersTable.ForeignKeys[3].RefTable = UsersTable
+	RolesTable.ForeignKeys[0].RefTable = ProjectsTable
+	RolesTable.ForeignKeys[1].RefTable = TenantsTable
+	RolePermissionsTable.ForeignKeys[0].RefTable = PermissionsTable
+	RolePermissionsTable.ForeignKeys[1].RefTable = RolesTable
+	RolePermissionsTable.ForeignKeys[2].RefTable = TenantsTable
 	StateDefinitionsTable.ForeignKeys[0].RefTable = EntityKindsTable
+	SubscriptionsTable.ForeignKeys[0].RefTable = PlansTable
+	SubscriptionsTable.ForeignKeys[1].RefTable = PlanVersionsTable
+	SubscriptionsTable.ForeignKeys[2].RefTable = StateDefinitionsTable
+	SubscriptionsTable.ForeignKeys[3].RefTable = TenantsTable
 	TenantsTable.ForeignKeys[0].RefTable = StateDefinitionsTable
 	TenantsTable.ForeignKeys[1].RefTable = UsersTable
+	TenantMembersTable.ForeignKeys[0].RefTable = RolesTable
+	TenantMembersTable.ForeignKeys[1].RefTable = TenantsTable
+	TenantMembersTable.ForeignKeys[2].RefTable = UsersTable
 	UsersTable.ForeignKeys[0].RefTable = StateDefinitionsTable
 	UserCredentialsTable.ForeignKeys[0].RefTable = UsersTable
 	UserSessionsTable.ForeignKeys[0].RefTable = UsersTable

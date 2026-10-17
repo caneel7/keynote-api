@@ -51,9 +51,19 @@ type TenantEdges struct {
 	Workspace *Workspace `json:"workspace,omitempty"`
 	// Projects holds the value of the projects edge.
 	Projects []*Project `json:"projects,omitempty"`
+	// Roles holds the value of the roles edge.
+	Roles []*Role `json:"roles,omitempty"`
+	// Rolepermissions holds the value of the rolepermissions edge.
+	Rolepermissions []*RolePermission `json:"rolepermissions,omitempty"`
+	// Tenantrole holds the value of the tenantrole edge.
+	Tenantrole []*TenantMember `json:"tenantrole,omitempty"`
+	// Projectrole holds the value of the projectrole edge.
+	Projectrole []*ProjectMember `json:"projectrole,omitempty"`
+	// Subscription holds the value of the subscription edge.
+	Subscription []*Subscription `json:"subscription,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [4]bool
+	loadedTypes [9]bool
 }
 
 // StateOrErr returns the State value or an error if the edge
@@ -96,6 +106,51 @@ func (e TenantEdges) ProjectsOrErr() ([]*Project, error) {
 		return e.Projects, nil
 	}
 	return nil, &NotLoadedError{edge: "projects"}
+}
+
+// RolesOrErr returns the Roles value or an error if the edge
+// was not loaded in eager-loading.
+func (e TenantEdges) RolesOrErr() ([]*Role, error) {
+	if e.loadedTypes[4] {
+		return e.Roles, nil
+	}
+	return nil, &NotLoadedError{edge: "roles"}
+}
+
+// RolepermissionsOrErr returns the Rolepermissions value or an error if the edge
+// was not loaded in eager-loading.
+func (e TenantEdges) RolepermissionsOrErr() ([]*RolePermission, error) {
+	if e.loadedTypes[5] {
+		return e.Rolepermissions, nil
+	}
+	return nil, &NotLoadedError{edge: "rolepermissions"}
+}
+
+// TenantroleOrErr returns the Tenantrole value or an error if the edge
+// was not loaded in eager-loading.
+func (e TenantEdges) TenantroleOrErr() ([]*TenantMember, error) {
+	if e.loadedTypes[6] {
+		return e.Tenantrole, nil
+	}
+	return nil, &NotLoadedError{edge: "tenantrole"}
+}
+
+// ProjectroleOrErr returns the Projectrole value or an error if the edge
+// was not loaded in eager-loading.
+func (e TenantEdges) ProjectroleOrErr() ([]*ProjectMember, error) {
+	if e.loadedTypes[7] {
+		return e.Projectrole, nil
+	}
+	return nil, &NotLoadedError{edge: "projectrole"}
+}
+
+// SubscriptionOrErr returns the Subscription value or an error if the edge
+// was not loaded in eager-loading.
+func (e TenantEdges) SubscriptionOrErr() ([]*Subscription, error) {
+	if e.loadedTypes[8] {
+		return e.Subscription, nil
+	}
+	return nil, &NotLoadedError{edge: "subscription"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -204,6 +259,31 @@ func (_m *Tenant) QueryWorkspace() *WorkspaceQuery {
 // QueryProjects queries the "projects" edge of the Tenant entity.
 func (_m *Tenant) QueryProjects() *ProjectQuery {
 	return NewTenantClient(_m.config).QueryProjects(_m)
+}
+
+// QueryRoles queries the "roles" edge of the Tenant entity.
+func (_m *Tenant) QueryRoles() *RoleQuery {
+	return NewTenantClient(_m.config).QueryRoles(_m)
+}
+
+// QueryRolepermissions queries the "rolepermissions" edge of the Tenant entity.
+func (_m *Tenant) QueryRolepermissions() *RolePermissionQuery {
+	return NewTenantClient(_m.config).QueryRolepermissions(_m)
+}
+
+// QueryTenantrole queries the "tenantrole" edge of the Tenant entity.
+func (_m *Tenant) QueryTenantrole() *TenantMemberQuery {
+	return NewTenantClient(_m.config).QueryTenantrole(_m)
+}
+
+// QueryProjectrole queries the "projectrole" edge of the Tenant entity.
+func (_m *Tenant) QueryProjectrole() *ProjectMemberQuery {
+	return NewTenantClient(_m.config).QueryProjectrole(_m)
+}
+
+// QuerySubscription queries the "subscription" edge of the Tenant entity.
+func (_m *Tenant) QuerySubscription() *SubscriptionQuery {
+	return NewTenantClient(_m.config).QuerySubscription(_m)
 }
 
 // Update returns a builder for updating this Tenant.

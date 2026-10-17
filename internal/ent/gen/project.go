@@ -54,9 +54,13 @@ type ProjectEdges struct {
 	State *StateDefinitions `json:"state,omitempty"`
 	// Creator holds the value of the creator edge.
 	Creator *User `json:"creator,omitempty"`
+	// Projectrole holds the value of the projectrole edge.
+	Projectrole []*ProjectMember `json:"projectrole,omitempty"`
+	// Roles holds the value of the roles edge.
+	Roles []*Role `json:"roles,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [4]bool
+	loadedTypes [6]bool
 }
 
 // TenantOrErr returns the Tenant value or an error if the edge
@@ -101,6 +105,24 @@ func (e ProjectEdges) CreatorOrErr() (*User, error) {
 		return nil, &NotFoundError{label: user.Label}
 	}
 	return nil, &NotLoadedError{edge: "creator"}
+}
+
+// ProjectroleOrErr returns the Projectrole value or an error if the edge
+// was not loaded in eager-loading.
+func (e ProjectEdges) ProjectroleOrErr() ([]*ProjectMember, error) {
+	if e.loadedTypes[4] {
+		return e.Projectrole, nil
+	}
+	return nil, &NotLoadedError{edge: "projectrole"}
+}
+
+// RolesOrErr returns the Roles value or an error if the edge
+// was not loaded in eager-loading.
+func (e ProjectEdges) RolesOrErr() ([]*Role, error) {
+	if e.loadedTypes[5] {
+		return e.Roles, nil
+	}
+	return nil, &NotLoadedError{edge: "roles"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -215,6 +237,16 @@ func (_m *Project) QueryState() *StateDefinitionsQuery {
 // QueryCreator queries the "creator" edge of the Project entity.
 func (_m *Project) QueryCreator() *UserQuery {
 	return NewProjectClient(_m.config).QueryCreator(_m)
+}
+
+// QueryProjectrole queries the "projectrole" edge of the Project entity.
+func (_m *Project) QueryProjectrole() *ProjectMemberQuery {
+	return NewProjectClient(_m.config).QueryProjectrole(_m)
+}
+
+// QueryRoles queries the "roles" edge of the Project entity.
+func (_m *Project) QueryRoles() *RoleQuery {
+	return NewProjectClient(_m.config).QueryRoles(_m)
 }
 
 // Update returns a builder for updating this Project.

@@ -14,12 +14,30 @@ type Tx struct {
 	config
 	// EntityKind is the client for interacting with the EntityKind builders.
 	EntityKind *EntityKindClient
+	// Module is the client for interacting with the Module builders.
+	Module *ModuleClient
+	// Permission is the client for interacting with the Permission builders.
+	Permission *PermissionClient
+	// Plan is the client for interacting with the Plan builders.
+	Plan *PlanClient
+	// PlanVersion is the client for interacting with the PlanVersion builders.
+	PlanVersion *PlanVersionClient
 	// Project is the client for interacting with the Project builders.
 	Project *ProjectClient
+	// ProjectMember is the client for interacting with the ProjectMember builders.
+	ProjectMember *ProjectMemberClient
+	// Role is the client for interacting with the Role builders.
+	Role *RoleClient
+	// RolePermission is the client for interacting with the RolePermission builders.
+	RolePermission *RolePermissionClient
 	// StateDefinitions is the client for interacting with the StateDefinitions builders.
 	StateDefinitions *StateDefinitionsClient
+	// Subscription is the client for interacting with the Subscription builders.
+	Subscription *SubscriptionClient
 	// Tenant is the client for interacting with the Tenant builders.
 	Tenant *TenantClient
+	// TenantMember is the client for interacting with the TenantMember builders.
+	TenantMember *TenantMemberClient
 	// User is the client for interacting with the User builders.
 	User *UserClient
 	// UserCredential is the client for interacting with the UserCredential builders.
@@ -160,9 +178,18 @@ func (tx *Tx) Client() *Client {
 
 func (tx *Tx) init() {
 	tx.EntityKind = NewEntityKindClient(tx.config)
+	tx.Module = NewModuleClient(tx.config)
+	tx.Permission = NewPermissionClient(tx.config)
+	tx.Plan = NewPlanClient(tx.config)
+	tx.PlanVersion = NewPlanVersionClient(tx.config)
 	tx.Project = NewProjectClient(tx.config)
+	tx.ProjectMember = NewProjectMemberClient(tx.config)
+	tx.Role = NewRoleClient(tx.config)
+	tx.RolePermission = NewRolePermissionClient(tx.config)
 	tx.StateDefinitions = NewStateDefinitionsClient(tx.config)
+	tx.Subscription = NewSubscriptionClient(tx.config)
 	tx.Tenant = NewTenantClient(tx.config)
+	tx.TenantMember = NewTenantMemberClient(tx.config)
 	tx.User = NewUserClient(tx.config)
 	tx.UserCredential = NewUserCredentialClient(tx.config)
 	tx.UserSession = NewUserSessionClient(tx.config)

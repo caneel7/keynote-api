@@ -16,6 +16,7 @@ import (
 	"github.com/caneel7/keynote-api/internal/ent/gen/predicate"
 	"github.com/caneel7/keynote-api/internal/ent/gen/project"
 	"github.com/caneel7/keynote-api/internal/ent/gen/statedefinitions"
+	"github.com/caneel7/keynote-api/internal/ent/gen/subscription"
 	"github.com/caneel7/keynote-api/internal/ent/gen/tenant"
 	"github.com/caneel7/keynote-api/internal/ent/gen/user"
 	"github.com/caneel7/keynote-api/internal/ent/gen/workspace"
@@ -25,15 +26,16 @@ import (
 // StateDefinitionsQuery is the builder for querying StateDefinitions entities.
 type StateDefinitionsQuery struct {
 	config
-	ctx            *QueryContext
-	order          []statedefinitions.OrderOption
-	inters         []Interceptor
-	predicates     []predicate.StateDefinitions
-	withEntityKind *EntityKindQuery
-	withTenants    *TenantQuery
-	withUser       *UserQuery
-	withWorkspace  *WorkspaceQuery
-	withProjects   *ProjectQuery
+	ctx              *QueryContext
+	order            []statedefinitions.OrderOption
+	inters           []Interceptor
+	predicates       []predicate.StateDefinitions
+	withEntityKind   *EntityKindQuery
+	withTenants      *TenantQuery
+	withUser         *UserQuery
+	withWorkspace    *WorkspaceQuery
+	withProjects     *ProjectQuery
+	withSubscription *SubscriptionQuery
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -173,6 +175,28 @@ func (_q *StateDefinitionsQuery) QueryProjects() *ProjectQuery {
 			sqlgraph.From(statedefinitions.Table, statedefinitions.FieldID, selector),
 			sqlgraph.To(project.Table, project.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, statedefinitions.ProjectsTable, statedefinitions.ProjectsColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(_q.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QuerySubscription chains the current query on the "subscription" edge.
+func (_q *StateDefinitionsQuery) QuerySubscription() *SubscriptionQuery {
+	query := (&SubscriptionClient{config: _q.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := _q.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := _q.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(statedefinitions.Table, statedefinitions.FieldID, selector),
+			sqlgraph.To(subscription.Table, subscription.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, statedefinitions.SubscriptionTable, statedefinitions.SubscriptionColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(_q.driver.Dialect(), step)
 		return fromU, nil
@@ -367,16 +391,17 @@ func (_q *StateDefinitionsQuery) Clone() *StateDefinitionsQuery {
 		return nil
 	}
 	return &StateDefinitionsQuery{
-		config:         _q.config,
-		ctx:            _q.ctx.Clone(),
-		order:          append([]statedefinitions.OrderOption{}, _q.order...),
-		inters:         append([]Interceptor{}, _q.inters...),
-		predicates:     append([]predicate.StateDefinitions{}, _q.predicates...),
-		withEntityKind: _q.withEntityKind.Clone(),
-		withTenants:    _q.withTenants.Clone(),
-		withUser:       _q.withUser.Clone(),
-		withWorkspace:  _q.withWorkspace.Clone(),
-		withProjects:   _q.withProjects.Clone(),
+		config:           _q.config,
+		ctx:              _q.ctx.Clone(),
+		order:            append([]statedefinitions.OrderOption{}, _q.order...),
+		inters:           append([]Interceptor{}, _q.inters...),
+		predicates:       append([]predicate.StateDefinitions{}, _q.predicates...),
+		withEntityKind:   _q.withEntityKind.Clone(),
+		withTenants:      _q.withTenants.Clone(),
+		withUser:         _q.withUser.Clone(),
+		withWorkspace:    _q.withWorkspace.Clone(),
+		withProjects:     _q.withProjects.Clone(),
+		withSubscription: _q.withSubscription.Clone(),
 		// clone intermediate query.
 		sql:  _q.sql.Clone(),
 		path: _q.path,
@@ -435,6 +460,17 @@ func (_q *StateDefinitionsQuery) WithProjects(opts ...func(*ProjectQuery)) *Stat
 		opt(query)
 	}
 	_q.withProjects = query
+	return _q
+}
+
+// WithSubscription tells the query-builder to eager-load the nodes that are connected to
+// the "subscription" edge. The optional arguments are used to configure the query builder of the edge.
+func (_q *StateDefinitionsQuery) WithSubscription(opts ...func(*SubscriptionQuery)) *StateDefinitionsQuery {
+	query := (&SubscriptionClient{config: _q.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	_q.withSubscription = query
 	return _q
 }
 
@@ -516,12 +552,13 @@ func (_q *StateDefinitionsQuery) sqlAll(ctx context.Context, hooks ...queryHook)
 	var (
 		nodes       = []*StateDefinitions{}
 		_spec       = _q.querySpec()
-		loadedTypes = [5]bool{
+		loadedTypes = [6]bool{
 			_q.withEntityKind != nil,
 			_q.withTenants != nil,
 			_q.withUser != nil,
 			_q.withWorkspace != nil,
 			_q.withProjects != nil,
+			_q.withSubscription != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]any, error) {
@@ -573,6 +610,13 @@ func (_q *StateDefinitionsQuery) sqlAll(ctx context.Context, hooks ...queryHook)
 		if err := _q.loadProjects(ctx, query, nodes,
 			func(n *StateDefinitions) { n.Edges.Projects = []*Project{} },
 			func(n *StateDefinitions, e *Project) { n.Edges.Projects = append(n.Edges.Projects, e) }); err != nil {
+			return nil, err
+		}
+	}
+	if query := _q.withSubscription; query != nil {
+		if err := _q.loadSubscription(ctx, query, nodes,
+			func(n *StateDefinitions) { n.Edges.Subscription = []*Subscription{} },
+			func(n *StateDefinitions, e *Subscription) { n.Edges.Subscription = append(n.Edges.Subscription, e) }); err != nil {
 			return nil, err
 		}
 	}
@@ -713,6 +757,36 @@ func (_q *StateDefinitionsQuery) loadProjects(ctx context.Context, query *Projec
 	}
 	query.Where(predicate.Project(func(s *sql.Selector) {
 		s.Where(sql.InValues(s.C(statedefinitions.ProjectsColumn), fks...))
+	}))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		fk := n.StatusID
+		node, ok := nodeids[fk]
+		if !ok {
+			return fmt.Errorf(`unexpected referenced foreign-key "status_id" returned %v for node %v`, fk, n.ID)
+		}
+		assign(node, n)
+	}
+	return nil
+}
+func (_q *StateDefinitionsQuery) loadSubscription(ctx context.Context, query *SubscriptionQuery, nodes []*StateDefinitions, init func(*StateDefinitions), assign func(*StateDefinitions, *Subscription)) error {
+	fks := make([]driver.Value, 0, len(nodes))
+	nodeids := make(map[uuid.UUID]*StateDefinitions)
+	for i := range nodes {
+		fks = append(fks, nodes[i].ID)
+		nodeids[nodes[i].ID] = nodes[i]
+		if init != nil {
+			init(nodes[i])
+		}
+	}
+	if len(query.ctx.Fields) > 0 {
+		query.ctx.AppendFieldOnce(subscription.FieldStatusID)
+	}
+	query.Where(predicate.Subscription(func(s *sql.Selector) {
+		s.Where(sql.InValues(s.C(statedefinitions.SubscriptionColumn), fks...))
 	}))
 	neighbors, err := query.All(ctx)
 	if err != nil {
