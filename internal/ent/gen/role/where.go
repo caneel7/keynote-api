@@ -111,6 +111,16 @@ func TenantIDNotIn(vs ...uuid.UUID) predicate.Role {
 	return predicate.Role(sql.FieldNotIn(FieldTenantID, vs...))
 }
 
+// TenantIDIsNil applies the IsNil predicate on the "tenant_id" field.
+func TenantIDIsNil() predicate.Role {
+	return predicate.Role(sql.FieldIsNull(FieldTenantID))
+}
+
+// TenantIDNotNil applies the NotNil predicate on the "tenant_id" field.
+func TenantIDNotNil() predicate.Role {
+	return predicate.Role(sql.FieldNotNull(FieldTenantID))
+}
+
 // ProjectIDEQ applies the EQ predicate on the "project_id" field.
 func ProjectIDEQ(v uuid.UUID) predicate.Role {
 	return predicate.Role(sql.FieldEQ(FieldProjectID, v))
@@ -129,6 +139,16 @@ func ProjectIDIn(vs ...uuid.UUID) predicate.Role {
 // ProjectIDNotIn applies the NotIn predicate on the "project_id" field.
 func ProjectIDNotIn(vs ...uuid.UUID) predicate.Role {
 	return predicate.Role(sql.FieldNotIn(FieldProjectID, vs...))
+}
+
+// ProjectIDIsNil applies the IsNil predicate on the "project_id" field.
+func ProjectIDIsNil() predicate.Role {
+	return predicate.Role(sql.FieldIsNull(FieldProjectID))
+}
+
+// ProjectIDNotNil applies the NotNil predicate on the "project_id" field.
+func ProjectIDNotNil() predicate.Role {
+	return predicate.Role(sql.FieldNotNull(FieldProjectID))
 }
 
 // NameEQ applies the EQ predicate on the "name" field.
@@ -254,6 +274,16 @@ func CreatedByLT(v uuid.UUID) predicate.Role {
 // CreatedByLTE applies the LTE predicate on the "created_by" field.
 func CreatedByLTE(v uuid.UUID) predicate.Role {
 	return predicate.Role(sql.FieldLTE(FieldCreatedBy, v))
+}
+
+// CreatedByIsNil applies the IsNil predicate on the "created_by" field.
+func CreatedByIsNil() predicate.Role {
+	return predicate.Role(sql.FieldIsNull(FieldCreatedBy))
+}
+
+// CreatedByNotNil applies the NotNil predicate on the "created_by" field.
+func CreatedByNotNil() predicate.Role {
+	return predicate.Role(sql.FieldNotNull(FieldCreatedBy))
 }
 
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.

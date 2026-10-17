@@ -1,0 +1,4 @@
+-- Modify "role_permissions" table
+ALTER TABLE "public"."role_permissions" DROP CONSTRAINT "role_permissions_tenants_rolepermissions", ALTER COLUMN "tenant_id" DROP NOT NULL, ADD CONSTRAINT "role_permissions_tenants_rolepermissions" FOREIGN KEY ("tenant_id") REFERENCES "public"."tenants" ("id") ON UPDATE NO ACTION ON DELETE SET NULL;
+-- Modify "roles" table
+ALTER TABLE "public"."roles" DROP CONSTRAINT "roles_projects_roles", DROP CONSTRAINT "roles_tenants_roles", ALTER COLUMN "created_by" DROP NOT NULL, ALTER COLUMN "project_id" DROP NOT NULL, ALTER COLUMN "tenant_id" DROP NOT NULL, ADD CONSTRAINT "roles_projects_roles" FOREIGN KEY ("project_id") REFERENCES "public"."projects" ("id") ON UPDATE NO ACTION ON DELETE SET NULL, ADD CONSTRAINT "roles_tenants_roles" FOREIGN KEY ("tenant_id") REFERENCES "public"."tenants" ("id") ON UPDATE NO ACTION ON DELETE SET NULL;

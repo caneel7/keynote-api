@@ -48,6 +48,12 @@ func (_u *RoleUpdate) SetNillableTenantID(v *uuid.UUID) *RoleUpdate {
 	return _u
 }
 
+// ClearTenantID clears the value of the "tenant_id" field.
+func (_u *RoleUpdate) ClearTenantID() *RoleUpdate {
+	_u.mutation.ClearTenantID()
+	return _u
+}
+
 // SetProjectID sets the "project_id" field.
 func (_u *RoleUpdate) SetProjectID(v uuid.UUID) *RoleUpdate {
 	_u.mutation.SetProjectID(v)
@@ -59,6 +65,12 @@ func (_u *RoleUpdate) SetNillableProjectID(v *uuid.UUID) *RoleUpdate {
 	if v != nil {
 		_u.SetProjectID(*v)
 	}
+	return _u
+}
+
+// ClearProjectID clears the value of the "project_id" field.
+func (_u *RoleUpdate) ClearProjectID() *RoleUpdate {
+	_u.mutation.ClearProjectID()
 	return _u
 }
 
@@ -101,6 +113,12 @@ func (_u *RoleUpdate) SetNillableCreatedBy(v *uuid.UUID) *RoleUpdate {
 	if v != nil {
 		_u.SetCreatedBy(*v)
 	}
+	return _u
+}
+
+// ClearCreatedBy clears the value of the "created_by" field.
+func (_u *RoleUpdate) ClearCreatedBy() *RoleUpdate {
+	_u.mutation.ClearCreatedBy()
 	return _u
 }
 
@@ -313,12 +331,6 @@ func (_u *RoleUpdate) check() error {
 			return &ValidationError{Name: "type", err: fmt.Errorf(`gen: validator failed for field "Role.type": %w`, err)}
 		}
 	}
-	if _u.mutation.TenantCleared() && len(_u.mutation.TenantIDs()) > 0 {
-		return errors.New(`gen: clearing a required unique edge "Role.tenant"`)
-	}
-	if _u.mutation.ProjectCleared() && len(_u.mutation.ProjectIDs()) > 0 {
-		return errors.New(`gen: clearing a required unique edge "Role.project"`)
-	}
 	return nil
 }
 
@@ -342,6 +354,9 @@ func (_u *RoleUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 	}
 	if value, ok := _u.mutation.CreatedBy(); ok {
 		_spec.SetField(role.FieldCreatedBy, field.TypeUUID, value)
+	}
+	if _u.mutation.CreatedByCleared() {
+		_spec.ClearField(role.FieldCreatedBy, field.TypeUUID)
 	}
 	if value, ok := _u.mutation.UpdatedAt(); ok {
 		_spec.SetField(role.FieldUpdatedAt, field.TypeTime, value)
@@ -579,6 +594,12 @@ func (_u *RoleUpdateOne) SetNillableTenantID(v *uuid.UUID) *RoleUpdateOne {
 	return _u
 }
 
+// ClearTenantID clears the value of the "tenant_id" field.
+func (_u *RoleUpdateOne) ClearTenantID() *RoleUpdateOne {
+	_u.mutation.ClearTenantID()
+	return _u
+}
+
 // SetProjectID sets the "project_id" field.
 func (_u *RoleUpdateOne) SetProjectID(v uuid.UUID) *RoleUpdateOne {
 	_u.mutation.SetProjectID(v)
@@ -590,6 +611,12 @@ func (_u *RoleUpdateOne) SetNillableProjectID(v *uuid.UUID) *RoleUpdateOne {
 	if v != nil {
 		_u.SetProjectID(*v)
 	}
+	return _u
+}
+
+// ClearProjectID clears the value of the "project_id" field.
+func (_u *RoleUpdateOne) ClearProjectID() *RoleUpdateOne {
+	_u.mutation.ClearProjectID()
 	return _u
 }
 
@@ -632,6 +659,12 @@ func (_u *RoleUpdateOne) SetNillableCreatedBy(v *uuid.UUID) *RoleUpdateOne {
 	if v != nil {
 		_u.SetCreatedBy(*v)
 	}
+	return _u
+}
+
+// ClearCreatedBy clears the value of the "created_by" field.
+func (_u *RoleUpdateOne) ClearCreatedBy() *RoleUpdateOne {
+	_u.mutation.ClearCreatedBy()
 	return _u
 }
 
@@ -857,12 +890,6 @@ func (_u *RoleUpdateOne) check() error {
 			return &ValidationError{Name: "type", err: fmt.Errorf(`gen: validator failed for field "Role.type": %w`, err)}
 		}
 	}
-	if _u.mutation.TenantCleared() && len(_u.mutation.TenantIDs()) > 0 {
-		return errors.New(`gen: clearing a required unique edge "Role.tenant"`)
-	}
-	if _u.mutation.ProjectCleared() && len(_u.mutation.ProjectIDs()) > 0 {
-		return errors.New(`gen: clearing a required unique edge "Role.project"`)
-	}
 	return nil
 }
 
@@ -903,6 +930,9 @@ func (_u *RoleUpdateOne) sqlSave(ctx context.Context) (_node *Role, err error) {
 	}
 	if value, ok := _u.mutation.CreatedBy(); ok {
 		_spec.SetField(role.FieldCreatedBy, field.TypeUUID, value)
+	}
+	if _u.mutation.CreatedByCleared() {
+		_spec.ClearField(role.FieldCreatedBy, field.TypeUUID)
 	}
 	if value, ok := _u.mutation.UpdatedAt(); ok {
 		_spec.SetField(role.FieldUpdatedAt, field.TypeTime, value)

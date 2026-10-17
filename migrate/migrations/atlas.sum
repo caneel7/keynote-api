@@ -1,4 +1,4 @@
-h1:Az/Uk5A5AazEaag5iDV9qeQ40tgWZmgcLJBrHk7Fjpk=
+h1:bWSgHgkU+sUKa9txFQA8mWsx49TruyHCUVsAjNX2qgw=
 20261014123140_init.sql h1:ttSWHCPI7CX9QmumMgFqAfhu1C3/7HjUw+jVbYvn9TE=
 20261014130521_seed_roles_permissions.sql h1:RlKEpnZrEAwpnDYLQxw/NRKaOEOe12uvKc+XVq0Qis4=
 20261015181021_add_citext_extension.sql h1:GzxM7bn+ZhbLHkxlOKGY5/I5OyOjOCMRVxodOYX+8z0=
@@ -7,3 +7,5 @@ h1:Az/Uk5A5AazEaag5iDV9qeQ40tgWZmgcLJBrHk7Fjpk=
 20261017093921_subscription_state_entity.sql h1:T2iqM9EfHopq3Yv87OenJ2I62VvQhu5xRL/OkE17xSw=
 20261017103640_planversion_discount_percentage.sql h1:OPCxNr6bJPiIdjSQKkhI6WOqDKz2pJhpwJenWUKyl8o=
 20261017103652_plan_seeder.sql h1:3kJWSaMwue0QrnyO28uy4i2/Es8PYRAdlo7p92wftbQ=
+20261017112207_roles_nullable.sql h1:79r6hhLegZdeaCc1+co9ajxUhzrz1T7+Km5vmy2QYXc=
+20261017112344_role_seeder.sql h1:RdS2nvatOX+K0HYeyUzltDeV6rBkDOpbGY+qQm34s9U=

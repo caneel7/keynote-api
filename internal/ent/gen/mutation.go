@@ -6224,9 +6224,22 @@ func (m *RoleMutation) OldTenantID(ctx context.Context) (v *uuid.UUID, err error
 	return oldValue.TenantID, nil
 }
 
+// ClearTenantID clears the value of the "tenant_id" field.
+func (m *RoleMutation) ClearTenantID() {
+	m.tenant = nil
+	m.clearedFields[role.FieldTenantID] = struct{}{}
+}
+
+// TenantIDCleared returns if the "tenant_id" field was cleared in this mutation.
+func (m *RoleMutation) TenantIDCleared() bool {
+	_, ok := m.clearedFields[role.FieldTenantID]
+	return ok
+}
+
 // ResetTenantID resets all changes to the "tenant_id" field.
 func (m *RoleMutation) ResetTenantID() {
 	m.tenant = nil
+	delete(m.clearedFields, role.FieldTenantID)
 }
 
 // SetProjectID sets the "project_id" field.
@@ -6260,9 +6273,22 @@ func (m *RoleMutation) OldProjectID(ctx context.Context) (v *uuid.UUID, err erro
 	return oldValue.ProjectID, nil
 }
 
+// ClearProjectID clears the value of the "project_id" field.
+func (m *RoleMutation) ClearProjectID() {
+	m.project = nil
+	m.clearedFields[role.FieldProjectID] = struct{}{}
+}
+
+// ProjectIDCleared returns if the "project_id" field was cleared in this mutation.
+func (m *RoleMutation) ProjectIDCleared() bool {
+	_, ok := m.clearedFields[role.FieldProjectID]
+	return ok
+}
+
 // ResetProjectID resets all changes to the "project_id" field.
 func (m *RoleMutation) ResetProjectID() {
 	m.project = nil
+	delete(m.clearedFields, role.FieldProjectID)
 }
 
 // SetName sets the "name" field.
@@ -6368,9 +6394,22 @@ func (m *RoleMutation) OldCreatedBy(ctx context.Context) (v *uuid.UUID, err erro
 	return oldValue.CreatedBy, nil
 }
 
+// ClearCreatedBy clears the value of the "created_by" field.
+func (m *RoleMutation) ClearCreatedBy() {
+	m.created_by = nil
+	m.clearedFields[role.FieldCreatedBy] = struct{}{}
+}
+
+// CreatedByCleared returns if the "created_by" field was cleared in this mutation.
+func (m *RoleMutation) CreatedByCleared() bool {
+	_, ok := m.clearedFields[role.FieldCreatedBy]
+	return ok
+}
+
 // ResetCreatedBy resets all changes to the "created_by" field.
 func (m *RoleMutation) ResetCreatedBy() {
 	m.created_by = nil
+	delete(m.clearedFields, role.FieldCreatedBy)
 }
 
 // SetCreatedAt sets the "created_at" field.
@@ -6502,7 +6541,7 @@ func (m *RoleMutation) ClearTenant() {
 
 // TenantCleared reports if the "tenant" edge to the Tenant entity was cleared.
 func (m *RoleMutation) TenantCleared() bool {
-	return m.clearedtenant
+	return m.TenantIDCleared() || m.clearedtenant
 }
 
 // TenantIDs returns the "tenant" edge IDs in the mutation.
@@ -6529,7 +6568,7 @@ func (m *RoleMutation) ClearProject() {
 
 // ProjectCleared reports if the "project" edge to the Project entity was cleared.
 func (m *RoleMutation) ProjectCleared() bool {
-	return m.clearedproject
+	return m.ProjectIDCleared() || m.clearedproject
 }
 
 // ProjectIDs returns the "project" edge IDs in the mutation.
@@ -6913,6 +6952,15 @@ func (m *RoleMutation) AddField(name string, value ent.Value) error {
 // mutation.
 func (m *RoleMutation) ClearedFields() []string {
 	var fields []string
+	if m.FieldCleared(role.FieldTenantID) {
+		fields = append(fields, role.FieldTenantID)
+	}
+	if m.FieldCleared(role.FieldProjectID) {
+		fields = append(fields, role.FieldProjectID)
+	}
+	if m.FieldCleared(role.FieldCreatedBy) {
+		fields = append(fields, role.FieldCreatedBy)
+	}
 	if m.FieldCleared(role.FieldDeletedAt) {
 		fields = append(fields, role.FieldDeletedAt)
 	}
@@ -6930,6 +6978,15 @@ func (m *RoleMutation) FieldCleared(name string) bool {
 // error if the field is not defined in the schema.
 func (m *RoleMutation) ClearField(name string) error {
 	switch name {
+	case role.FieldTenantID:
+		m.ClearTenantID()
+		return nil
+	case role.FieldProjectID:
+		m.ClearProjectID()
+		return nil
+	case role.FieldCreatedBy:
+		m.ClearCreatedBy()
+		return nil
 	case role.FieldDeletedAt:
 		m.ClearDeletedAt()
 		return nil
@@ -7297,9 +7354,22 @@ func (m *RolePermissionMutation) OldTenantID(ctx context.Context) (v uuid.UUID, 
 	return oldValue.TenantID, nil
 }
 
+// ClearTenantID clears the value of the "tenant_id" field.
+func (m *RolePermissionMutation) ClearTenantID() {
+	m.tenant = nil
+	m.clearedFields[rolepermission.FieldTenantID] = struct{}{}
+}
+
+// TenantIDCleared returns if the "tenant_id" field was cleared in this mutation.
+func (m *RolePermissionMutation) TenantIDCleared() bool {
+	_, ok := m.clearedFields[rolepermission.FieldTenantID]
+	return ok
+}
+
 // ResetTenantID resets all changes to the "tenant_id" field.
 func (m *RolePermissionMutation) ResetTenantID() {
 	m.tenant = nil
+	delete(m.clearedFields, rolepermission.FieldTenantID)
 }
 
 // SetRoleID sets the "role_id" field.
@@ -7557,7 +7627,7 @@ func (m *RolePermissionMutation) ClearTenant() {
 
 // TenantCleared reports if the "tenant" edge to the Tenant entity was cleared.
 func (m *RolePermissionMutation) TenantCleared() bool {
-	return m.clearedtenant
+	return m.TenantIDCleared() || m.clearedtenant
 }
 
 // TenantIDs returns the "tenant" edge IDs in the mutation.
@@ -7751,6 +7821,9 @@ func (m *RolePermissionMutation) AddField(name string, value ent.Value) error {
 // mutation.
 func (m *RolePermissionMutation) ClearedFields() []string {
 	var fields []string
+	if m.FieldCleared(rolepermission.FieldTenantID) {
+		fields = append(fields, rolepermission.FieldTenantID)
+	}
 	if m.FieldCleared(rolepermission.FieldDeletedAt) {
 		fields = append(fields, rolepermission.FieldDeletedAt)
 	}
@@ -7768,6 +7841,9 @@ func (m *RolePermissionMutation) FieldCleared(name string) bool {
 // error if the field is not defined in the schema.
 func (m *RolePermissionMutation) ClearField(name string) error {
 	switch name {
+	case rolepermission.FieldTenantID:
+		m.ClearTenantID()
+		return nil
 	case rolepermission.FieldDeletedAt:
 		m.ClearDeletedAt()
 		return nil

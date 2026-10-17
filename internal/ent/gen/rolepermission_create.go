@@ -30,6 +30,14 @@ func (_c *RolePermissionCreate) SetTenantID(v uuid.UUID) *RolePermissionCreate {
 	return _c
 }
 
+// SetNillableTenantID sets the "tenant_id" field if the given value is not nil.
+func (_c *RolePermissionCreate) SetNillableTenantID(v *uuid.UUID) *RolePermissionCreate {
+	if v != nil {
+		_c.SetTenantID(*v)
+	}
+	return _c
+}
+
 // SetRoleID sets the "role_id" field.
 func (_c *RolePermissionCreate) SetRoleID(v uuid.UUID) *RolePermissionCreate {
 	_c.mutation.SetRoleID(v)
@@ -164,9 +172,6 @@ func (_c *RolePermissionCreate) defaults() {
 
 // check runs all checks and user-defined validators on the builder.
 func (_c *RolePermissionCreate) check() error {
-	if _, ok := _c.mutation.TenantID(); !ok {
-		return &ValidationError{Name: "tenant_id", err: errors.New(`gen: missing required field "RolePermission.tenant_id"`)}
-	}
 	if _, ok := _c.mutation.RoleID(); !ok {
 		return &ValidationError{Name: "role_id", err: errors.New(`gen: missing required field "RolePermission.role_id"`)}
 	}
@@ -184,9 +189,6 @@ func (_c *RolePermissionCreate) check() error {
 	}
 	if len(_c.mutation.PermissionIDs()) == 0 {
 		return &ValidationError{Name: "permission", err: errors.New(`gen: missing required edge "RolePermission.permission"`)}
-	}
-	if len(_c.mutation.TenantIDs()) == 0 {
-		return &ValidationError{Name: "tenant", err: errors.New(`gen: missing required edge "RolePermission.tenant"`)}
 	}
 	return nil
 }

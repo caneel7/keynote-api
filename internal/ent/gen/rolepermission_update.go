@@ -46,6 +46,12 @@ func (_u *RolePermissionUpdate) SetNillableTenantID(v *uuid.UUID) *RolePermissio
 	return _u
 }
 
+// ClearTenantID clears the value of the "tenant_id" field.
+func (_u *RolePermissionUpdate) ClearTenantID() *RolePermissionUpdate {
+	_u.mutation.ClearTenantID()
+	return _u
+}
+
 // SetRoleID sets the "role_id" field.
 func (_u *RolePermissionUpdate) SetRoleID(v uuid.UUID) *RolePermissionUpdate {
 	_u.mutation.SetRoleID(v)
@@ -181,9 +187,6 @@ func (_u *RolePermissionUpdate) check() error {
 	}
 	if _u.mutation.PermissionCleared() && len(_u.mutation.PermissionIDs()) > 0 {
 		return errors.New(`gen: clearing a required unique edge "RolePermission.permission"`)
-	}
-	if _u.mutation.TenantCleared() && len(_u.mutation.TenantIDs()) > 0 {
-		return errors.New(`gen: clearing a required unique edge "RolePermission.tenant"`)
 	}
 	return nil
 }
@@ -327,6 +330,12 @@ func (_u *RolePermissionUpdateOne) SetNillableTenantID(v *uuid.UUID) *RolePermis
 	if v != nil {
 		_u.SetTenantID(*v)
 	}
+	return _u
+}
+
+// ClearTenantID clears the value of the "tenant_id" field.
+func (_u *RolePermissionUpdateOne) ClearTenantID() *RolePermissionUpdateOne {
+	_u.mutation.ClearTenantID()
 	return _u
 }
 
@@ -478,9 +487,6 @@ func (_u *RolePermissionUpdateOne) check() error {
 	}
 	if _u.mutation.PermissionCleared() && len(_u.mutation.PermissionIDs()) > 0 {
 		return errors.New(`gen: clearing a required unique edge "RolePermission.permission"`)
-	}
-	if _u.mutation.TenantCleared() && len(_u.mutation.TenantIDs()) > 0 {
-		return errors.New(`gen: clearing a required unique edge "RolePermission.tenant"`)
 	}
 	return nil
 }

@@ -106,6 +106,16 @@ func TenantIDNotIn(vs ...uuid.UUID) predicate.RolePermission {
 	return predicate.RolePermission(sql.FieldNotIn(FieldTenantID, vs...))
 }
 
+// TenantIDIsNil applies the IsNil predicate on the "tenant_id" field.
+func TenantIDIsNil() predicate.RolePermission {
+	return predicate.RolePermission(sql.FieldIsNull(FieldTenantID))
+}
+
+// TenantIDNotNil applies the NotNil predicate on the "tenant_id" field.
+func TenantIDNotNil() predicate.RolePermission {
+	return predicate.RolePermission(sql.FieldNotNull(FieldTenantID))
+}
+
 // RoleIDEQ applies the EQ predicate on the "role_id" field.
 func RoleIDEQ(v uuid.UUID) predicate.RolePermission {
 	return predicate.RolePermission(sql.FieldEQ(FieldRoleID, v))

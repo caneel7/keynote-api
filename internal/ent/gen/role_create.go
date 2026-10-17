@@ -32,9 +32,25 @@ func (_c *RoleCreate) SetTenantID(v uuid.UUID) *RoleCreate {
 	return _c
 }
 
+// SetNillableTenantID sets the "tenant_id" field if the given value is not nil.
+func (_c *RoleCreate) SetNillableTenantID(v *uuid.UUID) *RoleCreate {
+	if v != nil {
+		_c.SetTenantID(*v)
+	}
+	return _c
+}
+
 // SetProjectID sets the "project_id" field.
 func (_c *RoleCreate) SetProjectID(v uuid.UUID) *RoleCreate {
 	_c.mutation.SetProjectID(v)
+	return _c
+}
+
+// SetNillableProjectID sets the "project_id" field if the given value is not nil.
+func (_c *RoleCreate) SetNillableProjectID(v *uuid.UUID) *RoleCreate {
+	if v != nil {
+		_c.SetProjectID(*v)
+	}
 	return _c
 }
 
@@ -61,6 +77,14 @@ func (_c *RoleCreate) SetNillableType(v *role.Type) *RoleCreate {
 // SetCreatedBy sets the "created_by" field.
 func (_c *RoleCreate) SetCreatedBy(v uuid.UUID) *RoleCreate {
 	_c.mutation.SetCreatedBy(v)
+	return _c
+}
+
+// SetNillableCreatedBy sets the "created_by" field if the given value is not nil.
+func (_c *RoleCreate) SetNillableCreatedBy(v *uuid.UUID) *RoleCreate {
+	if v != nil {
+		_c.SetCreatedBy(*v)
+	}
 	return _c
 }
 
@@ -230,12 +254,6 @@ func (_c *RoleCreate) defaults() {
 
 // check runs all checks and user-defined validators on the builder.
 func (_c *RoleCreate) check() error {
-	if _, ok := _c.mutation.TenantID(); !ok {
-		return &ValidationError{Name: "tenant_id", err: errors.New(`gen: missing required field "Role.tenant_id"`)}
-	}
-	if _, ok := _c.mutation.ProjectID(); !ok {
-		return &ValidationError{Name: "project_id", err: errors.New(`gen: missing required field "Role.project_id"`)}
-	}
 	if _, ok := _c.mutation.Name(); !ok {
 		return &ValidationError{Name: "name", err: errors.New(`gen: missing required field "Role.name"`)}
 	}
@@ -252,20 +270,11 @@ func (_c *RoleCreate) check() error {
 			return &ValidationError{Name: "type", err: fmt.Errorf(`gen: validator failed for field "Role.type": %w`, err)}
 		}
 	}
-	if _, ok := _c.mutation.CreatedBy(); !ok {
-		return &ValidationError{Name: "created_by", err: errors.New(`gen: missing required field "Role.created_by"`)}
-	}
 	if _, ok := _c.mutation.CreatedAt(); !ok {
 		return &ValidationError{Name: "created_at", err: errors.New(`gen: missing required field "Role.created_at"`)}
 	}
 	if _, ok := _c.mutation.UpdatedAt(); !ok {
 		return &ValidationError{Name: "updated_at", err: errors.New(`gen: missing required field "Role.updated_at"`)}
-	}
-	if len(_c.mutation.TenantIDs()) == 0 {
-		return &ValidationError{Name: "tenant", err: errors.New(`gen: missing required edge "Role.tenant"`)}
-	}
-	if len(_c.mutation.ProjectIDs()) == 0 {
-		return &ValidationError{Name: "project", err: errors.New(`gen: missing required edge "Role.project"`)}
 	}
 	return nil
 }

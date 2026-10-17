@@ -224,12 +224,12 @@ var (
 		{Name: "id", Type: field.TypeUUID},
 		{Name: "name", Type: field.TypeString},
 		{Name: "type", Type: field.TypeEnum, Enums: []string{"tenant", "project"}, Default: "tenant"},
-		{Name: "created_by", Type: field.TypeUUID},
+		{Name: "created_by", Type: field.TypeUUID, Nullable: true},
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "updated_at", Type: field.TypeTime},
 		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
-		{Name: "project_id", Type: field.TypeUUID},
-		{Name: "tenant_id", Type: field.TypeUUID},
+		{Name: "project_id", Type: field.TypeUUID, Nullable: true},
+		{Name: "tenant_id", Type: field.TypeUUID, Nullable: true},
 	}
 	// RolesTable holds the schema information for the "roles" table.
 	RolesTable = &schema.Table{
@@ -241,13 +241,13 @@ var (
 				Symbol:     "roles_projects_roles",
 				Columns:    []*schema.Column{RolesColumns[7]},
 				RefColumns: []*schema.Column{ProjectsColumns[0]},
-				OnDelete:   schema.NoAction,
+				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "roles_tenants_roles",
 				Columns:    []*schema.Column{RolesColumns[8]},
 				RefColumns: []*schema.Column{TenantsColumns[0]},
-				OnDelete:   schema.NoAction,
+				OnDelete:   schema.SetNull,
 			},
 		},
 	}
@@ -259,7 +259,7 @@ var (
 		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
 		{Name: "permission_id", Type: field.TypeUUID},
 		{Name: "role_id", Type: field.TypeUUID},
-		{Name: "tenant_id", Type: field.TypeUUID},
+		{Name: "tenant_id", Type: field.TypeUUID, Nullable: true},
 	}
 	// RolePermissionsTable holds the schema information for the "role_permissions" table.
 	RolePermissionsTable = &schema.Table{
@@ -283,7 +283,7 @@ var (
 				Symbol:     "role_permissions_tenants_rolepermissions",
 				Columns:    []*schema.Column{RolePermissionsColumns[6]},
 				RefColumns: []*schema.Column{TenantsColumns[0]},
-				OnDelete:   schema.NoAction,
+				OnDelete:   schema.SetNull,
 			},
 		},
 		Indexes: []*schema.Index{
