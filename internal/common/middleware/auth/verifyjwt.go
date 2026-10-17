@@ -21,7 +21,7 @@ func ClaimFromContext(ctx context.Context) (tokens.Claims,bool) {
 
 func GetUserIDFromClaims(ctx context.Context) (uuid.UUID,error) {
 	c, _ := ClaimFromContext(ctx)
-	p, err := uuid.Parse(c.ID)
+	p, err := uuid.Parse(c.Subject)
 	return p, err
 }
 
