@@ -9,6 +9,7 @@ import (
 	"github.com/caneel7/keynote-api/internal/features/auth"
 	"github.com/caneel7/keynote-api/internal/features/project"
 	"github.com/caneel7/keynote-api/internal/features/tenant"
+	sqlc "github.com/caneel7/keynote-api/internal/db/sqlc"
 
 	"github.com/danielgtaylor/huma/v2"
 	"github.com/danielgtaylor/huma/v2/adapters/humachi"
@@ -24,7 +25,11 @@ func newApi (router chi.Router) huma.API {
 	)
 }
 
-func routes (db *gen.Client,signer *tokens.Signer) http.Handler {
+func routes (
+	db *gen.Client,
+	sqlc *sqlc.Queries,
+	signer *tokens.Signer,
+) http.Handler {
 
 	router := chi.NewRouter()
 	api := newApi(router)

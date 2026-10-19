@@ -9,6 +9,7 @@ import (
 	"github.com/caneel7/keynote-api/database"
 	"github.com/caneel7/keynote-api/internal/common/tokens"
 	"github.com/caneel7/keynote-api/internal/httpserver"
+	sqlc "github.com/caneel7/keynote-api/internal/db/sqlc"
 )
 
 func main () {
@@ -27,6 +28,7 @@ func main () {
 	defer db.Close()
 
 	entClient := database.NewEntClient(db)
+	queries := sqlc.New(db)
 
 	pem, err := os.ReadFile(env.JWT.PrivateKeyFile)
 	key, err := tokens.ParsePrivateKeyPEM(pem)
@@ -39,7 +41,7 @@ func main () {
 		key,
 	)
 	
-	server := httpserver.NewServer(env.HTTP,entClient,signer)
+	server := httpserver.NewServer(env.HTTP,entClient,queries,signer)
 	log.Printf("Server Start On port %v",server.Addr)
 	log.Printf("For OpenApi doc go to %v", server.Addr + "/docs")
 	log.Fatal(server.ListenAndServe())
