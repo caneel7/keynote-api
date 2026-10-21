@@ -2,87 +2,67 @@ package orgnodes
 
 import (
 	"context"
+	"database/sql"
+	"errors"
 	"fmt"
 
-	"entgo.io/ent/dialect/sql"
-	"github.com/caneel7/keynote-api/internal/ent/gen"
-	"github.com/caneel7/keynote-api/internal/ent/gen/orgnode"
-	"github.com/caneel7/keynote-api/internal/ent/gen/predicate"
+	sqlc "github.com/caneel7/keynote-api/internal/db/sqlc"
 	appError "github.com/caneel7/keynote-api/internal/errors"
 	"github.com/google/uuid"
+	"github.com/jackc/pgx/v5/pgconn"
+)
+
+const (
+	TypeTenant    = "tenant"
+	TypeWorkspace = "workspace"
+	TypeProject   = "project"
 )
 
 type NewNode struct {
 	ParentID  *uuid.UUID
-	Type      orgnode.Type
+	Type      string
 	Name      string
 	StatusID  uuid.UUID
 	CreatedBy uuid.UUID
 }
 
-var childType = map[orgnode.Type]orgnode.Type{
-	orgnode.TypeTenant:    orgnode.TypeWorkspace,
-	orgnode.TypeWorkspace: orgnode.TypeProject,
-}
-
-func AppendNode(ctx context.Context, db *gen.Client, n NewNode) (*gen.OrgNode, error) {
+func AppendNode(ctx context.Context, q *sqlc.Queries, n NewNode) (sqlc.OrgNode, error) {
 	id := uuid.New()
-	create := db.OrgNode.Create().
-		SetID(id).
-		SetType(n.Type).
-		SetName(n.Name).
-		SetStatusID(n.StatusID).
-		SetCreatedBy(n.CreatedBy)
+
+	var node sqlc.OrgNode
+	var err error
 
 	if n.ParentID == nil {
-		if n.Type != orgnode.TypeTenant {
-			return nil, appError.New(appError.KindBadRequest, "Only a tenant can be created without a parent")
+		if n.Type != TypeTenant {
+			return sqlc.OrgNode{}, appError.New(appError.KindBadRequest, "Only a tenant can be created without a parent")
 		}
-		create.SetTenantID(id).SetPath(label(id))
+		node, err = q.CreateRootNode(ctx, sqlc.CreateRootNodeParams{
+			ID:        id,
+			Name:      n.Name,
+			StatusID:  n.StatusID,
+			CreatedBy: n.CreatedBy,
+		})
 	} else {
-		parent, err := db.OrgNode.Query().
-			Where(orgnode.ID(*n.ParentID), orgnode.DeletedAtIsNil()).
-			Only(ctx)
-		if gen.IsNotFound(err) {
-			return nil, appError.New(appError.KindNotFound, "Parent not found")
+		node, err = q.AppendNode(ctx, sqlc.AppendNodeParams{
+			ID:        id,
+			Type:      n.Type,
+			Name:      n.Name,
+			StatusID:  n.StatusID,
+			CreatedBy: n.CreatedBy,
+			ParentID:  *n.ParentID,
+		})
+		if errors.Is(err, sql.ErrNoRows) {
+			return sqlc.OrgNode{}, appError.New(appError.KindNotFound, fmt.Sprintf("Parent not found or cannot contain a %s", n.Type))
 		}
-		if err != nil {
-			return nil, fmt.Errorf("find parent node: %w", err)
-		}
-		if childType[parent.Type] != n.Type {
-			return nil, appError.New(appError.KindBadRequest, fmt.Sprintf("A %s cannot be created under a %s", n.Type, parent.Type))
-		}
-		create.SetTenantID(parent.TenantID).
-			SetParentID(parent.ID).
-			SetPath(parent.Path + "." + label(id))
 	}
 
-	node, err := create.Save(ctx)
-	if gen.IsConstraintError(err) {
-		return nil, appError.New(appError.KindConflict, fmt.Sprintf("A %s with this name already exists", n.Type))
+	var pgErr *pgconn.PgError
+	if errors.As(err, &pgErr) && pgErr.Code == "23505" {
+		return sqlc.OrgNode{}, appError.New(appError.KindConflict, fmt.Sprintf("A %s with this name already exists", n.Type))
 	}
 	if err != nil {
-		return nil, fmt.Errorf("create org node: %w", err)
+		return sqlc.OrgNode{}, fmt.Errorf("create org node: %w", err)
 	}
+
 	return node, nil
-}
-
-func label(id uuid.UUID) string {
-	return id.String()
-}
-
-func IsAncestorOf(path string) predicate.OrgNode {
-	return func(s *sql.Selector) {
-		s.Where(sql.P(func(b *sql.Builder) {
-			b.Ident(s.C(orgnode.FieldPath)).WriteString(" @> ").Arg(path).WriteString("::ltree")
-		}))
-	}
-}
-
-func IsDescendantOf(path string) predicate.OrgNode {
-	return func(s *sql.Selector) {
-		s.Where(sql.P(func(b *sql.Builder) {
-			b.Ident(s.C(orgnode.FieldPath)).WriteString(" <@ ").Arg(path).WriteString("::ltree")
-		}))
-	}
 }
