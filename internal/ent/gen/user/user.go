@@ -31,16 +31,12 @@ const (
 	EdgeSessions = "sessions"
 	// EdgeState holds the string denoting the state edge name in mutations.
 	EdgeState = "state"
-	// EdgeTenant holds the string denoting the tenant edge name in mutations.
-	EdgeTenant = "tenant"
-	// EdgeCreator holds the string denoting the creator edge name in mutations.
-	EdgeCreator = "creator"
-	// EdgeProjectcreator holds the string denoting the projectcreator edge name in mutations.
-	EdgeProjectcreator = "projectcreator"
-	// EdgeTenantrole holds the string denoting the tenantrole edge name in mutations.
-	EdgeTenantrole = "tenantrole"
-	// EdgeProjectrole holds the string denoting the projectrole edge name in mutations.
-	EdgeProjectrole = "projectrole"
+	// EdgeCreatedNodes holds the string denoting the created_nodes edge name in mutations.
+	EdgeCreatedNodes = "created_nodes"
+	// EdgeNodeAssignments holds the string denoting the node_assignments edge name in mutations.
+	EdgeNodeAssignments = "node_assignments"
+	// EdgeCreatedAssignments holds the string denoting the created_assignments edge name in mutations.
+	EdgeCreatedAssignments = "created_assignments"
 	// Table holds the table name of the user in the database.
 	Table = "users"
 	// CredentialsTable is the table that holds the credentials relation/edge.
@@ -64,41 +60,27 @@ const (
 	StateInverseTable = "state_definitions"
 	// StateColumn is the table column denoting the state relation/edge.
 	StateColumn = "status_id"
-	// TenantTable is the table that holds the tenant relation/edge.
-	TenantTable = "tenants"
-	// TenantInverseTable is the table name for the Tenant entity.
-	// It exists in this package in order to avoid circular dependency with the "tenant" package.
-	TenantInverseTable = "tenants"
-	// TenantColumn is the table column denoting the tenant relation/edge.
-	TenantColumn = "created_by"
-	// CreatorTable is the table that holds the creator relation/edge.
-	CreatorTable = "workspaces"
-	// CreatorInverseTable is the table name for the Workspace entity.
-	// It exists in this package in order to avoid circular dependency with the "workspace" package.
-	CreatorInverseTable = "workspaces"
-	// CreatorColumn is the table column denoting the creator relation/edge.
-	CreatorColumn = "created_by"
-	// ProjectcreatorTable is the table that holds the projectcreator relation/edge.
-	ProjectcreatorTable = "projects"
-	// ProjectcreatorInverseTable is the table name for the Project entity.
-	// It exists in this package in order to avoid circular dependency with the "project" package.
-	ProjectcreatorInverseTable = "projects"
-	// ProjectcreatorColumn is the table column denoting the projectcreator relation/edge.
-	ProjectcreatorColumn = "created_by"
-	// TenantroleTable is the table that holds the tenantrole relation/edge.
-	TenantroleTable = "tenant_members"
-	// TenantroleInverseTable is the table name for the TenantMember entity.
-	// It exists in this package in order to avoid circular dependency with the "tenantmember" package.
-	TenantroleInverseTable = "tenant_members"
-	// TenantroleColumn is the table column denoting the tenantrole relation/edge.
-	TenantroleColumn = "user_id"
-	// ProjectroleTable is the table that holds the projectrole relation/edge.
-	ProjectroleTable = "project_members"
-	// ProjectroleInverseTable is the table name for the ProjectMember entity.
-	// It exists in this package in order to avoid circular dependency with the "projectmember" package.
-	ProjectroleInverseTable = "project_members"
-	// ProjectroleColumn is the table column denoting the projectrole relation/edge.
-	ProjectroleColumn = "user_id"
+	// CreatedNodesTable is the table that holds the created_nodes relation/edge.
+	CreatedNodesTable = "org_nodes"
+	// CreatedNodesInverseTable is the table name for the OrgNode entity.
+	// It exists in this package in order to avoid circular dependency with the "orgnode" package.
+	CreatedNodesInverseTable = "org_nodes"
+	// CreatedNodesColumn is the table column denoting the created_nodes relation/edge.
+	CreatedNodesColumn = "created_by"
+	// NodeAssignmentsTable is the table that holds the node_assignments relation/edge.
+	NodeAssignmentsTable = "user_node_assignments"
+	// NodeAssignmentsInverseTable is the table name for the UserNodeAssignment entity.
+	// It exists in this package in order to avoid circular dependency with the "usernodeassignment" package.
+	NodeAssignmentsInverseTable = "user_node_assignments"
+	// NodeAssignmentsColumn is the table column denoting the node_assignments relation/edge.
+	NodeAssignmentsColumn = "user_id"
+	// CreatedAssignmentsTable is the table that holds the created_assignments relation/edge.
+	CreatedAssignmentsTable = "user_node_assignments"
+	// CreatedAssignmentsInverseTable is the table name for the UserNodeAssignment entity.
+	// It exists in this package in order to avoid circular dependency with the "usernodeassignment" package.
+	CreatedAssignmentsInverseTable = "user_node_assignments"
+	// CreatedAssignmentsColumn is the table column denoting the created_assignments relation/edge.
+	CreatedAssignmentsColumn = "created_by"
 )
 
 // Columns holds all SQL columns for user fields.
@@ -195,66 +177,45 @@ func ByStateField(field string, opts ...sql.OrderTermOption) OrderOption {
 	}
 }
 
-// ByTenantField orders the results by tenant field.
-func ByTenantField(field string, opts ...sql.OrderTermOption) OrderOption {
+// ByCreatedNodesCount orders the results by created_nodes count.
+func ByCreatedNodesCount(opts ...sql.OrderTermOption) OrderOption {
 	return func(s *sql.Selector) {
-		sqlgraph.OrderByNeighborTerms(s, newTenantStep(), sql.OrderByField(field, opts...))
+		sqlgraph.OrderByNeighborsCount(s, newCreatedNodesStep(), opts...)
 	}
 }
 
-// ByCreatorCount orders the results by creator count.
-func ByCreatorCount(opts ...sql.OrderTermOption) OrderOption {
+// ByCreatedNodes orders the results by created_nodes terms.
+func ByCreatedNodes(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
 	return func(s *sql.Selector) {
-		sqlgraph.OrderByNeighborsCount(s, newCreatorStep(), opts...)
+		sqlgraph.OrderByNeighborTerms(s, newCreatedNodesStep(), append([]sql.OrderTerm{term}, terms...)...)
 	}
 }
 
-// ByCreator orders the results by creator terms.
-func ByCreator(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+// ByNodeAssignmentsCount orders the results by node_assignments count.
+func ByNodeAssignmentsCount(opts ...sql.OrderTermOption) OrderOption {
 	return func(s *sql.Selector) {
-		sqlgraph.OrderByNeighborTerms(s, newCreatorStep(), append([]sql.OrderTerm{term}, terms...)...)
+		sqlgraph.OrderByNeighborsCount(s, newNodeAssignmentsStep(), opts...)
 	}
 }
 
-// ByProjectcreatorCount orders the results by projectcreator count.
-func ByProjectcreatorCount(opts ...sql.OrderTermOption) OrderOption {
+// ByNodeAssignments orders the results by node_assignments terms.
+func ByNodeAssignments(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
 	return func(s *sql.Selector) {
-		sqlgraph.OrderByNeighborsCount(s, newProjectcreatorStep(), opts...)
+		sqlgraph.OrderByNeighborTerms(s, newNodeAssignmentsStep(), append([]sql.OrderTerm{term}, terms...)...)
 	}
 }
 
-// ByProjectcreator orders the results by projectcreator terms.
-func ByProjectcreator(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+// ByCreatedAssignmentsCount orders the results by created_assignments count.
+func ByCreatedAssignmentsCount(opts ...sql.OrderTermOption) OrderOption {
 	return func(s *sql.Selector) {
-		sqlgraph.OrderByNeighborTerms(s, newProjectcreatorStep(), append([]sql.OrderTerm{term}, terms...)...)
+		sqlgraph.OrderByNeighborsCount(s, newCreatedAssignmentsStep(), opts...)
 	}
 }
 
-// ByTenantroleCount orders the results by tenantrole count.
-func ByTenantroleCount(opts ...sql.OrderTermOption) OrderOption {
+// ByCreatedAssignments orders the results by created_assignments terms.
+func ByCreatedAssignments(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
 	return func(s *sql.Selector) {
-		sqlgraph.OrderByNeighborsCount(s, newTenantroleStep(), opts...)
-	}
-}
-
-// ByTenantrole orders the results by tenantrole terms.
-func ByTenantrole(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
-	return func(s *sql.Selector) {
-		sqlgraph.OrderByNeighborTerms(s, newTenantroleStep(), append([]sql.OrderTerm{term}, terms...)...)
-	}
-}
-
-// ByProjectroleCount orders the results by projectrole count.
-func ByProjectroleCount(opts ...sql.OrderTermOption) OrderOption {
-	return func(s *sql.Selector) {
-		sqlgraph.OrderByNeighborsCount(s, newProjectroleStep(), opts...)
-	}
-}
-
-// ByProjectrole orders the results by projectrole terms.
-func ByProjectrole(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
-	return func(s *sql.Selector) {
-		sqlgraph.OrderByNeighborTerms(s, newProjectroleStep(), append([]sql.OrderTerm{term}, terms...)...)
+		sqlgraph.OrderByNeighborTerms(s, newCreatedAssignmentsStep(), append([]sql.OrderTerm{term}, terms...)...)
 	}
 }
 func newCredentialsStep() *sqlgraph.Step {
@@ -278,38 +239,24 @@ func newStateStep() *sqlgraph.Step {
 		sqlgraph.Edge(sqlgraph.M2O, true, StateTable, StateColumn),
 	)
 }
-func newTenantStep() *sqlgraph.Step {
+func newCreatedNodesStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
-		sqlgraph.To(TenantInverseTable, FieldID),
-		sqlgraph.Edge(sqlgraph.O2O, false, TenantTable, TenantColumn),
+		sqlgraph.To(CreatedNodesInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, false, CreatedNodesTable, CreatedNodesColumn),
 	)
 }
-func newCreatorStep() *sqlgraph.Step {
+func newNodeAssignmentsStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
-		sqlgraph.To(CreatorInverseTable, FieldID),
-		sqlgraph.Edge(sqlgraph.O2M, false, CreatorTable, CreatorColumn),
+		sqlgraph.To(NodeAssignmentsInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, false, NodeAssignmentsTable, NodeAssignmentsColumn),
 	)
 }
-func newProjectcreatorStep() *sqlgraph.Step {
+func newCreatedAssignmentsStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
-		sqlgraph.To(ProjectcreatorInverseTable, FieldID),
-		sqlgraph.Edge(sqlgraph.O2M, false, ProjectcreatorTable, ProjectcreatorColumn),
-	)
-}
-func newTenantroleStep() *sqlgraph.Step {
-	return sqlgraph.NewStep(
-		sqlgraph.From(Table, FieldID),
-		sqlgraph.To(TenantroleInverseTable, FieldID),
-		sqlgraph.Edge(sqlgraph.O2M, false, TenantroleTable, TenantroleColumn),
-	)
-}
-func newProjectroleStep() *sqlgraph.Step {
-	return sqlgraph.NewStep(
-		sqlgraph.From(Table, FieldID),
-		sqlgraph.To(ProjectroleInverseTable, FieldID),
-		sqlgraph.Edge(sqlgraph.O2M, false, ProjectroleTable, ProjectroleColumn),
+		sqlgraph.To(CreatedAssignmentsInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, false, CreatedAssignmentsTable, CreatedAssignmentsColumn),
 	)
 }

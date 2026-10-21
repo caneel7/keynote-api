@@ -30,10 +30,8 @@ func (User) Edges () []ent.Edge {
 		edge.To("credentials",UserCredential.Type).Unique(),
 		edge.To("sessions",UserSession.Type),
 		edge.From("state",StateDefinitions.Type).Field("status_id").Ref("user").Unique().Required(),
-		edge.To("tenant",Tenant.Type).Unique(),
-		edge.To("creator",Workspace.Type),
-		edge.To("projectcreator",Project.Type),
-		edge.To("tenantrole",TenantMember.Type),
-		edge.To("projectrole",ProjectMember.Type),
+		edge.To("created_nodes",OrgNode.Type),
+		edge.To("node_assignments",UserNodeAssignment.Type),
+		edge.To("created_assignments",UserNodeAssignment.Type),
 	}
 }

@@ -17,34 +17,28 @@ type Project struct {
 
 func (Project) Fields() []ent.Field {
 	return []ent.Field{
-		field.UUID("id",uuid.UUID{}).Default(uuid.New),
-		field.UUID("tenant_id",uuid.UUID{}),
-		field.UUID("workspace_id",uuid.UUID{}),
-		field.String("name").SchemaType(map[string]string{
+		field.UUID("id", uuid.UUID{}).Immutable(),
+		field.UUID("tenant_id", uuid.UUID{}).Immutable(),
+		field.String("key").SchemaType(map[string]string{
 			dialect.Postgres: "citext",
 		}).NotEmpty(),
-		field.UUID("status_id",uuid.UUID{}),
-		field.UUID("created_by",uuid.UUID{}),
+		field.Text("description").Optional().Nillable(),
+		field.Time("start_date").Optional().Nillable(),
+		field.Time("end_date").Optional().Nillable(),
 		field.Time("created_at").Default(time.Now).Immutable(),
 		field.Time("updated_at").Default(time.Now).UpdateDefault(time.Now),
-		field.Time("deleted_at").Optional().Nillable(),
 	}
 }
 
 func (Project) Edges() []ent.Edge {
 	return []ent.Edge{
-		edge.From("tenant",Tenant.Type).Ref("projects").Field("tenant_id").Unique().Required(),
-		edge.From("workspace",Workspace.Type).Ref("projects").Field("workspace_id").Unique().Required(),
-		edge.From("state",StateDefinitions.Type).Ref("projects").Field("status_id").Unique().Required(),
-		edge.From("creator",User.Type).Ref("projectcreator").Field("created_by").Unique().Required(),
-		edge.To("projectrole",ProjectMember.Type),
-		edge.To("roles",Role.Type),
+		edge.From("tenant", Tenant.Type).Ref("projects").Field("tenant_id").Unique().Required().Immutable(),
 	}
 }
 
 func (Project) Indexes() []ent.Index {
 	return []ent.Index{
-		index.Fields("tenant_id","workspace_id"),
-		index.Fields("tenant_id","workspace_id","name"),
+		index.Fields("tenant_id", "id").Unique(),
+		index.Fields("tenant_id", "key").Unique(),
 	}
 }

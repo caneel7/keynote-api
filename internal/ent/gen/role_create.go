@@ -10,12 +10,11 @@ import (
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/caneel7/keynote-api/internal/ent/gen/project"
-	"github.com/caneel7/keynote-api/internal/ent/gen/projectmember"
+	"github.com/caneel7/keynote-api/internal/ent/gen/orgnode"
 	"github.com/caneel7/keynote-api/internal/ent/gen/role"
 	"github.com/caneel7/keynote-api/internal/ent/gen/rolepermission"
 	"github.com/caneel7/keynote-api/internal/ent/gen/tenant"
-	"github.com/caneel7/keynote-api/internal/ent/gen/tenantmember"
+	"github.com/caneel7/keynote-api/internal/ent/gen/usernodeassignment"
 	"github.com/google/uuid"
 )
 
@@ -40,16 +39,16 @@ func (_c *RoleCreate) SetNillableTenantID(v *uuid.UUID) *RoleCreate {
 	return _c
 }
 
-// SetProjectID sets the "project_id" field.
-func (_c *RoleCreate) SetProjectID(v uuid.UUID) *RoleCreate {
-	_c.mutation.SetProjectID(v)
+// SetNodeID sets the "node_id" field.
+func (_c *RoleCreate) SetNodeID(v uuid.UUID) *RoleCreate {
+	_c.mutation.SetNodeID(v)
 	return _c
 }
 
-// SetNillableProjectID sets the "project_id" field if the given value is not nil.
-func (_c *RoleCreate) SetNillableProjectID(v *uuid.UUID) *RoleCreate {
+// SetNillableNodeID sets the "node_id" field if the given value is not nil.
+func (_c *RoleCreate) SetNillableNodeID(v *uuid.UUID) *RoleCreate {
 	if v != nil {
-		_c.SetProjectID(*v)
+		_c.SetNodeID(*v)
 	}
 	return _c
 }
@@ -149,9 +148,9 @@ func (_c *RoleCreate) SetTenant(v *Tenant) *RoleCreate {
 	return _c.SetTenantID(v.ID)
 }
 
-// SetProject sets the "project" edge to the Project entity.
-func (_c *RoleCreate) SetProject(v *Project) *RoleCreate {
-	return _c.SetProjectID(v.ID)
+// SetNode sets the "node" edge to the OrgNode entity.
+func (_c *RoleCreate) SetNode(v *OrgNode) *RoleCreate {
+	return _c.SetNodeID(v.ID)
 }
 
 // AddPermissionIDs adds the "permissions" edge to the RolePermission entity by IDs.
@@ -169,34 +168,19 @@ func (_c *RoleCreate) AddPermissions(v ...*RolePermission) *RoleCreate {
 	return _c.AddPermissionIDs(ids...)
 }
 
-// AddTenantroleIDs adds the "tenantrole" edge to the TenantMember entity by IDs.
-func (_c *RoleCreate) AddTenantroleIDs(ids ...int) *RoleCreate {
-	_c.mutation.AddTenantroleIDs(ids...)
+// AddAssignmentIDs adds the "assignments" edge to the UserNodeAssignment entity by IDs.
+func (_c *RoleCreate) AddAssignmentIDs(ids ...uuid.UUID) *RoleCreate {
+	_c.mutation.AddAssignmentIDs(ids...)
 	return _c
 }
 
-// AddTenantrole adds the "tenantrole" edges to the TenantMember entity.
-func (_c *RoleCreate) AddTenantrole(v ...*TenantMember) *RoleCreate {
-	ids := make([]int, len(v))
+// AddAssignments adds the "assignments" edges to the UserNodeAssignment entity.
+func (_c *RoleCreate) AddAssignments(v ...*UserNodeAssignment) *RoleCreate {
+	ids := make([]uuid.UUID, len(v))
 	for i := range v {
 		ids[i] = v[i].ID
 	}
-	return _c.AddTenantroleIDs(ids...)
-}
-
-// AddProjectroleIDs adds the "projectrole" edge to the ProjectMember entity by IDs.
-func (_c *RoleCreate) AddProjectroleIDs(ids ...int) *RoleCreate {
-	_c.mutation.AddProjectroleIDs(ids...)
-	return _c
-}
-
-// AddProjectrole adds the "projectrole" edges to the ProjectMember entity.
-func (_c *RoleCreate) AddProjectrole(v ...*ProjectMember) *RoleCreate {
-	ids := make([]int, len(v))
-	for i := range v {
-		ids[i] = v[i].ID
-	}
-	return _c.AddProjectroleIDs(ids...)
+	return _c.AddAssignmentIDs(ids...)
 }
 
 // Mutation returns the RoleMutation object of the builder.
@@ -352,21 +336,21 @@ func (_c *RoleCreate) createSpec() (*Role, *sqlgraph.CreateSpec) {
 		_node.TenantID = &nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
-	if nodes := _c.mutation.ProjectIDs(); len(nodes) > 0 {
+	if nodes := _c.mutation.NodeIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
-			Table:   role.ProjectTable,
-			Columns: []string{role.ProjectColumn},
+			Table:   role.NodeTable,
+			Columns: []string{role.NodeColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(project.FieldID, field.TypeUUID),
+				IDSpec: sqlgraph.NewFieldSpec(orgnode.FieldID, field.TypeUUID),
 			},
 		}
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
-		_node.ProjectID = &nodes[0]
+		_node.NodeID = &nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	if nodes := _c.mutation.PermissionsIDs(); len(nodes) > 0 {
@@ -385,31 +369,15 @@ func (_c *RoleCreate) createSpec() (*Role, *sqlgraph.CreateSpec) {
 		}
 		_spec.Edges = append(_spec.Edges, edge)
 	}
-	if nodes := _c.mutation.TenantroleIDs(); len(nodes) > 0 {
+	if nodes := _c.mutation.AssignmentsIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   role.TenantroleTable,
-			Columns: []string{role.TenantroleColumn},
+			Table:   role.AssignmentsTable,
+			Columns: []string{role.AssignmentsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(tenantmember.FieldID, field.TypeInt),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges = append(_spec.Edges, edge)
-	}
-	if nodes := _c.mutation.ProjectroleIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   role.ProjectroleTable,
-			Columns: []string{role.ProjectroleColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(projectmember.FieldID, field.TypeInt),
+				IDSpec: sqlgraph.NewFieldSpec(usernodeassignment.FieldID, field.TypeUUID),
 			},
 		}
 		for _, k := range nodes {

@@ -61,9 +61,9 @@ func TenantID(v uuid.UUID) predicate.Role {
 	return predicate.Role(sql.FieldEQ(FieldTenantID, v))
 }
 
-// ProjectID applies equality check predicate on the "project_id" field. It's identical to ProjectIDEQ.
-func ProjectID(v uuid.UUID) predicate.Role {
-	return predicate.Role(sql.FieldEQ(FieldProjectID, v))
+// NodeID applies equality check predicate on the "node_id" field. It's identical to NodeIDEQ.
+func NodeID(v uuid.UUID) predicate.Role {
+	return predicate.Role(sql.FieldEQ(FieldNodeID, v))
 }
 
 // Name applies equality check predicate on the "name" field. It's identical to NameEQ.
@@ -121,34 +121,34 @@ func TenantIDNotNil() predicate.Role {
 	return predicate.Role(sql.FieldNotNull(FieldTenantID))
 }
 
-// ProjectIDEQ applies the EQ predicate on the "project_id" field.
-func ProjectIDEQ(v uuid.UUID) predicate.Role {
-	return predicate.Role(sql.FieldEQ(FieldProjectID, v))
+// NodeIDEQ applies the EQ predicate on the "node_id" field.
+func NodeIDEQ(v uuid.UUID) predicate.Role {
+	return predicate.Role(sql.FieldEQ(FieldNodeID, v))
 }
 
-// ProjectIDNEQ applies the NEQ predicate on the "project_id" field.
-func ProjectIDNEQ(v uuid.UUID) predicate.Role {
-	return predicate.Role(sql.FieldNEQ(FieldProjectID, v))
+// NodeIDNEQ applies the NEQ predicate on the "node_id" field.
+func NodeIDNEQ(v uuid.UUID) predicate.Role {
+	return predicate.Role(sql.FieldNEQ(FieldNodeID, v))
 }
 
-// ProjectIDIn applies the In predicate on the "project_id" field.
-func ProjectIDIn(vs ...uuid.UUID) predicate.Role {
-	return predicate.Role(sql.FieldIn(FieldProjectID, vs...))
+// NodeIDIn applies the In predicate on the "node_id" field.
+func NodeIDIn(vs ...uuid.UUID) predicate.Role {
+	return predicate.Role(sql.FieldIn(FieldNodeID, vs...))
 }
 
-// ProjectIDNotIn applies the NotIn predicate on the "project_id" field.
-func ProjectIDNotIn(vs ...uuid.UUID) predicate.Role {
-	return predicate.Role(sql.FieldNotIn(FieldProjectID, vs...))
+// NodeIDNotIn applies the NotIn predicate on the "node_id" field.
+func NodeIDNotIn(vs ...uuid.UUID) predicate.Role {
+	return predicate.Role(sql.FieldNotIn(FieldNodeID, vs...))
 }
 
-// ProjectIDIsNil applies the IsNil predicate on the "project_id" field.
-func ProjectIDIsNil() predicate.Role {
-	return predicate.Role(sql.FieldIsNull(FieldProjectID))
+// NodeIDIsNil applies the IsNil predicate on the "node_id" field.
+func NodeIDIsNil() predicate.Role {
+	return predicate.Role(sql.FieldIsNull(FieldNodeID))
 }
 
-// ProjectIDNotNil applies the NotNil predicate on the "project_id" field.
-func ProjectIDNotNil() predicate.Role {
-	return predicate.Role(sql.FieldNotNull(FieldProjectID))
+// NodeIDNotNil applies the NotNil predicate on the "node_id" field.
+func NodeIDNotNil() predicate.Role {
+	return predicate.Role(sql.FieldNotNull(FieldNodeID))
 }
 
 // NameEQ applies the EQ predicate on the "name" field.
@@ -439,21 +439,21 @@ func HasTenantWith(preds ...predicate.Tenant) predicate.Role {
 	})
 }
 
-// HasProject applies the HasEdge predicate on the "project" edge.
-func HasProject() predicate.Role {
+// HasNode applies the HasEdge predicate on the "node" edge.
+func HasNode() predicate.Role {
 	return predicate.Role(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, ProjectTable, ProjectColumn),
+			sqlgraph.Edge(sqlgraph.M2O, true, NodeTable, NodeColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
 	})
 }
 
-// HasProjectWith applies the HasEdge predicate on the "project" edge with a given conditions (other predicates).
-func HasProjectWith(preds ...predicate.Project) predicate.Role {
+// HasNodeWith applies the HasEdge predicate on the "node" edge with a given conditions (other predicates).
+func HasNodeWith(preds ...predicate.OrgNode) predicate.Role {
 	return predicate.Role(func(s *sql.Selector) {
-		step := newProjectStep()
+		step := newNodeStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)
@@ -485,44 +485,21 @@ func HasPermissionsWith(preds ...predicate.RolePermission) predicate.Role {
 	})
 }
 
-// HasTenantrole applies the HasEdge predicate on the "tenantrole" edge.
-func HasTenantrole() predicate.Role {
+// HasAssignments applies the HasEdge predicate on the "assignments" edge.
+func HasAssignments() predicate.Role {
 	return predicate.Role(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, TenantroleTable, TenantroleColumn),
+			sqlgraph.Edge(sqlgraph.O2M, false, AssignmentsTable, AssignmentsColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
 	})
 }
 
-// HasTenantroleWith applies the HasEdge predicate on the "tenantrole" edge with a given conditions (other predicates).
-func HasTenantroleWith(preds ...predicate.TenantMember) predicate.Role {
+// HasAssignmentsWith applies the HasEdge predicate on the "assignments" edge with a given conditions (other predicates).
+func HasAssignmentsWith(preds ...predicate.UserNodeAssignment) predicate.Role {
 	return predicate.Role(func(s *sql.Selector) {
-		step := newTenantroleStep()
-		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
-			for _, p := range preds {
-				p(s)
-			}
-		})
-	})
-}
-
-// HasProjectrole applies the HasEdge predicate on the "projectrole" edge.
-func HasProjectrole() predicate.Role {
-	return predicate.Role(func(s *sql.Selector) {
-		step := sqlgraph.NewStep(
-			sqlgraph.From(Table, FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, ProjectroleTable, ProjectroleColumn),
-		)
-		sqlgraph.HasNeighbors(s, step)
-	})
-}
-
-// HasProjectroleWith applies the HasEdge predicate on the "projectrole" edge with a given conditions (other predicates).
-func HasProjectroleWith(preds ...predicate.ProjectMember) predicate.Role {
-	return predicate.Role(func(s *sql.Selector) {
-		step := newProjectroleStep()
+		step := newAssignmentsStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)

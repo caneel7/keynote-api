@@ -9,7 +9,7 @@ import (
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
-	"github.com/caneel7/keynote-api/internal/ent/gen/project"
+	"github.com/caneel7/keynote-api/internal/ent/gen/orgnode"
 	"github.com/caneel7/keynote-api/internal/ent/gen/role"
 	"github.com/caneel7/keynote-api/internal/ent/gen/tenant"
 	"github.com/google/uuid"
@@ -22,8 +22,8 @@ type Role struct {
 	ID uuid.UUID `json:"id,omitempty"`
 	// TenantID holds the value of the "tenant_id" field.
 	TenantID *uuid.UUID `json:"tenant_id,omitempty"`
-	// ProjectID holds the value of the "project_id" field.
-	ProjectID *uuid.UUID `json:"project_id,omitempty"`
+	// NodeID holds the value of the "node_id" field.
+	NodeID *uuid.UUID `json:"node_id,omitempty"`
 	// Name holds the value of the "name" field.
 	Name string `json:"name,omitempty"`
 	// Type holds the value of the "type" field.
@@ -46,17 +46,15 @@ type Role struct {
 type RoleEdges struct {
 	// Tenant holds the value of the tenant edge.
 	Tenant *Tenant `json:"tenant,omitempty"`
-	// Project holds the value of the project edge.
-	Project *Project `json:"project,omitempty"`
+	// Node holds the value of the node edge.
+	Node *OrgNode `json:"node,omitempty"`
 	// Permissions holds the value of the permissions edge.
 	Permissions []*RolePermission `json:"permissions,omitempty"`
-	// Tenantrole holds the value of the tenantrole edge.
-	Tenantrole []*TenantMember `json:"tenantrole,omitempty"`
-	// Projectrole holds the value of the projectrole edge.
-	Projectrole []*ProjectMember `json:"projectrole,omitempty"`
+	// Assignments holds the value of the assignments edge.
+	Assignments []*UserNodeAssignment `json:"assignments,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [5]bool
+	loadedTypes [4]bool
 }
 
 // TenantOrErr returns the Tenant value or an error if the edge
@@ -70,15 +68,15 @@ func (e RoleEdges) TenantOrErr() (*Tenant, error) {
 	return nil, &NotLoadedError{edge: "tenant"}
 }
 
-// ProjectOrErr returns the Project value or an error if the edge
+// NodeOrErr returns the Node value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
-func (e RoleEdges) ProjectOrErr() (*Project, error) {
-	if e.Project != nil {
-		return e.Project, nil
+func (e RoleEdges) NodeOrErr() (*OrgNode, error) {
+	if e.Node != nil {
+		return e.Node, nil
 	} else if e.loadedTypes[1] {
-		return nil, &NotFoundError{label: project.Label}
+		return nil, &NotFoundError{label: orgnode.Label}
 	}
-	return nil, &NotLoadedError{edge: "project"}
+	return nil, &NotLoadedError{edge: "node"}
 }
 
 // PermissionsOrErr returns the Permissions value or an error if the edge
@@ -90,22 +88,13 @@ func (e RoleEdges) PermissionsOrErr() ([]*RolePermission, error) {
 	return nil, &NotLoadedError{edge: "permissions"}
 }
 
-// TenantroleOrErr returns the Tenantrole value or an error if the edge
+// AssignmentsOrErr returns the Assignments value or an error if the edge
 // was not loaded in eager-loading.
-func (e RoleEdges) TenantroleOrErr() ([]*TenantMember, error) {
+func (e RoleEdges) AssignmentsOrErr() ([]*UserNodeAssignment, error) {
 	if e.loadedTypes[3] {
-		return e.Tenantrole, nil
+		return e.Assignments, nil
 	}
-	return nil, &NotLoadedError{edge: "tenantrole"}
-}
-
-// ProjectroleOrErr returns the Projectrole value or an error if the edge
-// was not loaded in eager-loading.
-func (e RoleEdges) ProjectroleOrErr() ([]*ProjectMember, error) {
-	if e.loadedTypes[4] {
-		return e.Projectrole, nil
-	}
-	return nil, &NotLoadedError{edge: "projectrole"}
+	return nil, &NotLoadedError{edge: "assignments"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -113,7 +102,7 @@ func (*Role) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case role.FieldTenantID, role.FieldProjectID, role.FieldCreatedBy:
+		case role.FieldTenantID, role.FieldNodeID, role.FieldCreatedBy:
 			values[i] = &sql.NullScanner{S: new(uuid.UUID)}
 		case role.FieldName, role.FieldType:
 			values[i] = new(sql.NullString)
@@ -149,12 +138,12 @@ func (_m *Role) assignValues(columns []string, values []any) error {
 				_m.TenantID = new(uuid.UUID)
 				*_m.TenantID = *value.S.(*uuid.UUID)
 			}
-		case role.FieldProjectID:
+		case role.FieldNodeID:
 			if value, ok := values[i].(*sql.NullScanner); !ok {
-				return fmt.Errorf("unexpected type %T for field project_id", values[i])
+				return fmt.Errorf("unexpected type %T for field node_id", values[i])
 			} else if value.Valid {
-				_m.ProjectID = new(uuid.UUID)
-				*_m.ProjectID = *value.S.(*uuid.UUID)
+				_m.NodeID = new(uuid.UUID)
+				*_m.NodeID = *value.S.(*uuid.UUID)
 			}
 		case role.FieldName:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -212,9 +201,9 @@ func (_m *Role) QueryTenant() *TenantQuery {
 	return NewRoleClient(_m.config).QueryTenant(_m)
 }
 
-// QueryProject queries the "project" edge of the Role entity.
-func (_m *Role) QueryProject() *ProjectQuery {
-	return NewRoleClient(_m.config).QueryProject(_m)
+// QueryNode queries the "node" edge of the Role entity.
+func (_m *Role) QueryNode() *OrgNodeQuery {
+	return NewRoleClient(_m.config).QueryNode(_m)
 }
 
 // QueryPermissions queries the "permissions" edge of the Role entity.
@@ -222,14 +211,9 @@ func (_m *Role) QueryPermissions() *RolePermissionQuery {
 	return NewRoleClient(_m.config).QueryPermissions(_m)
 }
 
-// QueryTenantrole queries the "tenantrole" edge of the Role entity.
-func (_m *Role) QueryTenantrole() *TenantMemberQuery {
-	return NewRoleClient(_m.config).QueryTenantrole(_m)
-}
-
-// QueryProjectrole queries the "projectrole" edge of the Role entity.
-func (_m *Role) QueryProjectrole() *ProjectMemberQuery {
-	return NewRoleClient(_m.config).QueryProjectrole(_m)
+// QueryAssignments queries the "assignments" edge of the Role entity.
+func (_m *Role) QueryAssignments() *UserNodeAssignmentQuery {
+	return NewRoleClient(_m.config).QueryAssignments(_m)
 }
 
 // Update returns a builder for updating this Role.
@@ -260,8 +244,8 @@ func (_m *Role) String() string {
 		builder.WriteString(fmt.Sprintf("%v", *v))
 	}
 	builder.WriteString(", ")
-	if v := _m.ProjectID; v != nil {
-		builder.WriteString("project_id=")
+	if v := _m.NodeID; v != nil {
+		builder.WriteString("node_id=")
 		builder.WriteString(fmt.Sprintf("%v", *v))
 	}
 	builder.WriteString(", ")

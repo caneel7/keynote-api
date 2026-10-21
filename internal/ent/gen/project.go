@@ -10,10 +10,7 @@ import (
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"github.com/caneel7/keynote-api/internal/ent/gen/project"
-	"github.com/caneel7/keynote-api/internal/ent/gen/statedefinitions"
 	"github.com/caneel7/keynote-api/internal/ent/gen/tenant"
-	"github.com/caneel7/keynote-api/internal/ent/gen/user"
-	"github.com/caneel7/keynote-api/internal/ent/gen/workspace"
 	"github.com/google/uuid"
 )
 
@@ -24,20 +21,18 @@ type Project struct {
 	ID uuid.UUID `json:"id,omitempty"`
 	// TenantID holds the value of the "tenant_id" field.
 	TenantID uuid.UUID `json:"tenant_id,omitempty"`
-	// WorkspaceID holds the value of the "workspace_id" field.
-	WorkspaceID uuid.UUID `json:"workspace_id,omitempty"`
-	// Name holds the value of the "name" field.
-	Name string `json:"name,omitempty"`
-	// StatusID holds the value of the "status_id" field.
-	StatusID uuid.UUID `json:"status_id,omitempty"`
-	// CreatedBy holds the value of the "created_by" field.
-	CreatedBy uuid.UUID `json:"created_by,omitempty"`
+	// Key holds the value of the "key" field.
+	Key string `json:"key,omitempty"`
+	// Description holds the value of the "description" field.
+	Description *string `json:"description,omitempty"`
+	// StartDate holds the value of the "start_date" field.
+	StartDate *time.Time `json:"start_date,omitempty"`
+	// EndDate holds the value of the "end_date" field.
+	EndDate *time.Time `json:"end_date,omitempty"`
 	// CreatedAt holds the value of the "created_at" field.
 	CreatedAt time.Time `json:"created_at,omitempty"`
 	// UpdatedAt holds the value of the "updated_at" field.
 	UpdatedAt time.Time `json:"updated_at,omitempty"`
-	// DeletedAt holds the value of the "deleted_at" field.
-	DeletedAt *time.Time `json:"deleted_at,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the ProjectQuery when eager-loading is set.
 	Edges        ProjectEdges `json:"edges"`
@@ -48,19 +43,9 @@ type Project struct {
 type ProjectEdges struct {
 	// Tenant holds the value of the tenant edge.
 	Tenant *Tenant `json:"tenant,omitempty"`
-	// Workspace holds the value of the workspace edge.
-	Workspace *Workspace `json:"workspace,omitempty"`
-	// State holds the value of the state edge.
-	State *StateDefinitions `json:"state,omitempty"`
-	// Creator holds the value of the creator edge.
-	Creator *User `json:"creator,omitempty"`
-	// Projectrole holds the value of the projectrole edge.
-	Projectrole []*ProjectMember `json:"projectrole,omitempty"`
-	// Roles holds the value of the roles edge.
-	Roles []*Role `json:"roles,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [6]bool
+	loadedTypes [1]bool
 }
 
 // TenantOrErr returns the Tenant value or an error if the edge
@@ -74,67 +59,16 @@ func (e ProjectEdges) TenantOrErr() (*Tenant, error) {
 	return nil, &NotLoadedError{edge: "tenant"}
 }
 
-// WorkspaceOrErr returns the Workspace value or an error if the edge
-// was not loaded in eager-loading, or loaded but was not found.
-func (e ProjectEdges) WorkspaceOrErr() (*Workspace, error) {
-	if e.Workspace != nil {
-		return e.Workspace, nil
-	} else if e.loadedTypes[1] {
-		return nil, &NotFoundError{label: workspace.Label}
-	}
-	return nil, &NotLoadedError{edge: "workspace"}
-}
-
-// StateOrErr returns the State value or an error if the edge
-// was not loaded in eager-loading, or loaded but was not found.
-func (e ProjectEdges) StateOrErr() (*StateDefinitions, error) {
-	if e.State != nil {
-		return e.State, nil
-	} else if e.loadedTypes[2] {
-		return nil, &NotFoundError{label: statedefinitions.Label}
-	}
-	return nil, &NotLoadedError{edge: "state"}
-}
-
-// CreatorOrErr returns the Creator value or an error if the edge
-// was not loaded in eager-loading, or loaded but was not found.
-func (e ProjectEdges) CreatorOrErr() (*User, error) {
-	if e.Creator != nil {
-		return e.Creator, nil
-	} else if e.loadedTypes[3] {
-		return nil, &NotFoundError{label: user.Label}
-	}
-	return nil, &NotLoadedError{edge: "creator"}
-}
-
-// ProjectroleOrErr returns the Projectrole value or an error if the edge
-// was not loaded in eager-loading.
-func (e ProjectEdges) ProjectroleOrErr() ([]*ProjectMember, error) {
-	if e.loadedTypes[4] {
-		return e.Projectrole, nil
-	}
-	return nil, &NotLoadedError{edge: "projectrole"}
-}
-
-// RolesOrErr returns the Roles value or an error if the edge
-// was not loaded in eager-loading.
-func (e ProjectEdges) RolesOrErr() ([]*Role, error) {
-	if e.loadedTypes[5] {
-		return e.Roles, nil
-	}
-	return nil, &NotLoadedError{edge: "roles"}
-}
-
 // scanValues returns the types for scanning values from sql.Rows.
 func (*Project) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case project.FieldName:
+		case project.FieldKey, project.FieldDescription:
 			values[i] = new(sql.NullString)
-		case project.FieldCreatedAt, project.FieldUpdatedAt, project.FieldDeletedAt:
+		case project.FieldStartDate, project.FieldEndDate, project.FieldCreatedAt, project.FieldUpdatedAt:
 			values[i] = new(sql.NullTime)
-		case project.FieldID, project.FieldTenantID, project.FieldWorkspaceID, project.FieldStatusID, project.FieldCreatedBy:
+		case project.FieldID, project.FieldTenantID:
 			values[i] = new(uuid.UUID)
 		default:
 			values[i] = new(sql.UnknownType)
@@ -163,29 +97,32 @@ func (_m *Project) assignValues(columns []string, values []any) error {
 			} else if value != nil {
 				_m.TenantID = *value
 			}
-		case project.FieldWorkspaceID:
-			if value, ok := values[i].(*uuid.UUID); !ok {
-				return fmt.Errorf("unexpected type %T for field workspace_id", values[i])
-			} else if value != nil {
-				_m.WorkspaceID = *value
-			}
-		case project.FieldName:
+		case project.FieldKey:
 			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field name", values[i])
+				return fmt.Errorf("unexpected type %T for field key", values[i])
 			} else if value.Valid {
-				_m.Name = value.String
+				_m.Key = value.String
 			}
-		case project.FieldStatusID:
-			if value, ok := values[i].(*uuid.UUID); !ok {
-				return fmt.Errorf("unexpected type %T for field status_id", values[i])
-			} else if value != nil {
-				_m.StatusID = *value
+		case project.FieldDescription:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field description", values[i])
+			} else if value.Valid {
+				_m.Description = new(string)
+				*_m.Description = value.String
 			}
-		case project.FieldCreatedBy:
-			if value, ok := values[i].(*uuid.UUID); !ok {
-				return fmt.Errorf("unexpected type %T for field created_by", values[i])
-			} else if value != nil {
-				_m.CreatedBy = *value
+		case project.FieldStartDate:
+			if value, ok := values[i].(*sql.NullTime); !ok {
+				return fmt.Errorf("unexpected type %T for field start_date", values[i])
+			} else if value.Valid {
+				_m.StartDate = new(time.Time)
+				*_m.StartDate = value.Time
+			}
+		case project.FieldEndDate:
+			if value, ok := values[i].(*sql.NullTime); !ok {
+				return fmt.Errorf("unexpected type %T for field end_date", values[i])
+			} else if value.Valid {
+				_m.EndDate = new(time.Time)
+				*_m.EndDate = value.Time
 			}
 		case project.FieldCreatedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
@@ -198,13 +135,6 @@ func (_m *Project) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field updated_at", values[i])
 			} else if value.Valid {
 				_m.UpdatedAt = value.Time
-			}
-		case project.FieldDeletedAt:
-			if value, ok := values[i].(*sql.NullTime); !ok {
-				return fmt.Errorf("unexpected type %T for field deleted_at", values[i])
-			} else if value.Valid {
-				_m.DeletedAt = new(time.Time)
-				*_m.DeletedAt = value.Time
 			}
 		default:
 			_m.selectValues.Set(columns[i], values[i])
@@ -222,31 +152,6 @@ func (_m *Project) Value(name string) (ent.Value, error) {
 // QueryTenant queries the "tenant" edge of the Project entity.
 func (_m *Project) QueryTenant() *TenantQuery {
 	return NewProjectClient(_m.config).QueryTenant(_m)
-}
-
-// QueryWorkspace queries the "workspace" edge of the Project entity.
-func (_m *Project) QueryWorkspace() *WorkspaceQuery {
-	return NewProjectClient(_m.config).QueryWorkspace(_m)
-}
-
-// QueryState queries the "state" edge of the Project entity.
-func (_m *Project) QueryState() *StateDefinitionsQuery {
-	return NewProjectClient(_m.config).QueryState(_m)
-}
-
-// QueryCreator queries the "creator" edge of the Project entity.
-func (_m *Project) QueryCreator() *UserQuery {
-	return NewProjectClient(_m.config).QueryCreator(_m)
-}
-
-// QueryProjectrole queries the "projectrole" edge of the Project entity.
-func (_m *Project) QueryProjectrole() *ProjectMemberQuery {
-	return NewProjectClient(_m.config).QueryProjectrole(_m)
-}
-
-// QueryRoles queries the "roles" edge of the Project entity.
-func (_m *Project) QueryRoles() *RoleQuery {
-	return NewProjectClient(_m.config).QueryRoles(_m)
 }
 
 // Update returns a builder for updating this Project.
@@ -275,28 +180,29 @@ func (_m *Project) String() string {
 	builder.WriteString("tenant_id=")
 	builder.WriteString(fmt.Sprintf("%v", _m.TenantID))
 	builder.WriteString(", ")
-	builder.WriteString("workspace_id=")
-	builder.WriteString(fmt.Sprintf("%v", _m.WorkspaceID))
+	builder.WriteString("key=")
+	builder.WriteString(_m.Key)
 	builder.WriteString(", ")
-	builder.WriteString("name=")
-	builder.WriteString(_m.Name)
+	if v := _m.Description; v != nil {
+		builder.WriteString("description=")
+		builder.WriteString(*v)
+	}
 	builder.WriteString(", ")
-	builder.WriteString("status_id=")
-	builder.WriteString(fmt.Sprintf("%v", _m.StatusID))
+	if v := _m.StartDate; v != nil {
+		builder.WriteString("start_date=")
+		builder.WriteString(v.Format(time.ANSIC))
+	}
 	builder.WriteString(", ")
-	builder.WriteString("created_by=")
-	builder.WriteString(fmt.Sprintf("%v", _m.CreatedBy))
+	if v := _m.EndDate; v != nil {
+		builder.WriteString("end_date=")
+		builder.WriteString(v.Format(time.ANSIC))
+	}
 	builder.WriteString(", ")
 	builder.WriteString("created_at=")
 	builder.WriteString(_m.CreatedAt.Format(time.ANSIC))
 	builder.WriteString(", ")
 	builder.WriteString("updated_at=")
 	builder.WriteString(_m.UpdatedAt.Format(time.ANSIC))
-	builder.WriteString(", ")
-	if v := _m.DeletedAt; v != nil {
-		builder.WriteString("deleted_at=")
-		builder.WriteString(v.Format(time.ANSIC))
-	}
 	builder.WriteByte(')')
 	return builder.String()
 }

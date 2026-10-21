@@ -9,9 +9,7 @@ import (
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
-	"github.com/caneel7/keynote-api/internal/ent/gen/statedefinitions"
 	"github.com/caneel7/keynote-api/internal/ent/gen/tenant"
-	"github.com/caneel7/keynote-api/internal/ent/gen/user"
 	"github.com/caneel7/keynote-api/internal/ent/gen/workspace"
 	"github.com/google/uuid"
 )
@@ -23,20 +21,12 @@ type Workspace struct {
 	ID uuid.UUID `json:"id,omitempty"`
 	// TenantID holds the value of the "tenant_id" field.
 	TenantID uuid.UUID `json:"tenant_id,omitempty"`
-	// Name holds the value of the "name" field.
-	Name string `json:"name,omitempty"`
 	// Slug holds the value of the "slug" field.
 	Slug string `json:"slug,omitempty"`
-	// StatusID holds the value of the "status_id" field.
-	StatusID uuid.UUID `json:"status_id,omitempty"`
-	// CreatedBy holds the value of the "created_by" field.
-	CreatedBy uuid.UUID `json:"created_by,omitempty"`
 	// CreatedAt holds the value of the "created_at" field.
 	CreatedAt time.Time `json:"created_at,omitempty"`
 	// UpdatedAt holds the value of the "updated_at" field.
 	UpdatedAt time.Time `json:"updated_at,omitempty"`
-	// DeletedAt holds the value of the "deleted_at" field.
-	DeletedAt *time.Time `json:"deleted_at,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the WorkspaceQuery when eager-loading is set.
 	Edges        WorkspaceEdges `json:"edges"`
@@ -45,28 +35,11 @@ type Workspace struct {
 
 // WorkspaceEdges holds the relations/edges for other nodes in the graph.
 type WorkspaceEdges struct {
-	// Status holds the value of the status edge.
-	Status *StateDefinitions `json:"status,omitempty"`
 	// Tenant holds the value of the tenant edge.
 	Tenant *Tenant `json:"tenant,omitempty"`
-	// Createdby holds the value of the createdby edge.
-	Createdby *User `json:"createdby,omitempty"`
-	// Projects holds the value of the projects edge.
-	Projects []*Project `json:"projects,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [4]bool
-}
-
-// StatusOrErr returns the Status value or an error if the edge
-// was not loaded in eager-loading, or loaded but was not found.
-func (e WorkspaceEdges) StatusOrErr() (*StateDefinitions, error) {
-	if e.Status != nil {
-		return e.Status, nil
-	} else if e.loadedTypes[0] {
-		return nil, &NotFoundError{label: statedefinitions.Label}
-	}
-	return nil, &NotLoadedError{edge: "status"}
+	loadedTypes [1]bool
 }
 
 // TenantOrErr returns the Tenant value or an error if the edge
@@ -74,30 +47,10 @@ func (e WorkspaceEdges) StatusOrErr() (*StateDefinitions, error) {
 func (e WorkspaceEdges) TenantOrErr() (*Tenant, error) {
 	if e.Tenant != nil {
 		return e.Tenant, nil
-	} else if e.loadedTypes[1] {
+	} else if e.loadedTypes[0] {
 		return nil, &NotFoundError{label: tenant.Label}
 	}
 	return nil, &NotLoadedError{edge: "tenant"}
-}
-
-// CreatedbyOrErr returns the Createdby value or an error if the edge
-// was not loaded in eager-loading, or loaded but was not found.
-func (e WorkspaceEdges) CreatedbyOrErr() (*User, error) {
-	if e.Createdby != nil {
-		return e.Createdby, nil
-	} else if e.loadedTypes[2] {
-		return nil, &NotFoundError{label: user.Label}
-	}
-	return nil, &NotLoadedError{edge: "createdby"}
-}
-
-// ProjectsOrErr returns the Projects value or an error if the edge
-// was not loaded in eager-loading.
-func (e WorkspaceEdges) ProjectsOrErr() ([]*Project, error) {
-	if e.loadedTypes[3] {
-		return e.Projects, nil
-	}
-	return nil, &NotLoadedError{edge: "projects"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -105,11 +58,11 @@ func (*Workspace) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case workspace.FieldName, workspace.FieldSlug:
+		case workspace.FieldSlug:
 			values[i] = new(sql.NullString)
-		case workspace.FieldCreatedAt, workspace.FieldUpdatedAt, workspace.FieldDeletedAt:
+		case workspace.FieldCreatedAt, workspace.FieldUpdatedAt:
 			values[i] = new(sql.NullTime)
-		case workspace.FieldID, workspace.FieldTenantID, workspace.FieldStatusID, workspace.FieldCreatedBy:
+		case workspace.FieldID, workspace.FieldTenantID:
 			values[i] = new(uuid.UUID)
 		default:
 			values[i] = new(sql.UnknownType)
@@ -138,29 +91,11 @@ func (_m *Workspace) assignValues(columns []string, values []any) error {
 			} else if value != nil {
 				_m.TenantID = *value
 			}
-		case workspace.FieldName:
-			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field name", values[i])
-			} else if value.Valid {
-				_m.Name = value.String
-			}
 		case workspace.FieldSlug:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field slug", values[i])
 			} else if value.Valid {
 				_m.Slug = value.String
-			}
-		case workspace.FieldStatusID:
-			if value, ok := values[i].(*uuid.UUID); !ok {
-				return fmt.Errorf("unexpected type %T for field status_id", values[i])
-			} else if value != nil {
-				_m.StatusID = *value
-			}
-		case workspace.FieldCreatedBy:
-			if value, ok := values[i].(*uuid.UUID); !ok {
-				return fmt.Errorf("unexpected type %T for field created_by", values[i])
-			} else if value != nil {
-				_m.CreatedBy = *value
 			}
 		case workspace.FieldCreatedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
@@ -173,13 +108,6 @@ func (_m *Workspace) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field updated_at", values[i])
 			} else if value.Valid {
 				_m.UpdatedAt = value.Time
-			}
-		case workspace.FieldDeletedAt:
-			if value, ok := values[i].(*sql.NullTime); !ok {
-				return fmt.Errorf("unexpected type %T for field deleted_at", values[i])
-			} else if value.Valid {
-				_m.DeletedAt = new(time.Time)
-				*_m.DeletedAt = value.Time
 			}
 		default:
 			_m.selectValues.Set(columns[i], values[i])
@@ -194,24 +122,9 @@ func (_m *Workspace) Value(name string) (ent.Value, error) {
 	return _m.selectValues.Get(name)
 }
 
-// QueryStatus queries the "status" edge of the Workspace entity.
-func (_m *Workspace) QueryStatus() *StateDefinitionsQuery {
-	return NewWorkspaceClient(_m.config).QueryStatus(_m)
-}
-
 // QueryTenant queries the "tenant" edge of the Workspace entity.
 func (_m *Workspace) QueryTenant() *TenantQuery {
 	return NewWorkspaceClient(_m.config).QueryTenant(_m)
-}
-
-// QueryCreatedby queries the "createdby" edge of the Workspace entity.
-func (_m *Workspace) QueryCreatedby() *UserQuery {
-	return NewWorkspaceClient(_m.config).QueryCreatedby(_m)
-}
-
-// QueryProjects queries the "projects" edge of the Workspace entity.
-func (_m *Workspace) QueryProjects() *ProjectQuery {
-	return NewWorkspaceClient(_m.config).QueryProjects(_m)
 }
 
 // Update returns a builder for updating this Workspace.
@@ -240,28 +153,14 @@ func (_m *Workspace) String() string {
 	builder.WriteString("tenant_id=")
 	builder.WriteString(fmt.Sprintf("%v", _m.TenantID))
 	builder.WriteString(", ")
-	builder.WriteString("name=")
-	builder.WriteString(_m.Name)
-	builder.WriteString(", ")
 	builder.WriteString("slug=")
 	builder.WriteString(_m.Slug)
-	builder.WriteString(", ")
-	builder.WriteString("status_id=")
-	builder.WriteString(fmt.Sprintf("%v", _m.StatusID))
-	builder.WriteString(", ")
-	builder.WriteString("created_by=")
-	builder.WriteString(fmt.Sprintf("%v", _m.CreatedBy))
 	builder.WriteString(", ")
 	builder.WriteString("created_at=")
 	builder.WriteString(_m.CreatedAt.Format(time.ANSIC))
 	builder.WriteString(", ")
 	builder.WriteString("updated_at=")
 	builder.WriteString(_m.UpdatedAt.Format(time.ANSIC))
-	builder.WriteString(", ")
-	if v := _m.DeletedAt; v != nil {
-		builder.WriteString("deleted_at=")
-		builder.WriteString(v.Format(time.ANSIC))
-	}
 	builder.WriteByte(')')
 	return builder.String()
 }

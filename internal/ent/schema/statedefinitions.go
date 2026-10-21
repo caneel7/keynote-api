@@ -29,10 +29,8 @@ func (StateDefinitions) Fields () []ent.Field {
 func (StateDefinitions) Edges() []ent.Edge {
 	return []ent.Edge{
 		edge.From("entity_kind",EntityKind.Type).Ref("state_definitions").Field("entity_id").Unique().Required(),
-		edge.To("tenants",Tenant.Type),
 		edge.To("user",User.Type),
-		edge.To("workspace",Workspace.Type),
-		edge.To("projects",Project.Type),
+		edge.To("org_nodes",OrgNode.Type),
 		edge.To("subscription",Subscription.Type),
 	}
 }

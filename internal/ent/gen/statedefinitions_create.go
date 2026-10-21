@@ -11,12 +11,10 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/caneel7/keynote-api/internal/ent/gen/entitykind"
-	"github.com/caneel7/keynote-api/internal/ent/gen/project"
+	"github.com/caneel7/keynote-api/internal/ent/gen/orgnode"
 	"github.com/caneel7/keynote-api/internal/ent/gen/statedefinitions"
 	"github.com/caneel7/keynote-api/internal/ent/gen/subscription"
-	"github.com/caneel7/keynote-api/internal/ent/gen/tenant"
 	"github.com/caneel7/keynote-api/internal/ent/gen/user"
-	"github.com/caneel7/keynote-api/internal/ent/gen/workspace"
 	"github.com/google/uuid"
 )
 
@@ -112,21 +110,6 @@ func (_c *StateDefinitionsCreate) SetEntityKind(v *EntityKind) *StateDefinitions
 	return _c.SetEntityKindID(v.ID)
 }
 
-// AddTenantIDs adds the "tenants" edge to the Tenant entity by IDs.
-func (_c *StateDefinitionsCreate) AddTenantIDs(ids ...uuid.UUID) *StateDefinitionsCreate {
-	_c.mutation.AddTenantIDs(ids...)
-	return _c
-}
-
-// AddTenants adds the "tenants" edges to the Tenant entity.
-func (_c *StateDefinitionsCreate) AddTenants(v ...*Tenant) *StateDefinitionsCreate {
-	ids := make([]uuid.UUID, len(v))
-	for i := range v {
-		ids[i] = v[i].ID
-	}
-	return _c.AddTenantIDs(ids...)
-}
-
 // AddUserIDs adds the "user" edge to the User entity by IDs.
 func (_c *StateDefinitionsCreate) AddUserIDs(ids ...uuid.UUID) *StateDefinitionsCreate {
 	_c.mutation.AddUserIDs(ids...)
@@ -142,34 +125,19 @@ func (_c *StateDefinitionsCreate) AddUser(v ...*User) *StateDefinitionsCreate {
 	return _c.AddUserIDs(ids...)
 }
 
-// AddWorkspaceIDs adds the "workspace" edge to the Workspace entity by IDs.
-func (_c *StateDefinitionsCreate) AddWorkspaceIDs(ids ...uuid.UUID) *StateDefinitionsCreate {
-	_c.mutation.AddWorkspaceIDs(ids...)
+// AddOrgNodeIDs adds the "org_nodes" edge to the OrgNode entity by IDs.
+func (_c *StateDefinitionsCreate) AddOrgNodeIDs(ids ...uuid.UUID) *StateDefinitionsCreate {
+	_c.mutation.AddOrgNodeIDs(ids...)
 	return _c
 }
 
-// AddWorkspace adds the "workspace" edges to the Workspace entity.
-func (_c *StateDefinitionsCreate) AddWorkspace(v ...*Workspace) *StateDefinitionsCreate {
+// AddOrgNodes adds the "org_nodes" edges to the OrgNode entity.
+func (_c *StateDefinitionsCreate) AddOrgNodes(v ...*OrgNode) *StateDefinitionsCreate {
 	ids := make([]uuid.UUID, len(v))
 	for i := range v {
 		ids[i] = v[i].ID
 	}
-	return _c.AddWorkspaceIDs(ids...)
-}
-
-// AddProjectIDs adds the "projects" edge to the Project entity by IDs.
-func (_c *StateDefinitionsCreate) AddProjectIDs(ids ...uuid.UUID) *StateDefinitionsCreate {
-	_c.mutation.AddProjectIDs(ids...)
-	return _c
-}
-
-// AddProjects adds the "projects" edges to the Project entity.
-func (_c *StateDefinitionsCreate) AddProjects(v ...*Project) *StateDefinitionsCreate {
-	ids := make([]uuid.UUID, len(v))
-	for i := range v {
-		ids[i] = v[i].ID
-	}
-	return _c.AddProjectIDs(ids...)
+	return _c.AddOrgNodeIDs(ids...)
 }
 
 // AddSubscriptionIDs adds the "subscription" edge to the Subscription entity by IDs.
@@ -338,22 +306,6 @@ func (_c *StateDefinitionsCreate) createSpec() (*StateDefinitions, *sqlgraph.Cre
 		_node.EntityID = nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
-	if nodes := _c.mutation.TenantsIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   statedefinitions.TenantsTable,
-			Columns: []string{statedefinitions.TenantsColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(tenant.FieldID, field.TypeUUID),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges = append(_spec.Edges, edge)
-	}
 	if nodes := _c.mutation.UserIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
@@ -370,31 +322,15 @@ func (_c *StateDefinitionsCreate) createSpec() (*StateDefinitions, *sqlgraph.Cre
 		}
 		_spec.Edges = append(_spec.Edges, edge)
 	}
-	if nodes := _c.mutation.WorkspaceIDs(); len(nodes) > 0 {
+	if nodes := _c.mutation.OrgNodesIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   statedefinitions.WorkspaceTable,
-			Columns: []string{statedefinitions.WorkspaceColumn},
+			Table:   statedefinitions.OrgNodesTable,
+			Columns: []string{statedefinitions.OrgNodesColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(workspace.FieldID, field.TypeUUID),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges = append(_spec.Edges, edge)
-	}
-	if nodes := _c.mutation.ProjectsIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   statedefinitions.ProjectsTable,
-			Columns: []string{statedefinitions.ProjectsColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(project.FieldID, field.TypeUUID),
+				IDSpec: sqlgraph.NewFieldSpec(orgnode.FieldID, field.TypeUUID),
 			},
 		}
 		for _, k := range nodes {

@@ -9,10 +9,7 @@ import (
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
-	"github.com/caneel7/keynote-api/internal/ent/gen/statedefinitions"
 	"github.com/caneel7/keynote-api/internal/ent/gen/tenant"
-	"github.com/caneel7/keynote-api/internal/ent/gen/user"
-	"github.com/caneel7/keynote-api/internal/ent/gen/workspace"
 	"github.com/google/uuid"
 )
 
@@ -21,20 +18,12 @@ type Tenant struct {
 	config `json:"-"`
 	// ID of the ent.
 	ID uuid.UUID `json:"id,omitempty"`
-	// Name holds the value of the "name" field.
-	Name string `json:"name,omitempty"`
 	// Slug holds the value of the "slug" field.
 	Slug string `json:"slug,omitempty"`
-	// StatusID holds the value of the "status_id" field.
-	StatusID uuid.UUID `json:"status_id,omitempty"`
-	// CreatedBy holds the value of the "created_by" field.
-	CreatedBy uuid.UUID `json:"created_by,omitempty"`
 	// CreatedAt holds the value of the "created_at" field.
 	CreatedAt time.Time `json:"created_at,omitempty"`
 	// UpdatedAt holds the value of the "updated_at" field.
 	UpdatedAt time.Time `json:"updated_at,omitempty"`
-	// DeletedAt holds the value of the "deleted_at" field.
-	DeletedAt *time.Time `json:"deleted_at,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the TenantQuery when eager-loading is set.
 	Edges        TenantEdges `json:"edges"`
@@ -43,66 +32,36 @@ type Tenant struct {
 
 // TenantEdges holds the relations/edges for other nodes in the graph.
 type TenantEdges struct {
-	// State holds the value of the state edge.
-	State *StateDefinitions `json:"state,omitempty"`
-	// User holds the value of the user edge.
-	User *User `json:"user,omitempty"`
-	// Workspace holds the value of the workspace edge.
-	Workspace *Workspace `json:"workspace,omitempty"`
+	// Workspaces holds the value of the workspaces edge.
+	Workspaces []*Workspace `json:"workspaces,omitempty"`
 	// Projects holds the value of the projects edge.
 	Projects []*Project `json:"projects,omitempty"`
 	// Roles holds the value of the roles edge.
 	Roles []*Role `json:"roles,omitempty"`
 	// Rolepermissions holds the value of the rolepermissions edge.
 	Rolepermissions []*RolePermission `json:"rolepermissions,omitempty"`
-	// Tenantrole holds the value of the tenantrole edge.
-	Tenantrole []*TenantMember `json:"tenantrole,omitempty"`
-	// Projectrole holds the value of the projectrole edge.
-	Projectrole []*ProjectMember `json:"projectrole,omitempty"`
+	// Assignments holds the value of the assignments edge.
+	Assignments []*UserNodeAssignment `json:"assignments,omitempty"`
 	// Subscription holds the value of the subscription edge.
 	Subscription []*Subscription `json:"subscription,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [9]bool
+	loadedTypes [6]bool
 }
 
-// StateOrErr returns the State value or an error if the edge
-// was not loaded in eager-loading, or loaded but was not found.
-func (e TenantEdges) StateOrErr() (*StateDefinitions, error) {
-	if e.State != nil {
-		return e.State, nil
-	} else if e.loadedTypes[0] {
-		return nil, &NotFoundError{label: statedefinitions.Label}
+// WorkspacesOrErr returns the Workspaces value or an error if the edge
+// was not loaded in eager-loading.
+func (e TenantEdges) WorkspacesOrErr() ([]*Workspace, error) {
+	if e.loadedTypes[0] {
+		return e.Workspaces, nil
 	}
-	return nil, &NotLoadedError{edge: "state"}
-}
-
-// UserOrErr returns the User value or an error if the edge
-// was not loaded in eager-loading, or loaded but was not found.
-func (e TenantEdges) UserOrErr() (*User, error) {
-	if e.User != nil {
-		return e.User, nil
-	} else if e.loadedTypes[1] {
-		return nil, &NotFoundError{label: user.Label}
-	}
-	return nil, &NotLoadedError{edge: "user"}
-}
-
-// WorkspaceOrErr returns the Workspace value or an error if the edge
-// was not loaded in eager-loading, or loaded but was not found.
-func (e TenantEdges) WorkspaceOrErr() (*Workspace, error) {
-	if e.Workspace != nil {
-		return e.Workspace, nil
-	} else if e.loadedTypes[2] {
-		return nil, &NotFoundError{label: workspace.Label}
-	}
-	return nil, &NotLoadedError{edge: "workspace"}
+	return nil, &NotLoadedError{edge: "workspaces"}
 }
 
 // ProjectsOrErr returns the Projects value or an error if the edge
 // was not loaded in eager-loading.
 func (e TenantEdges) ProjectsOrErr() ([]*Project, error) {
-	if e.loadedTypes[3] {
+	if e.loadedTypes[1] {
 		return e.Projects, nil
 	}
 	return nil, &NotLoadedError{edge: "projects"}
@@ -111,7 +70,7 @@ func (e TenantEdges) ProjectsOrErr() ([]*Project, error) {
 // RolesOrErr returns the Roles value or an error if the edge
 // was not loaded in eager-loading.
 func (e TenantEdges) RolesOrErr() ([]*Role, error) {
-	if e.loadedTypes[4] {
+	if e.loadedTypes[2] {
 		return e.Roles, nil
 	}
 	return nil, &NotLoadedError{edge: "roles"}
@@ -120,34 +79,25 @@ func (e TenantEdges) RolesOrErr() ([]*Role, error) {
 // RolepermissionsOrErr returns the Rolepermissions value or an error if the edge
 // was not loaded in eager-loading.
 func (e TenantEdges) RolepermissionsOrErr() ([]*RolePermission, error) {
-	if e.loadedTypes[5] {
+	if e.loadedTypes[3] {
 		return e.Rolepermissions, nil
 	}
 	return nil, &NotLoadedError{edge: "rolepermissions"}
 }
 
-// TenantroleOrErr returns the Tenantrole value or an error if the edge
+// AssignmentsOrErr returns the Assignments value or an error if the edge
 // was not loaded in eager-loading.
-func (e TenantEdges) TenantroleOrErr() ([]*TenantMember, error) {
-	if e.loadedTypes[6] {
-		return e.Tenantrole, nil
+func (e TenantEdges) AssignmentsOrErr() ([]*UserNodeAssignment, error) {
+	if e.loadedTypes[4] {
+		return e.Assignments, nil
 	}
-	return nil, &NotLoadedError{edge: "tenantrole"}
-}
-
-// ProjectroleOrErr returns the Projectrole value or an error if the edge
-// was not loaded in eager-loading.
-func (e TenantEdges) ProjectroleOrErr() ([]*ProjectMember, error) {
-	if e.loadedTypes[7] {
-		return e.Projectrole, nil
-	}
-	return nil, &NotLoadedError{edge: "projectrole"}
+	return nil, &NotLoadedError{edge: "assignments"}
 }
 
 // SubscriptionOrErr returns the Subscription value or an error if the edge
 // was not loaded in eager-loading.
 func (e TenantEdges) SubscriptionOrErr() ([]*Subscription, error) {
-	if e.loadedTypes[8] {
+	if e.loadedTypes[5] {
 		return e.Subscription, nil
 	}
 	return nil, &NotLoadedError{edge: "subscription"}
@@ -158,11 +108,11 @@ func (*Tenant) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case tenant.FieldName, tenant.FieldSlug:
+		case tenant.FieldSlug:
 			values[i] = new(sql.NullString)
-		case tenant.FieldCreatedAt, tenant.FieldUpdatedAt, tenant.FieldDeletedAt:
+		case tenant.FieldCreatedAt, tenant.FieldUpdatedAt:
 			values[i] = new(sql.NullTime)
-		case tenant.FieldID, tenant.FieldStatusID, tenant.FieldCreatedBy:
+		case tenant.FieldID:
 			values[i] = new(uuid.UUID)
 		default:
 			values[i] = new(sql.UnknownType)
@@ -185,29 +135,11 @@ func (_m *Tenant) assignValues(columns []string, values []any) error {
 			} else if value != nil {
 				_m.ID = *value
 			}
-		case tenant.FieldName:
-			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field name", values[i])
-			} else if value.Valid {
-				_m.Name = value.String
-			}
 		case tenant.FieldSlug:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field slug", values[i])
 			} else if value.Valid {
 				_m.Slug = value.String
-			}
-		case tenant.FieldStatusID:
-			if value, ok := values[i].(*uuid.UUID); !ok {
-				return fmt.Errorf("unexpected type %T for field status_id", values[i])
-			} else if value != nil {
-				_m.StatusID = *value
-			}
-		case tenant.FieldCreatedBy:
-			if value, ok := values[i].(*uuid.UUID); !ok {
-				return fmt.Errorf("unexpected type %T for field created_by", values[i])
-			} else if value != nil {
-				_m.CreatedBy = *value
 			}
 		case tenant.FieldCreatedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
@@ -220,13 +152,6 @@ func (_m *Tenant) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field updated_at", values[i])
 			} else if value.Valid {
 				_m.UpdatedAt = value.Time
-			}
-		case tenant.FieldDeletedAt:
-			if value, ok := values[i].(*sql.NullTime); !ok {
-				return fmt.Errorf("unexpected type %T for field deleted_at", values[i])
-			} else if value.Valid {
-				_m.DeletedAt = new(time.Time)
-				*_m.DeletedAt = value.Time
 			}
 		default:
 			_m.selectValues.Set(columns[i], values[i])
@@ -241,19 +166,9 @@ func (_m *Tenant) Value(name string) (ent.Value, error) {
 	return _m.selectValues.Get(name)
 }
 
-// QueryState queries the "state" edge of the Tenant entity.
-func (_m *Tenant) QueryState() *StateDefinitionsQuery {
-	return NewTenantClient(_m.config).QueryState(_m)
-}
-
-// QueryUser queries the "user" edge of the Tenant entity.
-func (_m *Tenant) QueryUser() *UserQuery {
-	return NewTenantClient(_m.config).QueryUser(_m)
-}
-
-// QueryWorkspace queries the "workspace" edge of the Tenant entity.
-func (_m *Tenant) QueryWorkspace() *WorkspaceQuery {
-	return NewTenantClient(_m.config).QueryWorkspace(_m)
+// QueryWorkspaces queries the "workspaces" edge of the Tenant entity.
+func (_m *Tenant) QueryWorkspaces() *WorkspaceQuery {
+	return NewTenantClient(_m.config).QueryWorkspaces(_m)
 }
 
 // QueryProjects queries the "projects" edge of the Tenant entity.
@@ -271,14 +186,9 @@ func (_m *Tenant) QueryRolepermissions() *RolePermissionQuery {
 	return NewTenantClient(_m.config).QueryRolepermissions(_m)
 }
 
-// QueryTenantrole queries the "tenantrole" edge of the Tenant entity.
-func (_m *Tenant) QueryTenantrole() *TenantMemberQuery {
-	return NewTenantClient(_m.config).QueryTenantrole(_m)
-}
-
-// QueryProjectrole queries the "projectrole" edge of the Tenant entity.
-func (_m *Tenant) QueryProjectrole() *ProjectMemberQuery {
-	return NewTenantClient(_m.config).QueryProjectrole(_m)
+// QueryAssignments queries the "assignments" edge of the Tenant entity.
+func (_m *Tenant) QueryAssignments() *UserNodeAssignmentQuery {
+	return NewTenantClient(_m.config).QueryAssignments(_m)
 }
 
 // QuerySubscription queries the "subscription" edge of the Tenant entity.
@@ -309,28 +219,14 @@ func (_m *Tenant) String() string {
 	var builder strings.Builder
 	builder.WriteString("Tenant(")
 	builder.WriteString(fmt.Sprintf("id=%v, ", _m.ID))
-	builder.WriteString("name=")
-	builder.WriteString(_m.Name)
-	builder.WriteString(", ")
 	builder.WriteString("slug=")
 	builder.WriteString(_m.Slug)
-	builder.WriteString(", ")
-	builder.WriteString("status_id=")
-	builder.WriteString(fmt.Sprintf("%v", _m.StatusID))
-	builder.WriteString(", ")
-	builder.WriteString("created_by=")
-	builder.WriteString(fmt.Sprintf("%v", _m.CreatedBy))
 	builder.WriteString(", ")
 	builder.WriteString("created_at=")
 	builder.WriteString(_m.CreatedAt.Format(time.ANSIC))
 	builder.WriteString(", ")
 	builder.WriteString("updated_at=")
 	builder.WriteString(_m.UpdatedAt.Format(time.ANSIC))
-	builder.WriteString(", ")
-	if v := _m.DeletedAt; v != nil {
-		builder.WriteString("deleted_at=")
-		builder.WriteString(v.Format(time.ANSIC))
-	}
 	builder.WriteByte(')')
 	return builder.String()
 }
