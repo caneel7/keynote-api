@@ -10,7 +10,6 @@ import (
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"github.com/caneel7/keynote-api/internal/ent/gen/statedefinitions"
-	"github.com/caneel7/keynote-api/internal/ent/gen/tenant"
 	"github.com/caneel7/keynote-api/internal/ent/gen/user"
 	"github.com/caneel7/keynote-api/internal/ent/gen/usercredential"
 	"github.com/google/uuid"
@@ -45,19 +44,15 @@ type UserEdges struct {
 	Sessions []*UserSession `json:"sessions,omitempty"`
 	// State holds the value of the state edge.
 	State *StateDefinitions `json:"state,omitempty"`
-	// Tenant holds the value of the tenant edge.
-	Tenant *Tenant `json:"tenant,omitempty"`
-	// Creator holds the value of the creator edge.
-	Creator []*Workspace `json:"creator,omitempty"`
-	// Projectcreator holds the value of the projectcreator edge.
-	Projectcreator []*Project `json:"projectcreator,omitempty"`
-	// Tenantrole holds the value of the tenantrole edge.
-	Tenantrole []*TenantMember `json:"tenantrole,omitempty"`
-	// Projectrole holds the value of the projectrole edge.
-	Projectrole []*ProjectMember `json:"projectrole,omitempty"`
+	// CreatedNodes holds the value of the created_nodes edge.
+	CreatedNodes []*OrgNode `json:"created_nodes,omitempty"`
+	// NodeAssignments holds the value of the node_assignments edge.
+	NodeAssignments []*UserNodeAssignment `json:"node_assignments,omitempty"`
+	// CreatedAssignments holds the value of the created_assignments edge.
+	CreatedAssignments []*UserNodeAssignment `json:"created_assignments,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [8]bool
+	loadedTypes [6]bool
 }
 
 // CredentialsOrErr returns the Credentials value or an error if the edge
@@ -91,51 +86,31 @@ func (e UserEdges) StateOrErr() (*StateDefinitions, error) {
 	return nil, &NotLoadedError{edge: "state"}
 }
 
-// TenantOrErr returns the Tenant value or an error if the edge
-// was not loaded in eager-loading, or loaded but was not found.
-func (e UserEdges) TenantOrErr() (*Tenant, error) {
-	if e.Tenant != nil {
-		return e.Tenant, nil
-	} else if e.loadedTypes[3] {
-		return nil, &NotFoundError{label: tenant.Label}
+// CreatedNodesOrErr returns the CreatedNodes value or an error if the edge
+// was not loaded in eager-loading.
+func (e UserEdges) CreatedNodesOrErr() ([]*OrgNode, error) {
+	if e.loadedTypes[3] {
+		return e.CreatedNodes, nil
 	}
-	return nil, &NotLoadedError{edge: "tenant"}
+	return nil, &NotLoadedError{edge: "created_nodes"}
 }
 
-// CreatorOrErr returns the Creator value or an error if the edge
+// NodeAssignmentsOrErr returns the NodeAssignments value or an error if the edge
 // was not loaded in eager-loading.
-func (e UserEdges) CreatorOrErr() ([]*Workspace, error) {
+func (e UserEdges) NodeAssignmentsOrErr() ([]*UserNodeAssignment, error) {
 	if e.loadedTypes[4] {
-		return e.Creator, nil
+		return e.NodeAssignments, nil
 	}
-	return nil, &NotLoadedError{edge: "creator"}
+	return nil, &NotLoadedError{edge: "node_assignments"}
 }
 
-// ProjectcreatorOrErr returns the Projectcreator value or an error if the edge
+// CreatedAssignmentsOrErr returns the CreatedAssignments value or an error if the edge
 // was not loaded in eager-loading.
-func (e UserEdges) ProjectcreatorOrErr() ([]*Project, error) {
+func (e UserEdges) CreatedAssignmentsOrErr() ([]*UserNodeAssignment, error) {
 	if e.loadedTypes[5] {
-		return e.Projectcreator, nil
+		return e.CreatedAssignments, nil
 	}
-	return nil, &NotLoadedError{edge: "projectcreator"}
-}
-
-// TenantroleOrErr returns the Tenantrole value or an error if the edge
-// was not loaded in eager-loading.
-func (e UserEdges) TenantroleOrErr() ([]*TenantMember, error) {
-	if e.loadedTypes[6] {
-		return e.Tenantrole, nil
-	}
-	return nil, &NotLoadedError{edge: "tenantrole"}
-}
-
-// ProjectroleOrErr returns the Projectrole value or an error if the edge
-// was not loaded in eager-loading.
-func (e UserEdges) ProjectroleOrErr() ([]*ProjectMember, error) {
-	if e.loadedTypes[7] {
-		return e.Projectrole, nil
-	}
-	return nil, &NotLoadedError{edge: "projectrole"}
+	return nil, &NotLoadedError{edge: "created_assignments"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -229,29 +204,19 @@ func (_m *User) QueryState() *StateDefinitionsQuery {
 	return NewUserClient(_m.config).QueryState(_m)
 }
 
-// QueryTenant queries the "tenant" edge of the User entity.
-func (_m *User) QueryTenant() *TenantQuery {
-	return NewUserClient(_m.config).QueryTenant(_m)
+// QueryCreatedNodes queries the "created_nodes" edge of the User entity.
+func (_m *User) QueryCreatedNodes() *OrgNodeQuery {
+	return NewUserClient(_m.config).QueryCreatedNodes(_m)
 }
 
-// QueryCreator queries the "creator" edge of the User entity.
-func (_m *User) QueryCreator() *WorkspaceQuery {
-	return NewUserClient(_m.config).QueryCreator(_m)
+// QueryNodeAssignments queries the "node_assignments" edge of the User entity.
+func (_m *User) QueryNodeAssignments() *UserNodeAssignmentQuery {
+	return NewUserClient(_m.config).QueryNodeAssignments(_m)
 }
 
-// QueryProjectcreator queries the "projectcreator" edge of the User entity.
-func (_m *User) QueryProjectcreator() *ProjectQuery {
-	return NewUserClient(_m.config).QueryProjectcreator(_m)
-}
-
-// QueryTenantrole queries the "tenantrole" edge of the User entity.
-func (_m *User) QueryTenantrole() *TenantMemberQuery {
-	return NewUserClient(_m.config).QueryTenantrole(_m)
-}
-
-// QueryProjectrole queries the "projectrole" edge of the User entity.
-func (_m *User) QueryProjectrole() *ProjectMemberQuery {
-	return NewUserClient(_m.config).QueryProjectrole(_m)
+// QueryCreatedAssignments queries the "created_assignments" edge of the User entity.
+func (_m *User) QueryCreatedAssignments() *UserNodeAssignmentQuery {
+	return NewUserClient(_m.config).QueryCreatedAssignments(_m)
 }
 
 // Update returns a builder for updating this User.

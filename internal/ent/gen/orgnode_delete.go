@@ -8,30 +8,30 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/caneel7/keynote-api/internal/ent/gen/orgnode"
 	"github.com/caneel7/keynote-api/internal/ent/gen/predicate"
-	"github.com/caneel7/keynote-api/internal/ent/gen/projectmember"
 )
 
-// ProjectMemberDelete is the builder for deleting a ProjectMember entity.
-type ProjectMemberDelete struct {
+// OrgNodeDelete is the builder for deleting a OrgNode entity.
+type OrgNodeDelete struct {
 	config
 	hooks    []Hook
-	mutation *ProjectMemberMutation
+	mutation *OrgNodeMutation
 }
 
-// Where appends a list predicates to the ProjectMemberDelete builder.
-func (_d *ProjectMemberDelete) Where(ps ...predicate.ProjectMember) *ProjectMemberDelete {
+// Where appends a list predicates to the OrgNodeDelete builder.
+func (_d *OrgNodeDelete) Where(ps ...predicate.OrgNode) *OrgNodeDelete {
 	_d.mutation.Where(ps...)
 	return _d
 }
 
 // Exec executes the deletion query and returns how many vertices were deleted.
-func (_d *ProjectMemberDelete) Exec(ctx context.Context) (int, error) {
+func (_d *OrgNodeDelete) Exec(ctx context.Context) (int, error) {
 	return withHooks(ctx, _d.sqlExec, _d.mutation, _d.hooks)
 }
 
 // ExecX is like Exec, but panics if an error occurs.
-func (_d *ProjectMemberDelete) ExecX(ctx context.Context) int {
+func (_d *OrgNodeDelete) ExecX(ctx context.Context) int {
 	n, err := _d.Exec(ctx)
 	if err != nil {
 		panic(err)
@@ -39,8 +39,8 @@ func (_d *ProjectMemberDelete) ExecX(ctx context.Context) int {
 	return n
 }
 
-func (_d *ProjectMemberDelete) sqlExec(ctx context.Context) (int, error) {
-	_spec := sqlgraph.NewDeleteSpec(projectmember.Table, sqlgraph.NewFieldSpec(projectmember.FieldID, field.TypeInt))
+func (_d *OrgNodeDelete) sqlExec(ctx context.Context) (int, error) {
+	_spec := sqlgraph.NewDeleteSpec(orgnode.Table, sqlgraph.NewFieldSpec(orgnode.FieldID, field.TypeUUID))
 	if ps := _d.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {
@@ -56,32 +56,32 @@ func (_d *ProjectMemberDelete) sqlExec(ctx context.Context) (int, error) {
 	return affected, err
 }
 
-// ProjectMemberDeleteOne is the builder for deleting a single ProjectMember entity.
-type ProjectMemberDeleteOne struct {
-	_d *ProjectMemberDelete
+// OrgNodeDeleteOne is the builder for deleting a single OrgNode entity.
+type OrgNodeDeleteOne struct {
+	_d *OrgNodeDelete
 }
 
-// Where appends a list predicates to the ProjectMemberDelete builder.
-func (_d *ProjectMemberDeleteOne) Where(ps ...predicate.ProjectMember) *ProjectMemberDeleteOne {
+// Where appends a list predicates to the OrgNodeDelete builder.
+func (_d *OrgNodeDeleteOne) Where(ps ...predicate.OrgNode) *OrgNodeDeleteOne {
 	_d._d.mutation.Where(ps...)
 	return _d
 }
 
 // Exec executes the deletion query.
-func (_d *ProjectMemberDeleteOne) Exec(ctx context.Context) error {
+func (_d *OrgNodeDeleteOne) Exec(ctx context.Context) error {
 	n, err := _d._d.Exec(ctx)
 	switch {
 	case err != nil:
 		return err
 	case n == 0:
-		return &NotFoundError{projectmember.Label}
+		return &NotFoundError{orgnode.Label}
 	default:
 		return nil
 	}
 }
 
 // ExecX is like Exec, but panics if an error occurs.
-func (_d *ProjectMemberDeleteOne) ExecX(ctx context.Context) {
+func (_d *OrgNodeDeleteOne) ExecX(ctx context.Context) {
 	if err := _d.Exec(ctx); err != nil {
 		panic(err)
 	}

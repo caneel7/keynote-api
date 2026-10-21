@@ -16,6 +16,8 @@ type Tx struct {
 	EntityKind *EntityKindClient
 	// Module is the client for interacting with the Module builders.
 	Module *ModuleClient
+	// OrgNode is the client for interacting with the OrgNode builders.
+	OrgNode *OrgNodeClient
 	// Permission is the client for interacting with the Permission builders.
 	Permission *PermissionClient
 	// Plan is the client for interacting with the Plan builders.
@@ -24,8 +26,6 @@ type Tx struct {
 	PlanVersion *PlanVersionClient
 	// Project is the client for interacting with the Project builders.
 	Project *ProjectClient
-	// ProjectMember is the client for interacting with the ProjectMember builders.
-	ProjectMember *ProjectMemberClient
 	// Role is the client for interacting with the Role builders.
 	Role *RoleClient
 	// RolePermission is the client for interacting with the RolePermission builders.
@@ -36,12 +36,12 @@ type Tx struct {
 	Subscription *SubscriptionClient
 	// Tenant is the client for interacting with the Tenant builders.
 	Tenant *TenantClient
-	// TenantMember is the client for interacting with the TenantMember builders.
-	TenantMember *TenantMemberClient
 	// User is the client for interacting with the User builders.
 	User *UserClient
 	// UserCredential is the client for interacting with the UserCredential builders.
 	UserCredential *UserCredentialClient
+	// UserNodeAssignment is the client for interacting with the UserNodeAssignment builders.
+	UserNodeAssignment *UserNodeAssignmentClient
 	// UserSession is the client for interacting with the UserSession builders.
 	UserSession *UserSessionClient
 	// Workspace is the client for interacting with the Workspace builders.
@@ -179,19 +179,19 @@ func (tx *Tx) Client() *Client {
 func (tx *Tx) init() {
 	tx.EntityKind = NewEntityKindClient(tx.config)
 	tx.Module = NewModuleClient(tx.config)
+	tx.OrgNode = NewOrgNodeClient(tx.config)
 	tx.Permission = NewPermissionClient(tx.config)
 	tx.Plan = NewPlanClient(tx.config)
 	tx.PlanVersion = NewPlanVersionClient(tx.config)
 	tx.Project = NewProjectClient(tx.config)
-	tx.ProjectMember = NewProjectMemberClient(tx.config)
 	tx.Role = NewRoleClient(tx.config)
 	tx.RolePermission = NewRolePermissionClient(tx.config)
 	tx.StateDefinitions = NewStateDefinitionsClient(tx.config)
 	tx.Subscription = NewSubscriptionClient(tx.config)
 	tx.Tenant = NewTenantClient(tx.config)
-	tx.TenantMember = NewTenantMemberClient(tx.config)
 	tx.User = NewUserClient(tx.config)
 	tx.UserCredential = NewUserCredentialClient(tx.config)
+	tx.UserNodeAssignment = NewUserNodeAssignmentClient(tx.config)
 	tx.UserSession = NewUserSessionClient(tx.config)
 	tx.Workspace = NewWorkspaceClient(tx.config)
 }

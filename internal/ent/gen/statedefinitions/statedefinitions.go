@@ -29,14 +29,10 @@ const (
 	FieldDeletedAt = "deleted_at"
 	// EdgeEntityKind holds the string denoting the entity_kind edge name in mutations.
 	EdgeEntityKind = "entity_kind"
-	// EdgeTenants holds the string denoting the tenants edge name in mutations.
-	EdgeTenants = "tenants"
 	// EdgeUser holds the string denoting the user edge name in mutations.
 	EdgeUser = "user"
-	// EdgeWorkspace holds the string denoting the workspace edge name in mutations.
-	EdgeWorkspace = "workspace"
-	// EdgeProjects holds the string denoting the projects edge name in mutations.
-	EdgeProjects = "projects"
+	// EdgeOrgNodes holds the string denoting the org_nodes edge name in mutations.
+	EdgeOrgNodes = "org_nodes"
 	// EdgeSubscription holds the string denoting the subscription edge name in mutations.
 	EdgeSubscription = "subscription"
 	// Table holds the table name of the statedefinitions in the database.
@@ -48,13 +44,6 @@ const (
 	EntityKindInverseTable = "entity_kinds"
 	// EntityKindColumn is the table column denoting the entity_kind relation/edge.
 	EntityKindColumn = "entity_id"
-	// TenantsTable is the table that holds the tenants relation/edge.
-	TenantsTable = "tenants"
-	// TenantsInverseTable is the table name for the Tenant entity.
-	// It exists in this package in order to avoid circular dependency with the "tenant" package.
-	TenantsInverseTable = "tenants"
-	// TenantsColumn is the table column denoting the tenants relation/edge.
-	TenantsColumn = "status_id"
 	// UserTable is the table that holds the user relation/edge.
 	UserTable = "users"
 	// UserInverseTable is the table name for the User entity.
@@ -62,20 +51,13 @@ const (
 	UserInverseTable = "users"
 	// UserColumn is the table column denoting the user relation/edge.
 	UserColumn = "status_id"
-	// WorkspaceTable is the table that holds the workspace relation/edge.
-	WorkspaceTable = "workspaces"
-	// WorkspaceInverseTable is the table name for the Workspace entity.
-	// It exists in this package in order to avoid circular dependency with the "workspace" package.
-	WorkspaceInverseTable = "workspaces"
-	// WorkspaceColumn is the table column denoting the workspace relation/edge.
-	WorkspaceColumn = "status_id"
-	// ProjectsTable is the table that holds the projects relation/edge.
-	ProjectsTable = "projects"
-	// ProjectsInverseTable is the table name for the Project entity.
-	// It exists in this package in order to avoid circular dependency with the "project" package.
-	ProjectsInverseTable = "projects"
-	// ProjectsColumn is the table column denoting the projects relation/edge.
-	ProjectsColumn = "status_id"
+	// OrgNodesTable is the table that holds the org_nodes relation/edge.
+	OrgNodesTable = "org_nodes"
+	// OrgNodesInverseTable is the table name for the OrgNode entity.
+	// It exists in this package in order to avoid circular dependency with the "orgnode" package.
+	OrgNodesInverseTable = "org_nodes"
+	// OrgNodesColumn is the table column denoting the org_nodes relation/edge.
+	OrgNodesColumn = "status_id"
 	// SubscriptionTable is the table that holds the subscription relation/edge.
 	SubscriptionTable = "subscriptions"
 	// SubscriptionInverseTable is the table name for the Subscription entity.
@@ -166,20 +148,6 @@ func ByEntityKindField(field string, opts ...sql.OrderTermOption) OrderOption {
 	}
 }
 
-// ByTenantsCount orders the results by tenants count.
-func ByTenantsCount(opts ...sql.OrderTermOption) OrderOption {
-	return func(s *sql.Selector) {
-		sqlgraph.OrderByNeighborsCount(s, newTenantsStep(), opts...)
-	}
-}
-
-// ByTenants orders the results by tenants terms.
-func ByTenants(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
-	return func(s *sql.Selector) {
-		sqlgraph.OrderByNeighborTerms(s, newTenantsStep(), append([]sql.OrderTerm{term}, terms...)...)
-	}
-}
-
 // ByUserCount orders the results by user count.
 func ByUserCount(opts ...sql.OrderTermOption) OrderOption {
 	return func(s *sql.Selector) {
@@ -194,31 +162,17 @@ func ByUser(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
 	}
 }
 
-// ByWorkspaceCount orders the results by workspace count.
-func ByWorkspaceCount(opts ...sql.OrderTermOption) OrderOption {
+// ByOrgNodesCount orders the results by org_nodes count.
+func ByOrgNodesCount(opts ...sql.OrderTermOption) OrderOption {
 	return func(s *sql.Selector) {
-		sqlgraph.OrderByNeighborsCount(s, newWorkspaceStep(), opts...)
+		sqlgraph.OrderByNeighborsCount(s, newOrgNodesStep(), opts...)
 	}
 }
 
-// ByWorkspace orders the results by workspace terms.
-func ByWorkspace(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+// ByOrgNodes orders the results by org_nodes terms.
+func ByOrgNodes(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
 	return func(s *sql.Selector) {
-		sqlgraph.OrderByNeighborTerms(s, newWorkspaceStep(), append([]sql.OrderTerm{term}, terms...)...)
-	}
-}
-
-// ByProjectsCount orders the results by projects count.
-func ByProjectsCount(opts ...sql.OrderTermOption) OrderOption {
-	return func(s *sql.Selector) {
-		sqlgraph.OrderByNeighborsCount(s, newProjectsStep(), opts...)
-	}
-}
-
-// ByProjects orders the results by projects terms.
-func ByProjects(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
-	return func(s *sql.Selector) {
-		sqlgraph.OrderByNeighborTerms(s, newProjectsStep(), append([]sql.OrderTerm{term}, terms...)...)
+		sqlgraph.OrderByNeighborTerms(s, newOrgNodesStep(), append([]sql.OrderTerm{term}, terms...)...)
 	}
 }
 
@@ -242,13 +196,6 @@ func newEntityKindStep() *sqlgraph.Step {
 		sqlgraph.Edge(sqlgraph.M2O, true, EntityKindTable, EntityKindColumn),
 	)
 }
-func newTenantsStep() *sqlgraph.Step {
-	return sqlgraph.NewStep(
-		sqlgraph.From(Table, FieldID),
-		sqlgraph.To(TenantsInverseTable, FieldID),
-		sqlgraph.Edge(sqlgraph.O2M, false, TenantsTable, TenantsColumn),
-	)
-}
 func newUserStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
@@ -256,18 +203,11 @@ func newUserStep() *sqlgraph.Step {
 		sqlgraph.Edge(sqlgraph.O2M, false, UserTable, UserColumn),
 	)
 }
-func newWorkspaceStep() *sqlgraph.Step {
+func newOrgNodesStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
-		sqlgraph.To(WorkspaceInverseTable, FieldID),
-		sqlgraph.Edge(sqlgraph.O2M, false, WorkspaceTable, WorkspaceColumn),
-	)
-}
-func newProjectsStep() *sqlgraph.Step {
-	return sqlgraph.NewStep(
-		sqlgraph.From(Table, FieldID),
-		sqlgraph.To(ProjectsInverseTable, FieldID),
-		sqlgraph.Edge(sqlgraph.O2M, false, ProjectsTable, ProjectsColumn),
+		sqlgraph.To(OrgNodesInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, false, OrgNodesTable, OrgNodesColumn),
 	)
 }
 func newSubscriptionStep() *sqlgraph.Step {

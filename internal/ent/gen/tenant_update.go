@@ -13,14 +13,11 @@ import (
 	"entgo.io/ent/schema/field"
 	"github.com/caneel7/keynote-api/internal/ent/gen/predicate"
 	"github.com/caneel7/keynote-api/internal/ent/gen/project"
-	"github.com/caneel7/keynote-api/internal/ent/gen/projectmember"
 	"github.com/caneel7/keynote-api/internal/ent/gen/role"
 	"github.com/caneel7/keynote-api/internal/ent/gen/rolepermission"
-	"github.com/caneel7/keynote-api/internal/ent/gen/statedefinitions"
 	"github.com/caneel7/keynote-api/internal/ent/gen/subscription"
 	"github.com/caneel7/keynote-api/internal/ent/gen/tenant"
-	"github.com/caneel7/keynote-api/internal/ent/gen/tenantmember"
-	"github.com/caneel7/keynote-api/internal/ent/gen/user"
+	"github.com/caneel7/keynote-api/internal/ent/gen/usernodeassignment"
 	"github.com/caneel7/keynote-api/internal/ent/gen/workspace"
 	"github.com/google/uuid"
 )
@@ -38,20 +35,6 @@ func (_u *TenantUpdate) Where(ps ...predicate.Tenant) *TenantUpdate {
 	return _u
 }
 
-// SetName sets the "name" field.
-func (_u *TenantUpdate) SetName(v string) *TenantUpdate {
-	_u.mutation.SetName(v)
-	return _u
-}
-
-// SetNillableName sets the "name" field if the given value is not nil.
-func (_u *TenantUpdate) SetNillableName(v *string) *TenantUpdate {
-	if v != nil {
-		_u.SetName(*v)
-	}
-	return _u
-}
-
 // SetSlug sets the "slug" field.
 func (_u *TenantUpdate) SetSlug(v string) *TenantUpdate {
 	_u.mutation.SetSlug(v)
@@ -66,99 +49,25 @@ func (_u *TenantUpdate) SetNillableSlug(v *string) *TenantUpdate {
 	return _u
 }
 
-// SetStatusID sets the "status_id" field.
-func (_u *TenantUpdate) SetStatusID(v uuid.UUID) *TenantUpdate {
-	_u.mutation.SetStatusID(v)
-	return _u
-}
-
-// SetNillableStatusID sets the "status_id" field if the given value is not nil.
-func (_u *TenantUpdate) SetNillableStatusID(v *uuid.UUID) *TenantUpdate {
-	if v != nil {
-		_u.SetStatusID(*v)
-	}
-	return _u
-}
-
-// SetCreatedBy sets the "created_by" field.
-func (_u *TenantUpdate) SetCreatedBy(v uuid.UUID) *TenantUpdate {
-	_u.mutation.SetCreatedBy(v)
-	return _u
-}
-
-// SetNillableCreatedBy sets the "created_by" field if the given value is not nil.
-func (_u *TenantUpdate) SetNillableCreatedBy(v *uuid.UUID) *TenantUpdate {
-	if v != nil {
-		_u.SetCreatedBy(*v)
-	}
-	return _u
-}
-
 // SetUpdatedAt sets the "updated_at" field.
 func (_u *TenantUpdate) SetUpdatedAt(v time.Time) *TenantUpdate {
 	_u.mutation.SetUpdatedAt(v)
 	return _u
 }
 
-// SetDeletedAt sets the "deleted_at" field.
-func (_u *TenantUpdate) SetDeletedAt(v time.Time) *TenantUpdate {
-	_u.mutation.SetDeletedAt(v)
+// AddWorkspaceIDs adds the "workspaces" edge to the Workspace entity by IDs.
+func (_u *TenantUpdate) AddWorkspaceIDs(ids ...uuid.UUID) *TenantUpdate {
+	_u.mutation.AddWorkspaceIDs(ids...)
 	return _u
 }
 
-// SetNillableDeletedAt sets the "deleted_at" field if the given value is not nil.
-func (_u *TenantUpdate) SetNillableDeletedAt(v *time.Time) *TenantUpdate {
-	if v != nil {
-		_u.SetDeletedAt(*v)
+// AddWorkspaces adds the "workspaces" edges to the Workspace entity.
+func (_u *TenantUpdate) AddWorkspaces(v ...*Workspace) *TenantUpdate {
+	ids := make([]uuid.UUID, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
 	}
-	return _u
-}
-
-// ClearDeletedAt clears the value of the "deleted_at" field.
-func (_u *TenantUpdate) ClearDeletedAt() *TenantUpdate {
-	_u.mutation.ClearDeletedAt()
-	return _u
-}
-
-// SetStateID sets the "state" edge to the StateDefinitions entity by ID.
-func (_u *TenantUpdate) SetStateID(id uuid.UUID) *TenantUpdate {
-	_u.mutation.SetStateID(id)
-	return _u
-}
-
-// SetState sets the "state" edge to the StateDefinitions entity.
-func (_u *TenantUpdate) SetState(v *StateDefinitions) *TenantUpdate {
-	return _u.SetStateID(v.ID)
-}
-
-// SetUserID sets the "user" edge to the User entity by ID.
-func (_u *TenantUpdate) SetUserID(id uuid.UUID) *TenantUpdate {
-	_u.mutation.SetUserID(id)
-	return _u
-}
-
-// SetUser sets the "user" edge to the User entity.
-func (_u *TenantUpdate) SetUser(v *User) *TenantUpdate {
-	return _u.SetUserID(v.ID)
-}
-
-// SetWorkspaceID sets the "workspace" edge to the Workspace entity by ID.
-func (_u *TenantUpdate) SetWorkspaceID(id uuid.UUID) *TenantUpdate {
-	_u.mutation.SetWorkspaceID(id)
-	return _u
-}
-
-// SetNillableWorkspaceID sets the "workspace" edge to the Workspace entity by ID if the given value is not nil.
-func (_u *TenantUpdate) SetNillableWorkspaceID(id *uuid.UUID) *TenantUpdate {
-	if id != nil {
-		_u = _u.SetWorkspaceID(*id)
-	}
-	return _u
-}
-
-// SetWorkspace sets the "workspace" edge to the Workspace entity.
-func (_u *TenantUpdate) SetWorkspace(v *Workspace) *TenantUpdate {
-	return _u.SetWorkspaceID(v.ID)
+	return _u.AddWorkspaceIDs(ids...)
 }
 
 // AddProjectIDs adds the "projects" edge to the Project entity by IDs.
@@ -206,34 +115,19 @@ func (_u *TenantUpdate) AddRolepermissions(v ...*RolePermission) *TenantUpdate {
 	return _u.AddRolepermissionIDs(ids...)
 }
 
-// AddTenantroleIDs adds the "tenantrole" edge to the TenantMember entity by IDs.
-func (_u *TenantUpdate) AddTenantroleIDs(ids ...int) *TenantUpdate {
-	_u.mutation.AddTenantroleIDs(ids...)
+// AddAssignmentIDs adds the "assignments" edge to the UserNodeAssignment entity by IDs.
+func (_u *TenantUpdate) AddAssignmentIDs(ids ...uuid.UUID) *TenantUpdate {
+	_u.mutation.AddAssignmentIDs(ids...)
 	return _u
 }
 
-// AddTenantrole adds the "tenantrole" edges to the TenantMember entity.
-func (_u *TenantUpdate) AddTenantrole(v ...*TenantMember) *TenantUpdate {
-	ids := make([]int, len(v))
+// AddAssignments adds the "assignments" edges to the UserNodeAssignment entity.
+func (_u *TenantUpdate) AddAssignments(v ...*UserNodeAssignment) *TenantUpdate {
+	ids := make([]uuid.UUID, len(v))
 	for i := range v {
 		ids[i] = v[i].ID
 	}
-	return _u.AddTenantroleIDs(ids...)
-}
-
-// AddProjectroleIDs adds the "projectrole" edge to the ProjectMember entity by IDs.
-func (_u *TenantUpdate) AddProjectroleIDs(ids ...int) *TenantUpdate {
-	_u.mutation.AddProjectroleIDs(ids...)
-	return _u
-}
-
-// AddProjectrole adds the "projectrole" edges to the ProjectMember entity.
-func (_u *TenantUpdate) AddProjectrole(v ...*ProjectMember) *TenantUpdate {
-	ids := make([]int, len(v))
-	for i := range v {
-		ids[i] = v[i].ID
-	}
-	return _u.AddProjectroleIDs(ids...)
+	return _u.AddAssignmentIDs(ids...)
 }
 
 // AddSubscriptionIDs adds the "subscription" edge to the Subscription entity by IDs.
@@ -256,22 +150,25 @@ func (_u *TenantUpdate) Mutation() *TenantMutation {
 	return _u.mutation
 }
 
-// ClearState clears the "state" edge to the StateDefinitions entity.
-func (_u *TenantUpdate) ClearState() *TenantUpdate {
-	_u.mutation.ClearState()
+// ClearWorkspaces clears all "workspaces" edges to the Workspace entity.
+func (_u *TenantUpdate) ClearWorkspaces() *TenantUpdate {
+	_u.mutation.ClearWorkspaces()
 	return _u
 }
 
-// ClearUser clears the "user" edge to the User entity.
-func (_u *TenantUpdate) ClearUser() *TenantUpdate {
-	_u.mutation.ClearUser()
+// RemoveWorkspaceIDs removes the "workspaces" edge to Workspace entities by IDs.
+func (_u *TenantUpdate) RemoveWorkspaceIDs(ids ...uuid.UUID) *TenantUpdate {
+	_u.mutation.RemoveWorkspaceIDs(ids...)
 	return _u
 }
 
-// ClearWorkspace clears the "workspace" edge to the Workspace entity.
-func (_u *TenantUpdate) ClearWorkspace() *TenantUpdate {
-	_u.mutation.ClearWorkspace()
-	return _u
+// RemoveWorkspaces removes "workspaces" edges to Workspace entities.
+func (_u *TenantUpdate) RemoveWorkspaces(v ...*Workspace) *TenantUpdate {
+	ids := make([]uuid.UUID, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.RemoveWorkspaceIDs(ids...)
 }
 
 // ClearProjects clears all "projects" edges to the Project entity.
@@ -337,46 +234,25 @@ func (_u *TenantUpdate) RemoveRolepermissions(v ...*RolePermission) *TenantUpdat
 	return _u.RemoveRolepermissionIDs(ids...)
 }
 
-// ClearTenantrole clears all "tenantrole" edges to the TenantMember entity.
-func (_u *TenantUpdate) ClearTenantrole() *TenantUpdate {
-	_u.mutation.ClearTenantrole()
+// ClearAssignments clears all "assignments" edges to the UserNodeAssignment entity.
+func (_u *TenantUpdate) ClearAssignments() *TenantUpdate {
+	_u.mutation.ClearAssignments()
 	return _u
 }
 
-// RemoveTenantroleIDs removes the "tenantrole" edge to TenantMember entities by IDs.
-func (_u *TenantUpdate) RemoveTenantroleIDs(ids ...int) *TenantUpdate {
-	_u.mutation.RemoveTenantroleIDs(ids...)
+// RemoveAssignmentIDs removes the "assignments" edge to UserNodeAssignment entities by IDs.
+func (_u *TenantUpdate) RemoveAssignmentIDs(ids ...uuid.UUID) *TenantUpdate {
+	_u.mutation.RemoveAssignmentIDs(ids...)
 	return _u
 }
 
-// RemoveTenantrole removes "tenantrole" edges to TenantMember entities.
-func (_u *TenantUpdate) RemoveTenantrole(v ...*TenantMember) *TenantUpdate {
-	ids := make([]int, len(v))
+// RemoveAssignments removes "assignments" edges to UserNodeAssignment entities.
+func (_u *TenantUpdate) RemoveAssignments(v ...*UserNodeAssignment) *TenantUpdate {
+	ids := make([]uuid.UUID, len(v))
 	for i := range v {
 		ids[i] = v[i].ID
 	}
-	return _u.RemoveTenantroleIDs(ids...)
-}
-
-// ClearProjectrole clears all "projectrole" edges to the ProjectMember entity.
-func (_u *TenantUpdate) ClearProjectrole() *TenantUpdate {
-	_u.mutation.ClearProjectrole()
-	return _u
-}
-
-// RemoveProjectroleIDs removes the "projectrole" edge to ProjectMember entities by IDs.
-func (_u *TenantUpdate) RemoveProjectroleIDs(ids ...int) *TenantUpdate {
-	_u.mutation.RemoveProjectroleIDs(ids...)
-	return _u
-}
-
-// RemoveProjectrole removes "projectrole" edges to ProjectMember entities.
-func (_u *TenantUpdate) RemoveProjectrole(v ...*ProjectMember) *TenantUpdate {
-	ids := make([]int, len(v))
-	for i := range v {
-		ids[i] = v[i].ID
-	}
-	return _u.RemoveProjectroleIDs(ids...)
+	return _u.RemoveAssignmentIDs(ids...)
 }
 
 // ClearSubscription clears all "subscription" edges to the Subscription entity.
@@ -438,21 +314,10 @@ func (_u *TenantUpdate) defaults() {
 
 // check runs all checks and user-defined validators on the builder.
 func (_u *TenantUpdate) check() error {
-	if v, ok := _u.mutation.Name(); ok {
-		if err := tenant.NameValidator(v); err != nil {
-			return &ValidationError{Name: "name", err: fmt.Errorf(`gen: validator failed for field "Tenant.name": %w`, err)}
-		}
-	}
 	if v, ok := _u.mutation.Slug(); ok {
 		if err := tenant.SlugValidator(v); err != nil {
 			return &ValidationError{Name: "slug", err: fmt.Errorf(`gen: validator failed for field "Tenant.slug": %w`, err)}
 		}
-	}
-	if _u.mutation.StateCleared() && len(_u.mutation.StateIDs()) > 0 {
-		return errors.New(`gen: clearing a required unique edge "Tenant.state"`)
-	}
-	if _u.mutation.UserCleared() && len(_u.mutation.UserIDs()) > 0 {
-		return errors.New(`gen: clearing a required unique edge "Tenant.user"`)
 	}
 	return nil
 }
@@ -469,85 +334,18 @@ func (_u *TenantUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 			}
 		}
 	}
-	if value, ok := _u.mutation.Name(); ok {
-		_spec.SetField(tenant.FieldName, field.TypeString, value)
-	}
 	if value, ok := _u.mutation.Slug(); ok {
 		_spec.SetField(tenant.FieldSlug, field.TypeString, value)
 	}
 	if value, ok := _u.mutation.UpdatedAt(); ok {
 		_spec.SetField(tenant.FieldUpdatedAt, field.TypeTime, value)
 	}
-	if value, ok := _u.mutation.DeletedAt(); ok {
-		_spec.SetField(tenant.FieldDeletedAt, field.TypeTime, value)
-	}
-	if _u.mutation.DeletedAtCleared() {
-		_spec.ClearField(tenant.FieldDeletedAt, field.TypeTime)
-	}
-	if _u.mutation.StateCleared() {
+	if _u.mutation.WorkspacesCleared() {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: true,
-			Table:   tenant.StateTable,
-			Columns: []string{tenant.StateColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(statedefinitions.FieldID, field.TypeUUID),
-			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := _u.mutation.StateIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: true,
-			Table:   tenant.StateTable,
-			Columns: []string{tenant.StateColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(statedefinitions.FieldID, field.TypeUUID),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Add = append(_spec.Edges.Add, edge)
-	}
-	if _u.mutation.UserCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2O,
-			Inverse: true,
-			Table:   tenant.UserTable,
-			Columns: []string{tenant.UserColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeUUID),
-			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := _u.mutation.UserIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2O,
-			Inverse: true,
-			Table:   tenant.UserTable,
-			Columns: []string{tenant.UserColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeUUID),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Add = append(_spec.Edges.Add, edge)
-	}
-	if _u.mutation.WorkspaceCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2O,
+			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   tenant.WorkspaceTable,
-			Columns: []string{tenant.WorkspaceColumn},
+			Table:   tenant.WorkspacesTable,
+			Columns: []string{tenant.WorkspacesColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(workspace.FieldID, field.TypeUUID),
@@ -555,12 +353,28 @@ func (_u *TenantUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := _u.mutation.WorkspaceIDs(); len(nodes) > 0 {
+	if nodes := _u.mutation.RemovedWorkspacesIDs(); len(nodes) > 0 && !_u.mutation.WorkspacesCleared() {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2O,
+			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   tenant.WorkspaceTable,
-			Columns: []string{tenant.WorkspaceColumn},
+			Table:   tenant.WorkspacesTable,
+			Columns: []string{tenant.WorkspacesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(workspace.FieldID, field.TypeUUID),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.WorkspacesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   tenant.WorkspacesTable,
+			Columns: []string{tenant.WorkspacesColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(workspace.FieldID, field.TypeUUID),
@@ -706,28 +520,28 @@ func (_u *TenantUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if _u.mutation.TenantroleCleared() {
+	if _u.mutation.AssignmentsCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   tenant.TenantroleTable,
-			Columns: []string{tenant.TenantroleColumn},
+			Table:   tenant.AssignmentsTable,
+			Columns: []string{tenant.AssignmentsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(tenantmember.FieldID, field.TypeInt),
+				IDSpec: sqlgraph.NewFieldSpec(usernodeassignment.FieldID, field.TypeUUID),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := _u.mutation.RemovedTenantroleIDs(); len(nodes) > 0 && !_u.mutation.TenantroleCleared() {
+	if nodes := _u.mutation.RemovedAssignmentsIDs(); len(nodes) > 0 && !_u.mutation.AssignmentsCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   tenant.TenantroleTable,
-			Columns: []string{tenant.TenantroleColumn},
+			Table:   tenant.AssignmentsTable,
+			Columns: []string{tenant.AssignmentsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(tenantmember.FieldID, field.TypeInt),
+				IDSpec: sqlgraph.NewFieldSpec(usernodeassignment.FieldID, field.TypeUUID),
 			},
 		}
 		for _, k := range nodes {
@@ -735,60 +549,15 @@ func (_u *TenantUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := _u.mutation.TenantroleIDs(); len(nodes) > 0 {
+	if nodes := _u.mutation.AssignmentsIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   tenant.TenantroleTable,
-			Columns: []string{tenant.TenantroleColumn},
+			Table:   tenant.AssignmentsTable,
+			Columns: []string{tenant.AssignmentsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(tenantmember.FieldID, field.TypeInt),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Add = append(_spec.Edges.Add, edge)
-	}
-	if _u.mutation.ProjectroleCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   tenant.ProjectroleTable,
-			Columns: []string{tenant.ProjectroleColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(projectmember.FieldID, field.TypeInt),
-			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := _u.mutation.RemovedProjectroleIDs(); len(nodes) > 0 && !_u.mutation.ProjectroleCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   tenant.ProjectroleTable,
-			Columns: []string{tenant.ProjectroleColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(projectmember.FieldID, field.TypeInt),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := _u.mutation.ProjectroleIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   tenant.ProjectroleTable,
-			Columns: []string{tenant.ProjectroleColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(projectmember.FieldID, field.TypeInt),
+				IDSpec: sqlgraph.NewFieldSpec(usernodeassignment.FieldID, field.TypeUUID),
 			},
 		}
 		for _, k := range nodes {
@@ -861,20 +630,6 @@ type TenantUpdateOne struct {
 	mutation *TenantMutation
 }
 
-// SetName sets the "name" field.
-func (_u *TenantUpdateOne) SetName(v string) *TenantUpdateOne {
-	_u.mutation.SetName(v)
-	return _u
-}
-
-// SetNillableName sets the "name" field if the given value is not nil.
-func (_u *TenantUpdateOne) SetNillableName(v *string) *TenantUpdateOne {
-	if v != nil {
-		_u.SetName(*v)
-	}
-	return _u
-}
-
 // SetSlug sets the "slug" field.
 func (_u *TenantUpdateOne) SetSlug(v string) *TenantUpdateOne {
 	_u.mutation.SetSlug(v)
@@ -889,99 +644,25 @@ func (_u *TenantUpdateOne) SetNillableSlug(v *string) *TenantUpdateOne {
 	return _u
 }
 
-// SetStatusID sets the "status_id" field.
-func (_u *TenantUpdateOne) SetStatusID(v uuid.UUID) *TenantUpdateOne {
-	_u.mutation.SetStatusID(v)
-	return _u
-}
-
-// SetNillableStatusID sets the "status_id" field if the given value is not nil.
-func (_u *TenantUpdateOne) SetNillableStatusID(v *uuid.UUID) *TenantUpdateOne {
-	if v != nil {
-		_u.SetStatusID(*v)
-	}
-	return _u
-}
-
-// SetCreatedBy sets the "created_by" field.
-func (_u *TenantUpdateOne) SetCreatedBy(v uuid.UUID) *TenantUpdateOne {
-	_u.mutation.SetCreatedBy(v)
-	return _u
-}
-
-// SetNillableCreatedBy sets the "created_by" field if the given value is not nil.
-func (_u *TenantUpdateOne) SetNillableCreatedBy(v *uuid.UUID) *TenantUpdateOne {
-	if v != nil {
-		_u.SetCreatedBy(*v)
-	}
-	return _u
-}
-
 // SetUpdatedAt sets the "updated_at" field.
 func (_u *TenantUpdateOne) SetUpdatedAt(v time.Time) *TenantUpdateOne {
 	_u.mutation.SetUpdatedAt(v)
 	return _u
 }
 
-// SetDeletedAt sets the "deleted_at" field.
-func (_u *TenantUpdateOne) SetDeletedAt(v time.Time) *TenantUpdateOne {
-	_u.mutation.SetDeletedAt(v)
+// AddWorkspaceIDs adds the "workspaces" edge to the Workspace entity by IDs.
+func (_u *TenantUpdateOne) AddWorkspaceIDs(ids ...uuid.UUID) *TenantUpdateOne {
+	_u.mutation.AddWorkspaceIDs(ids...)
 	return _u
 }
 
-// SetNillableDeletedAt sets the "deleted_at" field if the given value is not nil.
-func (_u *TenantUpdateOne) SetNillableDeletedAt(v *time.Time) *TenantUpdateOne {
-	if v != nil {
-		_u.SetDeletedAt(*v)
+// AddWorkspaces adds the "workspaces" edges to the Workspace entity.
+func (_u *TenantUpdateOne) AddWorkspaces(v ...*Workspace) *TenantUpdateOne {
+	ids := make([]uuid.UUID, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
 	}
-	return _u
-}
-
-// ClearDeletedAt clears the value of the "deleted_at" field.
-func (_u *TenantUpdateOne) ClearDeletedAt() *TenantUpdateOne {
-	_u.mutation.ClearDeletedAt()
-	return _u
-}
-
-// SetStateID sets the "state" edge to the StateDefinitions entity by ID.
-func (_u *TenantUpdateOne) SetStateID(id uuid.UUID) *TenantUpdateOne {
-	_u.mutation.SetStateID(id)
-	return _u
-}
-
-// SetState sets the "state" edge to the StateDefinitions entity.
-func (_u *TenantUpdateOne) SetState(v *StateDefinitions) *TenantUpdateOne {
-	return _u.SetStateID(v.ID)
-}
-
-// SetUserID sets the "user" edge to the User entity by ID.
-func (_u *TenantUpdateOne) SetUserID(id uuid.UUID) *TenantUpdateOne {
-	_u.mutation.SetUserID(id)
-	return _u
-}
-
-// SetUser sets the "user" edge to the User entity.
-func (_u *TenantUpdateOne) SetUser(v *User) *TenantUpdateOne {
-	return _u.SetUserID(v.ID)
-}
-
-// SetWorkspaceID sets the "workspace" edge to the Workspace entity by ID.
-func (_u *TenantUpdateOne) SetWorkspaceID(id uuid.UUID) *TenantUpdateOne {
-	_u.mutation.SetWorkspaceID(id)
-	return _u
-}
-
-// SetNillableWorkspaceID sets the "workspace" edge to the Workspace entity by ID if the given value is not nil.
-func (_u *TenantUpdateOne) SetNillableWorkspaceID(id *uuid.UUID) *TenantUpdateOne {
-	if id != nil {
-		_u = _u.SetWorkspaceID(*id)
-	}
-	return _u
-}
-
-// SetWorkspace sets the "workspace" edge to the Workspace entity.
-func (_u *TenantUpdateOne) SetWorkspace(v *Workspace) *TenantUpdateOne {
-	return _u.SetWorkspaceID(v.ID)
+	return _u.AddWorkspaceIDs(ids...)
 }
 
 // AddProjectIDs adds the "projects" edge to the Project entity by IDs.
@@ -1029,34 +710,19 @@ func (_u *TenantUpdateOne) AddRolepermissions(v ...*RolePermission) *TenantUpdat
 	return _u.AddRolepermissionIDs(ids...)
 }
 
-// AddTenantroleIDs adds the "tenantrole" edge to the TenantMember entity by IDs.
-func (_u *TenantUpdateOne) AddTenantroleIDs(ids ...int) *TenantUpdateOne {
-	_u.mutation.AddTenantroleIDs(ids...)
+// AddAssignmentIDs adds the "assignments" edge to the UserNodeAssignment entity by IDs.
+func (_u *TenantUpdateOne) AddAssignmentIDs(ids ...uuid.UUID) *TenantUpdateOne {
+	_u.mutation.AddAssignmentIDs(ids...)
 	return _u
 }
 
-// AddTenantrole adds the "tenantrole" edges to the TenantMember entity.
-func (_u *TenantUpdateOne) AddTenantrole(v ...*TenantMember) *TenantUpdateOne {
-	ids := make([]int, len(v))
+// AddAssignments adds the "assignments" edges to the UserNodeAssignment entity.
+func (_u *TenantUpdateOne) AddAssignments(v ...*UserNodeAssignment) *TenantUpdateOne {
+	ids := make([]uuid.UUID, len(v))
 	for i := range v {
 		ids[i] = v[i].ID
 	}
-	return _u.AddTenantroleIDs(ids...)
-}
-
-// AddProjectroleIDs adds the "projectrole" edge to the ProjectMember entity by IDs.
-func (_u *TenantUpdateOne) AddProjectroleIDs(ids ...int) *TenantUpdateOne {
-	_u.mutation.AddProjectroleIDs(ids...)
-	return _u
-}
-
-// AddProjectrole adds the "projectrole" edges to the ProjectMember entity.
-func (_u *TenantUpdateOne) AddProjectrole(v ...*ProjectMember) *TenantUpdateOne {
-	ids := make([]int, len(v))
-	for i := range v {
-		ids[i] = v[i].ID
-	}
-	return _u.AddProjectroleIDs(ids...)
+	return _u.AddAssignmentIDs(ids...)
 }
 
 // AddSubscriptionIDs adds the "subscription" edge to the Subscription entity by IDs.
@@ -1079,22 +745,25 @@ func (_u *TenantUpdateOne) Mutation() *TenantMutation {
 	return _u.mutation
 }
 
-// ClearState clears the "state" edge to the StateDefinitions entity.
-func (_u *TenantUpdateOne) ClearState() *TenantUpdateOne {
-	_u.mutation.ClearState()
+// ClearWorkspaces clears all "workspaces" edges to the Workspace entity.
+func (_u *TenantUpdateOne) ClearWorkspaces() *TenantUpdateOne {
+	_u.mutation.ClearWorkspaces()
 	return _u
 }
 
-// ClearUser clears the "user" edge to the User entity.
-func (_u *TenantUpdateOne) ClearUser() *TenantUpdateOne {
-	_u.mutation.ClearUser()
+// RemoveWorkspaceIDs removes the "workspaces" edge to Workspace entities by IDs.
+func (_u *TenantUpdateOne) RemoveWorkspaceIDs(ids ...uuid.UUID) *TenantUpdateOne {
+	_u.mutation.RemoveWorkspaceIDs(ids...)
 	return _u
 }
 
-// ClearWorkspace clears the "workspace" edge to the Workspace entity.
-func (_u *TenantUpdateOne) ClearWorkspace() *TenantUpdateOne {
-	_u.mutation.ClearWorkspace()
-	return _u
+// RemoveWorkspaces removes "workspaces" edges to Workspace entities.
+func (_u *TenantUpdateOne) RemoveWorkspaces(v ...*Workspace) *TenantUpdateOne {
+	ids := make([]uuid.UUID, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.RemoveWorkspaceIDs(ids...)
 }
 
 // ClearProjects clears all "projects" edges to the Project entity.
@@ -1160,46 +829,25 @@ func (_u *TenantUpdateOne) RemoveRolepermissions(v ...*RolePermission) *TenantUp
 	return _u.RemoveRolepermissionIDs(ids...)
 }
 
-// ClearTenantrole clears all "tenantrole" edges to the TenantMember entity.
-func (_u *TenantUpdateOne) ClearTenantrole() *TenantUpdateOne {
-	_u.mutation.ClearTenantrole()
+// ClearAssignments clears all "assignments" edges to the UserNodeAssignment entity.
+func (_u *TenantUpdateOne) ClearAssignments() *TenantUpdateOne {
+	_u.mutation.ClearAssignments()
 	return _u
 }
 
-// RemoveTenantroleIDs removes the "tenantrole" edge to TenantMember entities by IDs.
-func (_u *TenantUpdateOne) RemoveTenantroleIDs(ids ...int) *TenantUpdateOne {
-	_u.mutation.RemoveTenantroleIDs(ids...)
+// RemoveAssignmentIDs removes the "assignments" edge to UserNodeAssignment entities by IDs.
+func (_u *TenantUpdateOne) RemoveAssignmentIDs(ids ...uuid.UUID) *TenantUpdateOne {
+	_u.mutation.RemoveAssignmentIDs(ids...)
 	return _u
 }
 
-// RemoveTenantrole removes "tenantrole" edges to TenantMember entities.
-func (_u *TenantUpdateOne) RemoveTenantrole(v ...*TenantMember) *TenantUpdateOne {
-	ids := make([]int, len(v))
+// RemoveAssignments removes "assignments" edges to UserNodeAssignment entities.
+func (_u *TenantUpdateOne) RemoveAssignments(v ...*UserNodeAssignment) *TenantUpdateOne {
+	ids := make([]uuid.UUID, len(v))
 	for i := range v {
 		ids[i] = v[i].ID
 	}
-	return _u.RemoveTenantroleIDs(ids...)
-}
-
-// ClearProjectrole clears all "projectrole" edges to the ProjectMember entity.
-func (_u *TenantUpdateOne) ClearProjectrole() *TenantUpdateOne {
-	_u.mutation.ClearProjectrole()
-	return _u
-}
-
-// RemoveProjectroleIDs removes the "projectrole" edge to ProjectMember entities by IDs.
-func (_u *TenantUpdateOne) RemoveProjectroleIDs(ids ...int) *TenantUpdateOne {
-	_u.mutation.RemoveProjectroleIDs(ids...)
-	return _u
-}
-
-// RemoveProjectrole removes "projectrole" edges to ProjectMember entities.
-func (_u *TenantUpdateOne) RemoveProjectrole(v ...*ProjectMember) *TenantUpdateOne {
-	ids := make([]int, len(v))
-	for i := range v {
-		ids[i] = v[i].ID
-	}
-	return _u.RemoveProjectroleIDs(ids...)
+	return _u.RemoveAssignmentIDs(ids...)
 }
 
 // ClearSubscription clears all "subscription" edges to the Subscription entity.
@@ -1274,21 +922,10 @@ func (_u *TenantUpdateOne) defaults() {
 
 // check runs all checks and user-defined validators on the builder.
 func (_u *TenantUpdateOne) check() error {
-	if v, ok := _u.mutation.Name(); ok {
-		if err := tenant.NameValidator(v); err != nil {
-			return &ValidationError{Name: "name", err: fmt.Errorf(`gen: validator failed for field "Tenant.name": %w`, err)}
-		}
-	}
 	if v, ok := _u.mutation.Slug(); ok {
 		if err := tenant.SlugValidator(v); err != nil {
 			return &ValidationError{Name: "slug", err: fmt.Errorf(`gen: validator failed for field "Tenant.slug": %w`, err)}
 		}
-	}
-	if _u.mutation.StateCleared() && len(_u.mutation.StateIDs()) > 0 {
-		return errors.New(`gen: clearing a required unique edge "Tenant.state"`)
-	}
-	if _u.mutation.UserCleared() && len(_u.mutation.UserIDs()) > 0 {
-		return errors.New(`gen: clearing a required unique edge "Tenant.user"`)
 	}
 	return nil
 }
@@ -1322,85 +959,18 @@ func (_u *TenantUpdateOne) sqlSave(ctx context.Context) (_node *Tenant, err erro
 			}
 		}
 	}
-	if value, ok := _u.mutation.Name(); ok {
-		_spec.SetField(tenant.FieldName, field.TypeString, value)
-	}
 	if value, ok := _u.mutation.Slug(); ok {
 		_spec.SetField(tenant.FieldSlug, field.TypeString, value)
 	}
 	if value, ok := _u.mutation.UpdatedAt(); ok {
 		_spec.SetField(tenant.FieldUpdatedAt, field.TypeTime, value)
 	}
-	if value, ok := _u.mutation.DeletedAt(); ok {
-		_spec.SetField(tenant.FieldDeletedAt, field.TypeTime, value)
-	}
-	if _u.mutation.DeletedAtCleared() {
-		_spec.ClearField(tenant.FieldDeletedAt, field.TypeTime)
-	}
-	if _u.mutation.StateCleared() {
+	if _u.mutation.WorkspacesCleared() {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: true,
-			Table:   tenant.StateTable,
-			Columns: []string{tenant.StateColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(statedefinitions.FieldID, field.TypeUUID),
-			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := _u.mutation.StateIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: true,
-			Table:   tenant.StateTable,
-			Columns: []string{tenant.StateColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(statedefinitions.FieldID, field.TypeUUID),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Add = append(_spec.Edges.Add, edge)
-	}
-	if _u.mutation.UserCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2O,
-			Inverse: true,
-			Table:   tenant.UserTable,
-			Columns: []string{tenant.UserColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeUUID),
-			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := _u.mutation.UserIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2O,
-			Inverse: true,
-			Table:   tenant.UserTable,
-			Columns: []string{tenant.UserColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeUUID),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Add = append(_spec.Edges.Add, edge)
-	}
-	if _u.mutation.WorkspaceCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2O,
+			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   tenant.WorkspaceTable,
-			Columns: []string{tenant.WorkspaceColumn},
+			Table:   tenant.WorkspacesTable,
+			Columns: []string{tenant.WorkspacesColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(workspace.FieldID, field.TypeUUID),
@@ -1408,12 +978,28 @@ func (_u *TenantUpdateOne) sqlSave(ctx context.Context) (_node *Tenant, err erro
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := _u.mutation.WorkspaceIDs(); len(nodes) > 0 {
+	if nodes := _u.mutation.RemovedWorkspacesIDs(); len(nodes) > 0 && !_u.mutation.WorkspacesCleared() {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2O,
+			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   tenant.WorkspaceTable,
-			Columns: []string{tenant.WorkspaceColumn},
+			Table:   tenant.WorkspacesTable,
+			Columns: []string{tenant.WorkspacesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(workspace.FieldID, field.TypeUUID),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.WorkspacesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   tenant.WorkspacesTable,
+			Columns: []string{tenant.WorkspacesColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(workspace.FieldID, field.TypeUUID),
@@ -1559,28 +1145,28 @@ func (_u *TenantUpdateOne) sqlSave(ctx context.Context) (_node *Tenant, err erro
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if _u.mutation.TenantroleCleared() {
+	if _u.mutation.AssignmentsCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   tenant.TenantroleTable,
-			Columns: []string{tenant.TenantroleColumn},
+			Table:   tenant.AssignmentsTable,
+			Columns: []string{tenant.AssignmentsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(tenantmember.FieldID, field.TypeInt),
+				IDSpec: sqlgraph.NewFieldSpec(usernodeassignment.FieldID, field.TypeUUID),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := _u.mutation.RemovedTenantroleIDs(); len(nodes) > 0 && !_u.mutation.TenantroleCleared() {
+	if nodes := _u.mutation.RemovedAssignmentsIDs(); len(nodes) > 0 && !_u.mutation.AssignmentsCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   tenant.TenantroleTable,
-			Columns: []string{tenant.TenantroleColumn},
+			Table:   tenant.AssignmentsTable,
+			Columns: []string{tenant.AssignmentsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(tenantmember.FieldID, field.TypeInt),
+				IDSpec: sqlgraph.NewFieldSpec(usernodeassignment.FieldID, field.TypeUUID),
 			},
 		}
 		for _, k := range nodes {
@@ -1588,60 +1174,15 @@ func (_u *TenantUpdateOne) sqlSave(ctx context.Context) (_node *Tenant, err erro
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := _u.mutation.TenantroleIDs(); len(nodes) > 0 {
+	if nodes := _u.mutation.AssignmentsIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   tenant.TenantroleTable,
-			Columns: []string{tenant.TenantroleColumn},
+			Table:   tenant.AssignmentsTable,
+			Columns: []string{tenant.AssignmentsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(tenantmember.FieldID, field.TypeInt),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Add = append(_spec.Edges.Add, edge)
-	}
-	if _u.mutation.ProjectroleCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   tenant.ProjectroleTable,
-			Columns: []string{tenant.ProjectroleColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(projectmember.FieldID, field.TypeInt),
-			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := _u.mutation.RemovedProjectroleIDs(); len(nodes) > 0 && !_u.mutation.ProjectroleCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   tenant.ProjectroleTable,
-			Columns: []string{tenant.ProjectroleColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(projectmember.FieldID, field.TypeInt),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := _u.mutation.ProjectroleIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   tenant.ProjectroleTable,
-			Columns: []string{tenant.ProjectroleColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(projectmember.FieldID, field.TypeInt),
+				IDSpec: sqlgraph.NewFieldSpec(usernodeassignment.FieldID, field.TypeUUID),
 			},
 		}
 		for _, k := range nodes {

@@ -10,10 +10,7 @@ import (
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/caneel7/keynote-api/internal/ent/gen/project"
-	"github.com/caneel7/keynote-api/internal/ent/gen/statedefinitions"
 	"github.com/caneel7/keynote-api/internal/ent/gen/tenant"
-	"github.com/caneel7/keynote-api/internal/ent/gen/user"
 	"github.com/caneel7/keynote-api/internal/ent/gen/workspace"
 	"github.com/google/uuid"
 )
@@ -31,27 +28,9 @@ func (_c *WorkspaceCreate) SetTenantID(v uuid.UUID) *WorkspaceCreate {
 	return _c
 }
 
-// SetName sets the "name" field.
-func (_c *WorkspaceCreate) SetName(v string) *WorkspaceCreate {
-	_c.mutation.SetName(v)
-	return _c
-}
-
 // SetSlug sets the "slug" field.
 func (_c *WorkspaceCreate) SetSlug(v string) *WorkspaceCreate {
 	_c.mutation.SetSlug(v)
-	return _c
-}
-
-// SetStatusID sets the "status_id" field.
-func (_c *WorkspaceCreate) SetStatusID(v uuid.UUID) *WorkspaceCreate {
-	_c.mutation.SetStatusID(v)
-	return _c
-}
-
-// SetCreatedBy sets the "created_by" field.
-func (_c *WorkspaceCreate) SetCreatedBy(v uuid.UUID) *WorkspaceCreate {
-	_c.mutation.SetCreatedBy(v)
 	return _c
 }
 
@@ -83,68 +62,15 @@ func (_c *WorkspaceCreate) SetNillableUpdatedAt(v *time.Time) *WorkspaceCreate {
 	return _c
 }
 
-// SetDeletedAt sets the "deleted_at" field.
-func (_c *WorkspaceCreate) SetDeletedAt(v time.Time) *WorkspaceCreate {
-	_c.mutation.SetDeletedAt(v)
-	return _c
-}
-
-// SetNillableDeletedAt sets the "deleted_at" field if the given value is not nil.
-func (_c *WorkspaceCreate) SetNillableDeletedAt(v *time.Time) *WorkspaceCreate {
-	if v != nil {
-		_c.SetDeletedAt(*v)
-	}
-	return _c
-}
-
 // SetID sets the "id" field.
 func (_c *WorkspaceCreate) SetID(v uuid.UUID) *WorkspaceCreate {
 	_c.mutation.SetID(v)
 	return _c
 }
 
-// SetNillableID sets the "id" field if the given value is not nil.
-func (_c *WorkspaceCreate) SetNillableID(v *uuid.UUID) *WorkspaceCreate {
-	if v != nil {
-		_c.SetID(*v)
-	}
-	return _c
-}
-
-// SetStatus sets the "status" edge to the StateDefinitions entity.
-func (_c *WorkspaceCreate) SetStatus(v *StateDefinitions) *WorkspaceCreate {
-	return _c.SetStatusID(v.ID)
-}
-
 // SetTenant sets the "tenant" edge to the Tenant entity.
 func (_c *WorkspaceCreate) SetTenant(v *Tenant) *WorkspaceCreate {
 	return _c.SetTenantID(v.ID)
-}
-
-// SetCreatedbyID sets the "createdby" edge to the User entity by ID.
-func (_c *WorkspaceCreate) SetCreatedbyID(id uuid.UUID) *WorkspaceCreate {
-	_c.mutation.SetCreatedbyID(id)
-	return _c
-}
-
-// SetCreatedby sets the "createdby" edge to the User entity.
-func (_c *WorkspaceCreate) SetCreatedby(v *User) *WorkspaceCreate {
-	return _c.SetCreatedbyID(v.ID)
-}
-
-// AddProjectIDs adds the "projects" edge to the Project entity by IDs.
-func (_c *WorkspaceCreate) AddProjectIDs(ids ...uuid.UUID) *WorkspaceCreate {
-	_c.mutation.AddProjectIDs(ids...)
-	return _c
-}
-
-// AddProjects adds the "projects" edges to the Project entity.
-func (_c *WorkspaceCreate) AddProjects(v ...*Project) *WorkspaceCreate {
-	ids := make([]uuid.UUID, len(v))
-	for i := range v {
-		ids[i] = v[i].ID
-	}
-	return _c.AddProjectIDs(ids...)
 }
 
 // Mutation returns the WorkspaceMutation object of the builder.
@@ -190,24 +116,12 @@ func (_c *WorkspaceCreate) defaults() {
 		v := workspace.DefaultUpdatedAt()
 		_c.mutation.SetUpdatedAt(v)
 	}
-	if _, ok := _c.mutation.ID(); !ok {
-		v := workspace.DefaultID()
-		_c.mutation.SetID(v)
-	}
 }
 
 // check runs all checks and user-defined validators on the builder.
 func (_c *WorkspaceCreate) check() error {
 	if _, ok := _c.mutation.TenantID(); !ok {
 		return &ValidationError{Name: "tenant_id", err: errors.New(`gen: missing required field "Workspace.tenant_id"`)}
-	}
-	if _, ok := _c.mutation.Name(); !ok {
-		return &ValidationError{Name: "name", err: errors.New(`gen: missing required field "Workspace.name"`)}
-	}
-	if v, ok := _c.mutation.Name(); ok {
-		if err := workspace.NameValidator(v); err != nil {
-			return &ValidationError{Name: "name", err: fmt.Errorf(`gen: validator failed for field "Workspace.name": %w`, err)}
-		}
 	}
 	if _, ok := _c.mutation.Slug(); !ok {
 		return &ValidationError{Name: "slug", err: errors.New(`gen: missing required field "Workspace.slug"`)}
@@ -217,26 +131,14 @@ func (_c *WorkspaceCreate) check() error {
 			return &ValidationError{Name: "slug", err: fmt.Errorf(`gen: validator failed for field "Workspace.slug": %w`, err)}
 		}
 	}
-	if _, ok := _c.mutation.StatusID(); !ok {
-		return &ValidationError{Name: "status_id", err: errors.New(`gen: missing required field "Workspace.status_id"`)}
-	}
-	if _, ok := _c.mutation.CreatedBy(); !ok {
-		return &ValidationError{Name: "created_by", err: errors.New(`gen: missing required field "Workspace.created_by"`)}
-	}
 	if _, ok := _c.mutation.CreatedAt(); !ok {
 		return &ValidationError{Name: "created_at", err: errors.New(`gen: missing required field "Workspace.created_at"`)}
 	}
 	if _, ok := _c.mutation.UpdatedAt(); !ok {
 		return &ValidationError{Name: "updated_at", err: errors.New(`gen: missing required field "Workspace.updated_at"`)}
 	}
-	if len(_c.mutation.StatusIDs()) == 0 {
-		return &ValidationError{Name: "status", err: errors.New(`gen: missing required edge "Workspace.status"`)}
-	}
 	if len(_c.mutation.TenantIDs()) == 0 {
 		return &ValidationError{Name: "tenant", err: errors.New(`gen: missing required edge "Workspace.tenant"`)}
-	}
-	if len(_c.mutation.CreatedbyIDs()) == 0 {
-		return &ValidationError{Name: "createdby", err: errors.New(`gen: missing required edge "Workspace.createdby"`)}
 	}
 	return nil
 }
@@ -273,10 +175,6 @@ func (_c *WorkspaceCreate) createSpec() (*Workspace, *sqlgraph.CreateSpec) {
 		_node.ID = id
 		_spec.ID.Value = &id
 	}
-	if value, ok := _c.mutation.Name(); ok {
-		_spec.SetField(workspace.FieldName, field.TypeString, value)
-		_node.Name = value
-	}
 	if value, ok := _c.mutation.Slug(); ok {
 		_spec.SetField(workspace.FieldSlug, field.TypeString, value)
 		_node.Slug = value
@@ -289,30 +187,9 @@ func (_c *WorkspaceCreate) createSpec() (*Workspace, *sqlgraph.CreateSpec) {
 		_spec.SetField(workspace.FieldUpdatedAt, field.TypeTime, value)
 		_node.UpdatedAt = value
 	}
-	if value, ok := _c.mutation.DeletedAt(); ok {
-		_spec.SetField(workspace.FieldDeletedAt, field.TypeTime, value)
-		_node.DeletedAt = &value
-	}
-	if nodes := _c.mutation.StatusIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: true,
-			Table:   workspace.StatusTable,
-			Columns: []string{workspace.StatusColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(statedefinitions.FieldID, field.TypeUUID),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_node.StatusID = nodes[0]
-		_spec.Edges = append(_spec.Edges, edge)
-	}
 	if nodes := _c.mutation.TenantIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2O,
+			Rel:     sqlgraph.M2O,
 			Inverse: true,
 			Table:   workspace.TenantTable,
 			Columns: []string{workspace.TenantColumn},
@@ -325,39 +202,6 @@ func (_c *WorkspaceCreate) createSpec() (*Workspace, *sqlgraph.CreateSpec) {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
 		_node.TenantID = nodes[0]
-		_spec.Edges = append(_spec.Edges, edge)
-	}
-	if nodes := _c.mutation.CreatedbyIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: true,
-			Table:   workspace.CreatedbyTable,
-			Columns: []string{workspace.CreatedbyColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeUUID),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_node.CreatedBy = nodes[0]
-		_spec.Edges = append(_spec.Edges, edge)
-	}
-	if nodes := _c.mutation.ProjectsIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   workspace.ProjectsTable,
-			Columns: []string{workspace.ProjectsColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(project.FieldID, field.TypeUUID),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec

@@ -13,13 +13,11 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/caneel7/keynote-api/internal/ent/gen/entitykind"
+	"github.com/caneel7/keynote-api/internal/ent/gen/orgnode"
 	"github.com/caneel7/keynote-api/internal/ent/gen/predicate"
-	"github.com/caneel7/keynote-api/internal/ent/gen/project"
 	"github.com/caneel7/keynote-api/internal/ent/gen/statedefinitions"
 	"github.com/caneel7/keynote-api/internal/ent/gen/subscription"
-	"github.com/caneel7/keynote-api/internal/ent/gen/tenant"
 	"github.com/caneel7/keynote-api/internal/ent/gen/user"
-	"github.com/caneel7/keynote-api/internal/ent/gen/workspace"
 	"github.com/google/uuid"
 )
 
@@ -31,10 +29,8 @@ type StateDefinitionsQuery struct {
 	inters           []Interceptor
 	predicates       []predicate.StateDefinitions
 	withEntityKind   *EntityKindQuery
-	withTenants      *TenantQuery
 	withUser         *UserQuery
-	withWorkspace    *WorkspaceQuery
-	withProjects     *ProjectQuery
+	withOrgNodes     *OrgNodeQuery
 	withSubscription *SubscriptionQuery
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
@@ -94,28 +90,6 @@ func (_q *StateDefinitionsQuery) QueryEntityKind() *EntityKindQuery {
 	return query
 }
 
-// QueryTenants chains the current query on the "tenants" edge.
-func (_q *StateDefinitionsQuery) QueryTenants() *TenantQuery {
-	query := (&TenantClient{config: _q.config}).Query()
-	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
-		if err := _q.prepareQuery(ctx); err != nil {
-			return nil, err
-		}
-		selector := _q.sqlQuery(ctx)
-		if err := selector.Err(); err != nil {
-			return nil, err
-		}
-		step := sqlgraph.NewStep(
-			sqlgraph.From(statedefinitions.Table, statedefinitions.FieldID, selector),
-			sqlgraph.To(tenant.Table, tenant.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, statedefinitions.TenantsTable, statedefinitions.TenantsColumn),
-		)
-		fromU = sqlgraph.SetNeighbors(_q.driver.Dialect(), step)
-		return fromU, nil
-	}
-	return query
-}
-
 // QueryUser chains the current query on the "user" edge.
 func (_q *StateDefinitionsQuery) QueryUser() *UserQuery {
 	query := (&UserClient{config: _q.config}).Query()
@@ -138,9 +112,9 @@ func (_q *StateDefinitionsQuery) QueryUser() *UserQuery {
 	return query
 }
 
-// QueryWorkspace chains the current query on the "workspace" edge.
-func (_q *StateDefinitionsQuery) QueryWorkspace() *WorkspaceQuery {
-	query := (&WorkspaceClient{config: _q.config}).Query()
+// QueryOrgNodes chains the current query on the "org_nodes" edge.
+func (_q *StateDefinitionsQuery) QueryOrgNodes() *OrgNodeQuery {
+	query := (&OrgNodeClient{config: _q.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := _q.prepareQuery(ctx); err != nil {
 			return nil, err
@@ -151,30 +125,8 @@ func (_q *StateDefinitionsQuery) QueryWorkspace() *WorkspaceQuery {
 		}
 		step := sqlgraph.NewStep(
 			sqlgraph.From(statedefinitions.Table, statedefinitions.FieldID, selector),
-			sqlgraph.To(workspace.Table, workspace.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, statedefinitions.WorkspaceTable, statedefinitions.WorkspaceColumn),
-		)
-		fromU = sqlgraph.SetNeighbors(_q.driver.Dialect(), step)
-		return fromU, nil
-	}
-	return query
-}
-
-// QueryProjects chains the current query on the "projects" edge.
-func (_q *StateDefinitionsQuery) QueryProjects() *ProjectQuery {
-	query := (&ProjectClient{config: _q.config}).Query()
-	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
-		if err := _q.prepareQuery(ctx); err != nil {
-			return nil, err
-		}
-		selector := _q.sqlQuery(ctx)
-		if err := selector.Err(); err != nil {
-			return nil, err
-		}
-		step := sqlgraph.NewStep(
-			sqlgraph.From(statedefinitions.Table, statedefinitions.FieldID, selector),
-			sqlgraph.To(project.Table, project.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, statedefinitions.ProjectsTable, statedefinitions.ProjectsColumn),
+			sqlgraph.To(orgnode.Table, orgnode.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, statedefinitions.OrgNodesTable, statedefinitions.OrgNodesColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(_q.driver.Dialect(), step)
 		return fromU, nil
@@ -397,10 +349,8 @@ func (_q *StateDefinitionsQuery) Clone() *StateDefinitionsQuery {
 		inters:           append([]Interceptor{}, _q.inters...),
 		predicates:       append([]predicate.StateDefinitions{}, _q.predicates...),
 		withEntityKind:   _q.withEntityKind.Clone(),
-		withTenants:      _q.withTenants.Clone(),
 		withUser:         _q.withUser.Clone(),
-		withWorkspace:    _q.withWorkspace.Clone(),
-		withProjects:     _q.withProjects.Clone(),
+		withOrgNodes:     _q.withOrgNodes.Clone(),
 		withSubscription: _q.withSubscription.Clone(),
 		// clone intermediate query.
 		sql:  _q.sql.Clone(),
@@ -419,17 +369,6 @@ func (_q *StateDefinitionsQuery) WithEntityKind(opts ...func(*EntityKindQuery)) 
 	return _q
 }
 
-// WithTenants tells the query-builder to eager-load the nodes that are connected to
-// the "tenants" edge. The optional arguments are used to configure the query builder of the edge.
-func (_q *StateDefinitionsQuery) WithTenants(opts ...func(*TenantQuery)) *StateDefinitionsQuery {
-	query := (&TenantClient{config: _q.config}).Query()
-	for _, opt := range opts {
-		opt(query)
-	}
-	_q.withTenants = query
-	return _q
-}
-
 // WithUser tells the query-builder to eager-load the nodes that are connected to
 // the "user" edge. The optional arguments are used to configure the query builder of the edge.
 func (_q *StateDefinitionsQuery) WithUser(opts ...func(*UserQuery)) *StateDefinitionsQuery {
@@ -441,25 +380,14 @@ func (_q *StateDefinitionsQuery) WithUser(opts ...func(*UserQuery)) *StateDefini
 	return _q
 }
 
-// WithWorkspace tells the query-builder to eager-load the nodes that are connected to
-// the "workspace" edge. The optional arguments are used to configure the query builder of the edge.
-func (_q *StateDefinitionsQuery) WithWorkspace(opts ...func(*WorkspaceQuery)) *StateDefinitionsQuery {
-	query := (&WorkspaceClient{config: _q.config}).Query()
+// WithOrgNodes tells the query-builder to eager-load the nodes that are connected to
+// the "org_nodes" edge. The optional arguments are used to configure the query builder of the edge.
+func (_q *StateDefinitionsQuery) WithOrgNodes(opts ...func(*OrgNodeQuery)) *StateDefinitionsQuery {
+	query := (&OrgNodeClient{config: _q.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
-	_q.withWorkspace = query
-	return _q
-}
-
-// WithProjects tells the query-builder to eager-load the nodes that are connected to
-// the "projects" edge. The optional arguments are used to configure the query builder of the edge.
-func (_q *StateDefinitionsQuery) WithProjects(opts ...func(*ProjectQuery)) *StateDefinitionsQuery {
-	query := (&ProjectClient{config: _q.config}).Query()
-	for _, opt := range opts {
-		opt(query)
-	}
-	_q.withProjects = query
+	_q.withOrgNodes = query
 	return _q
 }
 
@@ -552,12 +480,10 @@ func (_q *StateDefinitionsQuery) sqlAll(ctx context.Context, hooks ...queryHook)
 	var (
 		nodes       = []*StateDefinitions{}
 		_spec       = _q.querySpec()
-		loadedTypes = [6]bool{
+		loadedTypes = [4]bool{
 			_q.withEntityKind != nil,
-			_q.withTenants != nil,
 			_q.withUser != nil,
-			_q.withWorkspace != nil,
-			_q.withProjects != nil,
+			_q.withOrgNodes != nil,
 			_q.withSubscription != nil,
 		}
 	)
@@ -585,13 +511,6 @@ func (_q *StateDefinitionsQuery) sqlAll(ctx context.Context, hooks ...queryHook)
 			return nil, err
 		}
 	}
-	if query := _q.withTenants; query != nil {
-		if err := _q.loadTenants(ctx, query, nodes,
-			func(n *StateDefinitions) { n.Edges.Tenants = []*Tenant{} },
-			func(n *StateDefinitions, e *Tenant) { n.Edges.Tenants = append(n.Edges.Tenants, e) }); err != nil {
-			return nil, err
-		}
-	}
 	if query := _q.withUser; query != nil {
 		if err := _q.loadUser(ctx, query, nodes,
 			func(n *StateDefinitions) { n.Edges.User = []*User{} },
@@ -599,17 +518,10 @@ func (_q *StateDefinitionsQuery) sqlAll(ctx context.Context, hooks ...queryHook)
 			return nil, err
 		}
 	}
-	if query := _q.withWorkspace; query != nil {
-		if err := _q.loadWorkspace(ctx, query, nodes,
-			func(n *StateDefinitions) { n.Edges.Workspace = []*Workspace{} },
-			func(n *StateDefinitions, e *Workspace) { n.Edges.Workspace = append(n.Edges.Workspace, e) }); err != nil {
-			return nil, err
-		}
-	}
-	if query := _q.withProjects; query != nil {
-		if err := _q.loadProjects(ctx, query, nodes,
-			func(n *StateDefinitions) { n.Edges.Projects = []*Project{} },
-			func(n *StateDefinitions, e *Project) { n.Edges.Projects = append(n.Edges.Projects, e) }); err != nil {
+	if query := _q.withOrgNodes; query != nil {
+		if err := _q.loadOrgNodes(ctx, query, nodes,
+			func(n *StateDefinitions) { n.Edges.OrgNodes = []*OrgNode{} },
+			func(n *StateDefinitions, e *OrgNode) { n.Edges.OrgNodes = append(n.Edges.OrgNodes, e) }); err != nil {
 			return nil, err
 		}
 	}
@@ -652,36 +564,6 @@ func (_q *StateDefinitionsQuery) loadEntityKind(ctx context.Context, query *Enti
 	}
 	return nil
 }
-func (_q *StateDefinitionsQuery) loadTenants(ctx context.Context, query *TenantQuery, nodes []*StateDefinitions, init func(*StateDefinitions), assign func(*StateDefinitions, *Tenant)) error {
-	fks := make([]driver.Value, 0, len(nodes))
-	nodeids := make(map[uuid.UUID]*StateDefinitions)
-	for i := range nodes {
-		fks = append(fks, nodes[i].ID)
-		nodeids[nodes[i].ID] = nodes[i]
-		if init != nil {
-			init(nodes[i])
-		}
-	}
-	if len(query.ctx.Fields) > 0 {
-		query.ctx.AppendFieldOnce(tenant.FieldStatusID)
-	}
-	query.Where(predicate.Tenant(func(s *sql.Selector) {
-		s.Where(sql.InValues(s.C(statedefinitions.TenantsColumn), fks...))
-	}))
-	neighbors, err := query.All(ctx)
-	if err != nil {
-		return err
-	}
-	for _, n := range neighbors {
-		fk := n.StatusID
-		node, ok := nodeids[fk]
-		if !ok {
-			return fmt.Errorf(`unexpected referenced foreign-key "status_id" returned %v for node %v`, fk, n.ID)
-		}
-		assign(node, n)
-	}
-	return nil
-}
 func (_q *StateDefinitionsQuery) loadUser(ctx context.Context, query *UserQuery, nodes []*StateDefinitions, init func(*StateDefinitions), assign func(*StateDefinitions, *User)) error {
 	fks := make([]driver.Value, 0, len(nodes))
 	nodeids := make(map[uuid.UUID]*StateDefinitions)
@@ -712,7 +594,7 @@ func (_q *StateDefinitionsQuery) loadUser(ctx context.Context, query *UserQuery,
 	}
 	return nil
 }
-func (_q *StateDefinitionsQuery) loadWorkspace(ctx context.Context, query *WorkspaceQuery, nodes []*StateDefinitions, init func(*StateDefinitions), assign func(*StateDefinitions, *Workspace)) error {
+func (_q *StateDefinitionsQuery) loadOrgNodes(ctx context.Context, query *OrgNodeQuery, nodes []*StateDefinitions, init func(*StateDefinitions), assign func(*StateDefinitions, *OrgNode)) error {
 	fks := make([]driver.Value, 0, len(nodes))
 	nodeids := make(map[uuid.UUID]*StateDefinitions)
 	for i := range nodes {
@@ -723,40 +605,10 @@ func (_q *StateDefinitionsQuery) loadWorkspace(ctx context.Context, query *Works
 		}
 	}
 	if len(query.ctx.Fields) > 0 {
-		query.ctx.AppendFieldOnce(workspace.FieldStatusID)
+		query.ctx.AppendFieldOnce(orgnode.FieldStatusID)
 	}
-	query.Where(predicate.Workspace(func(s *sql.Selector) {
-		s.Where(sql.InValues(s.C(statedefinitions.WorkspaceColumn), fks...))
-	}))
-	neighbors, err := query.All(ctx)
-	if err != nil {
-		return err
-	}
-	for _, n := range neighbors {
-		fk := n.StatusID
-		node, ok := nodeids[fk]
-		if !ok {
-			return fmt.Errorf(`unexpected referenced foreign-key "status_id" returned %v for node %v`, fk, n.ID)
-		}
-		assign(node, n)
-	}
-	return nil
-}
-func (_q *StateDefinitionsQuery) loadProjects(ctx context.Context, query *ProjectQuery, nodes []*StateDefinitions, init func(*StateDefinitions), assign func(*StateDefinitions, *Project)) error {
-	fks := make([]driver.Value, 0, len(nodes))
-	nodeids := make(map[uuid.UUID]*StateDefinitions)
-	for i := range nodes {
-		fks = append(fks, nodes[i].ID)
-		nodeids[nodes[i].ID] = nodes[i]
-		if init != nil {
-			init(nodes[i])
-		}
-	}
-	if len(query.ctx.Fields) > 0 {
-		query.ctx.AppendFieldOnce(project.FieldStatusID)
-	}
-	query.Where(predicate.Project(func(s *sql.Selector) {
-		s.Where(sql.InValues(s.C(statedefinitions.ProjectsColumn), fks...))
+	query.Where(predicate.OrgNode(func(s *sql.Selector) {
+		s.Where(sql.InValues(s.C(statedefinitions.OrgNodesColumn), fks...))
 	}))
 	neighbors, err := query.All(ctx)
 	if err != nil {

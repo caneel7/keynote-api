@@ -389,29 +389,6 @@ func HasEntityKindWith(preds ...predicate.EntityKind) predicate.StateDefinitions
 	})
 }
 
-// HasTenants applies the HasEdge predicate on the "tenants" edge.
-func HasTenants() predicate.StateDefinitions {
-	return predicate.StateDefinitions(func(s *sql.Selector) {
-		step := sqlgraph.NewStep(
-			sqlgraph.From(Table, FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, TenantsTable, TenantsColumn),
-		)
-		sqlgraph.HasNeighbors(s, step)
-	})
-}
-
-// HasTenantsWith applies the HasEdge predicate on the "tenants" edge with a given conditions (other predicates).
-func HasTenantsWith(preds ...predicate.Tenant) predicate.StateDefinitions {
-	return predicate.StateDefinitions(func(s *sql.Selector) {
-		step := newTenantsStep()
-		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
-			for _, p := range preds {
-				p(s)
-			}
-		})
-	})
-}
-
 // HasUser applies the HasEdge predicate on the "user" edge.
 func HasUser() predicate.StateDefinitions {
 	return predicate.StateDefinitions(func(s *sql.Selector) {
@@ -435,44 +412,21 @@ func HasUserWith(preds ...predicate.User) predicate.StateDefinitions {
 	})
 }
 
-// HasWorkspace applies the HasEdge predicate on the "workspace" edge.
-func HasWorkspace() predicate.StateDefinitions {
+// HasOrgNodes applies the HasEdge predicate on the "org_nodes" edge.
+func HasOrgNodes() predicate.StateDefinitions {
 	return predicate.StateDefinitions(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, WorkspaceTable, WorkspaceColumn),
+			sqlgraph.Edge(sqlgraph.O2M, false, OrgNodesTable, OrgNodesColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
 	})
 }
 
-// HasWorkspaceWith applies the HasEdge predicate on the "workspace" edge with a given conditions (other predicates).
-func HasWorkspaceWith(preds ...predicate.Workspace) predicate.StateDefinitions {
+// HasOrgNodesWith applies the HasEdge predicate on the "org_nodes" edge with a given conditions (other predicates).
+func HasOrgNodesWith(preds ...predicate.OrgNode) predicate.StateDefinitions {
 	return predicate.StateDefinitions(func(s *sql.Selector) {
-		step := newWorkspaceStep()
-		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
-			for _, p := range preds {
-				p(s)
-			}
-		})
-	})
-}
-
-// HasProjects applies the HasEdge predicate on the "projects" edge.
-func HasProjects() predicate.StateDefinitions {
-	return predicate.StateDefinitions(func(s *sql.Selector) {
-		step := sqlgraph.NewStep(
-			sqlgraph.From(Table, FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, ProjectsTable, ProjectsColumn),
-		)
-		sqlgraph.HasNeighbors(s, step)
-	})
-}
-
-// HasProjectsWith applies the HasEdge predicate on the "projects" edge with a given conditions (other predicates).
-func HasProjectsWith(preds ...predicate.Project) predicate.StateDefinitions {
-	return predicate.StateDefinitions(func(s *sql.Selector) {
-		step := newProjectsStep()
+		step := newOrgNodesStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)

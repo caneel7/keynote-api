@@ -7,7 +7,6 @@ import (
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
-	"github.com/google/uuid"
 )
 
 const (
@@ -15,61 +14,33 @@ const (
 	Label = "tenant"
 	// FieldID holds the string denoting the id field in the database.
 	FieldID = "id"
-	// FieldName holds the string denoting the name field in the database.
-	FieldName = "name"
 	// FieldSlug holds the string denoting the slug field in the database.
 	FieldSlug = "slug"
-	// FieldStatusID holds the string denoting the status_id field in the database.
-	FieldStatusID = "status_id"
-	// FieldCreatedBy holds the string denoting the created_by field in the database.
-	FieldCreatedBy = "created_by"
 	// FieldCreatedAt holds the string denoting the created_at field in the database.
 	FieldCreatedAt = "created_at"
 	// FieldUpdatedAt holds the string denoting the updated_at field in the database.
 	FieldUpdatedAt = "updated_at"
-	// FieldDeletedAt holds the string denoting the deleted_at field in the database.
-	FieldDeletedAt = "deleted_at"
-	// EdgeState holds the string denoting the state edge name in mutations.
-	EdgeState = "state"
-	// EdgeUser holds the string denoting the user edge name in mutations.
-	EdgeUser = "user"
-	// EdgeWorkspace holds the string denoting the workspace edge name in mutations.
-	EdgeWorkspace = "workspace"
+	// EdgeWorkspaces holds the string denoting the workspaces edge name in mutations.
+	EdgeWorkspaces = "workspaces"
 	// EdgeProjects holds the string denoting the projects edge name in mutations.
 	EdgeProjects = "projects"
 	// EdgeRoles holds the string denoting the roles edge name in mutations.
 	EdgeRoles = "roles"
 	// EdgeRolepermissions holds the string denoting the rolepermissions edge name in mutations.
 	EdgeRolepermissions = "rolepermissions"
-	// EdgeTenantrole holds the string denoting the tenantrole edge name in mutations.
-	EdgeTenantrole = "tenantrole"
-	// EdgeProjectrole holds the string denoting the projectrole edge name in mutations.
-	EdgeProjectrole = "projectrole"
+	// EdgeAssignments holds the string denoting the assignments edge name in mutations.
+	EdgeAssignments = "assignments"
 	// EdgeSubscription holds the string denoting the subscription edge name in mutations.
 	EdgeSubscription = "subscription"
 	// Table holds the table name of the tenant in the database.
 	Table = "tenants"
-	// StateTable is the table that holds the state relation/edge.
-	StateTable = "tenants"
-	// StateInverseTable is the table name for the StateDefinitions entity.
-	// It exists in this package in order to avoid circular dependency with the "statedefinitions" package.
-	StateInverseTable = "state_definitions"
-	// StateColumn is the table column denoting the state relation/edge.
-	StateColumn = "status_id"
-	// UserTable is the table that holds the user relation/edge.
-	UserTable = "tenants"
-	// UserInverseTable is the table name for the User entity.
-	// It exists in this package in order to avoid circular dependency with the "user" package.
-	UserInverseTable = "users"
-	// UserColumn is the table column denoting the user relation/edge.
-	UserColumn = "created_by"
-	// WorkspaceTable is the table that holds the workspace relation/edge.
-	WorkspaceTable = "workspaces"
-	// WorkspaceInverseTable is the table name for the Workspace entity.
+	// WorkspacesTable is the table that holds the workspaces relation/edge.
+	WorkspacesTable = "workspaces"
+	// WorkspacesInverseTable is the table name for the Workspace entity.
 	// It exists in this package in order to avoid circular dependency with the "workspace" package.
-	WorkspaceInverseTable = "workspaces"
-	// WorkspaceColumn is the table column denoting the workspace relation/edge.
-	WorkspaceColumn = "tenant_id"
+	WorkspacesInverseTable = "workspaces"
+	// WorkspacesColumn is the table column denoting the workspaces relation/edge.
+	WorkspacesColumn = "tenant_id"
 	// ProjectsTable is the table that holds the projects relation/edge.
 	ProjectsTable = "projects"
 	// ProjectsInverseTable is the table name for the Project entity.
@@ -91,20 +62,13 @@ const (
 	RolepermissionsInverseTable = "role_permissions"
 	// RolepermissionsColumn is the table column denoting the rolepermissions relation/edge.
 	RolepermissionsColumn = "tenant_id"
-	// TenantroleTable is the table that holds the tenantrole relation/edge.
-	TenantroleTable = "tenant_members"
-	// TenantroleInverseTable is the table name for the TenantMember entity.
-	// It exists in this package in order to avoid circular dependency with the "tenantmember" package.
-	TenantroleInverseTable = "tenant_members"
-	// TenantroleColumn is the table column denoting the tenantrole relation/edge.
-	TenantroleColumn = "tenant_id"
-	// ProjectroleTable is the table that holds the projectrole relation/edge.
-	ProjectroleTable = "project_members"
-	// ProjectroleInverseTable is the table name for the ProjectMember entity.
-	// It exists in this package in order to avoid circular dependency with the "projectmember" package.
-	ProjectroleInverseTable = "project_members"
-	// ProjectroleColumn is the table column denoting the projectrole relation/edge.
-	ProjectroleColumn = "tenant_id"
+	// AssignmentsTable is the table that holds the assignments relation/edge.
+	AssignmentsTable = "user_node_assignments"
+	// AssignmentsInverseTable is the table name for the UserNodeAssignment entity.
+	// It exists in this package in order to avoid circular dependency with the "usernodeassignment" package.
+	AssignmentsInverseTable = "user_node_assignments"
+	// AssignmentsColumn is the table column denoting the assignments relation/edge.
+	AssignmentsColumn = "tenant_id"
 	// SubscriptionTable is the table that holds the subscription relation/edge.
 	SubscriptionTable = "subscriptions"
 	// SubscriptionInverseTable is the table name for the Subscription entity.
@@ -117,13 +81,9 @@ const (
 // Columns holds all SQL columns for tenant fields.
 var Columns = []string{
 	FieldID,
-	FieldName,
 	FieldSlug,
-	FieldStatusID,
-	FieldCreatedBy,
 	FieldCreatedAt,
 	FieldUpdatedAt,
-	FieldDeletedAt,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -137,8 +97,6 @@ func ValidColumn(column string) bool {
 }
 
 var (
-	// NameValidator is a validator for the "name" field. It is called by the builders before save.
-	NameValidator func(string) error
 	// SlugValidator is a validator for the "slug" field. It is called by the builders before save.
 	SlugValidator func(string) error
 	// DefaultCreatedAt holds the default value on creation for the "created_at" field.
@@ -147,8 +105,6 @@ var (
 	DefaultUpdatedAt func() time.Time
 	// UpdateDefaultUpdatedAt holds the default value on update for the "updated_at" field.
 	UpdateDefaultUpdatedAt func() time.Time
-	// DefaultID holds the default value on creation for the "id" field.
-	DefaultID func() uuid.UUID
 )
 
 // OrderOption defines the ordering options for the Tenant queries.
@@ -159,24 +115,9 @@ func ByID(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldID, opts...).ToFunc()
 }
 
-// ByName orders the results by the name field.
-func ByName(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldName, opts...).ToFunc()
-}
-
 // BySlug orders the results by the slug field.
 func BySlug(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldSlug, opts...).ToFunc()
-}
-
-// ByStatusID orders the results by the status_id field.
-func ByStatusID(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldStatusID, opts...).ToFunc()
-}
-
-// ByCreatedBy orders the results by the created_by field.
-func ByCreatedBy(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldCreatedBy, opts...).ToFunc()
 }
 
 // ByCreatedAt orders the results by the created_at field.
@@ -189,29 +130,17 @@ func ByUpdatedAt(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldUpdatedAt, opts...).ToFunc()
 }
 
-// ByDeletedAt orders the results by the deleted_at field.
-func ByDeletedAt(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldDeletedAt, opts...).ToFunc()
-}
-
-// ByStateField orders the results by state field.
-func ByStateField(field string, opts ...sql.OrderTermOption) OrderOption {
+// ByWorkspacesCount orders the results by workspaces count.
+func ByWorkspacesCount(opts ...sql.OrderTermOption) OrderOption {
 	return func(s *sql.Selector) {
-		sqlgraph.OrderByNeighborTerms(s, newStateStep(), sql.OrderByField(field, opts...))
+		sqlgraph.OrderByNeighborsCount(s, newWorkspacesStep(), opts...)
 	}
 }
 
-// ByUserField orders the results by user field.
-func ByUserField(field string, opts ...sql.OrderTermOption) OrderOption {
+// ByWorkspaces orders the results by workspaces terms.
+func ByWorkspaces(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
 	return func(s *sql.Selector) {
-		sqlgraph.OrderByNeighborTerms(s, newUserStep(), sql.OrderByField(field, opts...))
-	}
-}
-
-// ByWorkspaceField orders the results by workspace field.
-func ByWorkspaceField(field string, opts ...sql.OrderTermOption) OrderOption {
-	return func(s *sql.Selector) {
-		sqlgraph.OrderByNeighborTerms(s, newWorkspaceStep(), sql.OrderByField(field, opts...))
+		sqlgraph.OrderByNeighborTerms(s, newWorkspacesStep(), append([]sql.OrderTerm{term}, terms...)...)
 	}
 }
 
@@ -257,31 +186,17 @@ func ByRolepermissions(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
 	}
 }
 
-// ByTenantroleCount orders the results by tenantrole count.
-func ByTenantroleCount(opts ...sql.OrderTermOption) OrderOption {
+// ByAssignmentsCount orders the results by assignments count.
+func ByAssignmentsCount(opts ...sql.OrderTermOption) OrderOption {
 	return func(s *sql.Selector) {
-		sqlgraph.OrderByNeighborsCount(s, newTenantroleStep(), opts...)
+		sqlgraph.OrderByNeighborsCount(s, newAssignmentsStep(), opts...)
 	}
 }
 
-// ByTenantrole orders the results by tenantrole terms.
-func ByTenantrole(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+// ByAssignments orders the results by assignments terms.
+func ByAssignments(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
 	return func(s *sql.Selector) {
-		sqlgraph.OrderByNeighborTerms(s, newTenantroleStep(), append([]sql.OrderTerm{term}, terms...)...)
-	}
-}
-
-// ByProjectroleCount orders the results by projectrole count.
-func ByProjectroleCount(opts ...sql.OrderTermOption) OrderOption {
-	return func(s *sql.Selector) {
-		sqlgraph.OrderByNeighborsCount(s, newProjectroleStep(), opts...)
-	}
-}
-
-// ByProjectrole orders the results by projectrole terms.
-func ByProjectrole(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
-	return func(s *sql.Selector) {
-		sqlgraph.OrderByNeighborTerms(s, newProjectroleStep(), append([]sql.OrderTerm{term}, terms...)...)
+		sqlgraph.OrderByNeighborTerms(s, newAssignmentsStep(), append([]sql.OrderTerm{term}, terms...)...)
 	}
 }
 
@@ -298,25 +213,11 @@ func BySubscription(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
 		sqlgraph.OrderByNeighborTerms(s, newSubscriptionStep(), append([]sql.OrderTerm{term}, terms...)...)
 	}
 }
-func newStateStep() *sqlgraph.Step {
+func newWorkspacesStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
-		sqlgraph.To(StateInverseTable, FieldID),
-		sqlgraph.Edge(sqlgraph.M2O, true, StateTable, StateColumn),
-	)
-}
-func newUserStep() *sqlgraph.Step {
-	return sqlgraph.NewStep(
-		sqlgraph.From(Table, FieldID),
-		sqlgraph.To(UserInverseTable, FieldID),
-		sqlgraph.Edge(sqlgraph.O2O, true, UserTable, UserColumn),
-	)
-}
-func newWorkspaceStep() *sqlgraph.Step {
-	return sqlgraph.NewStep(
-		sqlgraph.From(Table, FieldID),
-		sqlgraph.To(WorkspaceInverseTable, FieldID),
-		sqlgraph.Edge(sqlgraph.O2O, false, WorkspaceTable, WorkspaceColumn),
+		sqlgraph.To(WorkspacesInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, false, WorkspacesTable, WorkspacesColumn),
 	)
 }
 func newProjectsStep() *sqlgraph.Step {
@@ -340,18 +241,11 @@ func newRolepermissionsStep() *sqlgraph.Step {
 		sqlgraph.Edge(sqlgraph.O2M, false, RolepermissionsTable, RolepermissionsColumn),
 	)
 }
-func newTenantroleStep() *sqlgraph.Step {
+func newAssignmentsStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
-		sqlgraph.To(TenantroleInverseTable, FieldID),
-		sqlgraph.Edge(sqlgraph.O2M, false, TenantroleTable, TenantroleColumn),
-	)
-}
-func newProjectroleStep() *sqlgraph.Step {
-	return sqlgraph.NewStep(
-		sqlgraph.From(Table, FieldID),
-		sqlgraph.To(ProjectroleInverseTable, FieldID),
-		sqlgraph.Edge(sqlgraph.O2M, false, ProjectroleTable, ProjectroleColumn),
+		sqlgraph.To(AssignmentsInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, false, AssignmentsTable, AssignmentsColumn),
 	)
 }
 func newSubscriptionStep() *sqlgraph.Step {

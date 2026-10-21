@@ -4,7 +4,6 @@ package gen
 
 import (
 	"context"
-	"database/sql/driver"
 	"fmt"
 	"math"
 
@@ -13,10 +12,7 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/caneel7/keynote-api/internal/ent/gen/predicate"
-	"github.com/caneel7/keynote-api/internal/ent/gen/project"
-	"github.com/caneel7/keynote-api/internal/ent/gen/statedefinitions"
 	"github.com/caneel7/keynote-api/internal/ent/gen/tenant"
-	"github.com/caneel7/keynote-api/internal/ent/gen/user"
 	"github.com/caneel7/keynote-api/internal/ent/gen/workspace"
 	"github.com/google/uuid"
 )
@@ -24,14 +20,11 @@ import (
 // WorkspaceQuery is the builder for querying Workspace entities.
 type WorkspaceQuery struct {
 	config
-	ctx           *QueryContext
-	order         []workspace.OrderOption
-	inters        []Interceptor
-	predicates    []predicate.Workspace
-	withStatus    *StateDefinitionsQuery
-	withTenant    *TenantQuery
-	withCreatedby *UserQuery
-	withProjects  *ProjectQuery
+	ctx        *QueryContext
+	order      []workspace.OrderOption
+	inters     []Interceptor
+	predicates []predicate.Workspace
+	withTenant *TenantQuery
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -68,28 +61,6 @@ func (_q *WorkspaceQuery) Order(o ...workspace.OrderOption) *WorkspaceQuery {
 	return _q
 }
 
-// QueryStatus chains the current query on the "status" edge.
-func (_q *WorkspaceQuery) QueryStatus() *StateDefinitionsQuery {
-	query := (&StateDefinitionsClient{config: _q.config}).Query()
-	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
-		if err := _q.prepareQuery(ctx); err != nil {
-			return nil, err
-		}
-		selector := _q.sqlQuery(ctx)
-		if err := selector.Err(); err != nil {
-			return nil, err
-		}
-		step := sqlgraph.NewStep(
-			sqlgraph.From(workspace.Table, workspace.FieldID, selector),
-			sqlgraph.To(statedefinitions.Table, statedefinitions.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, workspace.StatusTable, workspace.StatusColumn),
-		)
-		fromU = sqlgraph.SetNeighbors(_q.driver.Dialect(), step)
-		return fromU, nil
-	}
-	return query
-}
-
 // QueryTenant chains the current query on the "tenant" edge.
 func (_q *WorkspaceQuery) QueryTenant() *TenantQuery {
 	query := (&TenantClient{config: _q.config}).Query()
@@ -104,51 +75,7 @@ func (_q *WorkspaceQuery) QueryTenant() *TenantQuery {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(workspace.Table, workspace.FieldID, selector),
 			sqlgraph.To(tenant.Table, tenant.FieldID),
-			sqlgraph.Edge(sqlgraph.O2O, true, workspace.TenantTable, workspace.TenantColumn),
-		)
-		fromU = sqlgraph.SetNeighbors(_q.driver.Dialect(), step)
-		return fromU, nil
-	}
-	return query
-}
-
-// QueryCreatedby chains the current query on the "createdby" edge.
-func (_q *WorkspaceQuery) QueryCreatedby() *UserQuery {
-	query := (&UserClient{config: _q.config}).Query()
-	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
-		if err := _q.prepareQuery(ctx); err != nil {
-			return nil, err
-		}
-		selector := _q.sqlQuery(ctx)
-		if err := selector.Err(); err != nil {
-			return nil, err
-		}
-		step := sqlgraph.NewStep(
-			sqlgraph.From(workspace.Table, workspace.FieldID, selector),
-			sqlgraph.To(user.Table, user.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, workspace.CreatedbyTable, workspace.CreatedbyColumn),
-		)
-		fromU = sqlgraph.SetNeighbors(_q.driver.Dialect(), step)
-		return fromU, nil
-	}
-	return query
-}
-
-// QueryProjects chains the current query on the "projects" edge.
-func (_q *WorkspaceQuery) QueryProjects() *ProjectQuery {
-	query := (&ProjectClient{config: _q.config}).Query()
-	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
-		if err := _q.prepareQuery(ctx); err != nil {
-			return nil, err
-		}
-		selector := _q.sqlQuery(ctx)
-		if err := selector.Err(); err != nil {
-			return nil, err
-		}
-		step := sqlgraph.NewStep(
-			sqlgraph.From(workspace.Table, workspace.FieldID, selector),
-			sqlgraph.To(project.Table, project.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, workspace.ProjectsTable, workspace.ProjectsColumn),
+			sqlgraph.Edge(sqlgraph.M2O, true, workspace.TenantTable, workspace.TenantColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(_q.driver.Dialect(), step)
 		return fromU, nil
@@ -343,30 +270,16 @@ func (_q *WorkspaceQuery) Clone() *WorkspaceQuery {
 		return nil
 	}
 	return &WorkspaceQuery{
-		config:        _q.config,
-		ctx:           _q.ctx.Clone(),
-		order:         append([]workspace.OrderOption{}, _q.order...),
-		inters:        append([]Interceptor{}, _q.inters...),
-		predicates:    append([]predicate.Workspace{}, _q.predicates...),
-		withStatus:    _q.withStatus.Clone(),
-		withTenant:    _q.withTenant.Clone(),
-		withCreatedby: _q.withCreatedby.Clone(),
-		withProjects:  _q.withProjects.Clone(),
+		config:     _q.config,
+		ctx:        _q.ctx.Clone(),
+		order:      append([]workspace.OrderOption{}, _q.order...),
+		inters:     append([]Interceptor{}, _q.inters...),
+		predicates: append([]predicate.Workspace{}, _q.predicates...),
+		withTenant: _q.withTenant.Clone(),
 		// clone intermediate query.
 		sql:  _q.sql.Clone(),
 		path: _q.path,
 	}
-}
-
-// WithStatus tells the query-builder to eager-load the nodes that are connected to
-// the "status" edge. The optional arguments are used to configure the query builder of the edge.
-func (_q *WorkspaceQuery) WithStatus(opts ...func(*StateDefinitionsQuery)) *WorkspaceQuery {
-	query := (&StateDefinitionsClient{config: _q.config}).Query()
-	for _, opt := range opts {
-		opt(query)
-	}
-	_q.withStatus = query
-	return _q
 }
 
 // WithTenant tells the query-builder to eager-load the nodes that are connected to
@@ -377,28 +290,6 @@ func (_q *WorkspaceQuery) WithTenant(opts ...func(*TenantQuery)) *WorkspaceQuery
 		opt(query)
 	}
 	_q.withTenant = query
-	return _q
-}
-
-// WithCreatedby tells the query-builder to eager-load the nodes that are connected to
-// the "createdby" edge. The optional arguments are used to configure the query builder of the edge.
-func (_q *WorkspaceQuery) WithCreatedby(opts ...func(*UserQuery)) *WorkspaceQuery {
-	query := (&UserClient{config: _q.config}).Query()
-	for _, opt := range opts {
-		opt(query)
-	}
-	_q.withCreatedby = query
-	return _q
-}
-
-// WithProjects tells the query-builder to eager-load the nodes that are connected to
-// the "projects" edge. The optional arguments are used to configure the query builder of the edge.
-func (_q *WorkspaceQuery) WithProjects(opts ...func(*ProjectQuery)) *WorkspaceQuery {
-	query := (&ProjectClient{config: _q.config}).Query()
-	for _, opt := range opts {
-		opt(query)
-	}
-	_q.withProjects = query
 	return _q
 }
 
@@ -480,11 +371,8 @@ func (_q *WorkspaceQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Wo
 	var (
 		nodes       = []*Workspace{}
 		_spec       = _q.querySpec()
-		loadedTypes = [4]bool{
-			_q.withStatus != nil,
+		loadedTypes = [1]bool{
 			_q.withTenant != nil,
-			_q.withCreatedby != nil,
-			_q.withProjects != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]any, error) {
@@ -505,63 +393,15 @@ func (_q *WorkspaceQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Wo
 	if len(nodes) == 0 {
 		return nodes, nil
 	}
-	if query := _q.withStatus; query != nil {
-		if err := _q.loadStatus(ctx, query, nodes, nil,
-			func(n *Workspace, e *StateDefinitions) { n.Edges.Status = e }); err != nil {
-			return nil, err
-		}
-	}
 	if query := _q.withTenant; query != nil {
 		if err := _q.loadTenant(ctx, query, nodes, nil,
 			func(n *Workspace, e *Tenant) { n.Edges.Tenant = e }); err != nil {
 			return nil, err
 		}
 	}
-	if query := _q.withCreatedby; query != nil {
-		if err := _q.loadCreatedby(ctx, query, nodes, nil,
-			func(n *Workspace, e *User) { n.Edges.Createdby = e }); err != nil {
-			return nil, err
-		}
-	}
-	if query := _q.withProjects; query != nil {
-		if err := _q.loadProjects(ctx, query, nodes,
-			func(n *Workspace) { n.Edges.Projects = []*Project{} },
-			func(n *Workspace, e *Project) { n.Edges.Projects = append(n.Edges.Projects, e) }); err != nil {
-			return nil, err
-		}
-	}
 	return nodes, nil
 }
 
-func (_q *WorkspaceQuery) loadStatus(ctx context.Context, query *StateDefinitionsQuery, nodes []*Workspace, init func(*Workspace), assign func(*Workspace, *StateDefinitions)) error {
-	ids := make([]uuid.UUID, 0, len(nodes))
-	nodeids := make(map[uuid.UUID][]*Workspace)
-	for i := range nodes {
-		fk := nodes[i].StatusID
-		if _, ok := nodeids[fk]; !ok {
-			ids = append(ids, fk)
-		}
-		nodeids[fk] = append(nodeids[fk], nodes[i])
-	}
-	if len(ids) == 0 {
-		return nil
-	}
-	query.Where(statedefinitions.IDIn(ids...))
-	neighbors, err := query.All(ctx)
-	if err != nil {
-		return err
-	}
-	for _, n := range neighbors {
-		nodes, ok := nodeids[n.ID]
-		if !ok {
-			return fmt.Errorf(`unexpected foreign-key "status_id" returned %v`, n.ID)
-		}
-		for i := range nodes {
-			assign(nodes[i], n)
-		}
-	}
-	return nil
-}
 func (_q *WorkspaceQuery) loadTenant(ctx context.Context, query *TenantQuery, nodes []*Workspace, init func(*Workspace), assign func(*Workspace, *Tenant)) error {
 	ids := make([]uuid.UUID, 0, len(nodes))
 	nodeids := make(map[uuid.UUID][]*Workspace)
@@ -591,65 +431,6 @@ func (_q *WorkspaceQuery) loadTenant(ctx context.Context, query *TenantQuery, no
 	}
 	return nil
 }
-func (_q *WorkspaceQuery) loadCreatedby(ctx context.Context, query *UserQuery, nodes []*Workspace, init func(*Workspace), assign func(*Workspace, *User)) error {
-	ids := make([]uuid.UUID, 0, len(nodes))
-	nodeids := make(map[uuid.UUID][]*Workspace)
-	for i := range nodes {
-		fk := nodes[i].CreatedBy
-		if _, ok := nodeids[fk]; !ok {
-			ids = append(ids, fk)
-		}
-		nodeids[fk] = append(nodeids[fk], nodes[i])
-	}
-	if len(ids) == 0 {
-		return nil
-	}
-	query.Where(user.IDIn(ids...))
-	neighbors, err := query.All(ctx)
-	if err != nil {
-		return err
-	}
-	for _, n := range neighbors {
-		nodes, ok := nodeids[n.ID]
-		if !ok {
-			return fmt.Errorf(`unexpected foreign-key "created_by" returned %v`, n.ID)
-		}
-		for i := range nodes {
-			assign(nodes[i], n)
-		}
-	}
-	return nil
-}
-func (_q *WorkspaceQuery) loadProjects(ctx context.Context, query *ProjectQuery, nodes []*Workspace, init func(*Workspace), assign func(*Workspace, *Project)) error {
-	fks := make([]driver.Value, 0, len(nodes))
-	nodeids := make(map[uuid.UUID]*Workspace)
-	for i := range nodes {
-		fks = append(fks, nodes[i].ID)
-		nodeids[nodes[i].ID] = nodes[i]
-		if init != nil {
-			init(nodes[i])
-		}
-	}
-	if len(query.ctx.Fields) > 0 {
-		query.ctx.AppendFieldOnce(project.FieldWorkspaceID)
-	}
-	query.Where(predicate.Project(func(s *sql.Selector) {
-		s.Where(sql.InValues(s.C(workspace.ProjectsColumn), fks...))
-	}))
-	neighbors, err := query.All(ctx)
-	if err != nil {
-		return err
-	}
-	for _, n := range neighbors {
-		fk := n.WorkspaceID
-		node, ok := nodeids[fk]
-		if !ok {
-			return fmt.Errorf(`unexpected referenced foreign-key "workspace_id" returned %v for node %v`, fk, n.ID)
-		}
-		assign(node, n)
-	}
-	return nil
-}
 
 func (_q *WorkspaceQuery) sqlCount(ctx context.Context) (int, error) {
 	_spec := _q.querySpec()
@@ -676,14 +457,8 @@ func (_q *WorkspaceQuery) querySpec() *sqlgraph.QuerySpec {
 				_spec.Node.Columns = append(_spec.Node.Columns, fields[i])
 			}
 		}
-		if _q.withStatus != nil {
-			_spec.Node.AddColumnOnce(workspace.FieldStatusID)
-		}
 		if _q.withTenant != nil {
 			_spec.Node.AddColumnOnce(workspace.FieldTenantID)
-		}
-		if _q.withCreatedby != nil {
-			_spec.Node.AddColumnOnce(workspace.FieldCreatedBy)
 		}
 	}
 	if ps := _q.predicates; len(ps) > 0 {

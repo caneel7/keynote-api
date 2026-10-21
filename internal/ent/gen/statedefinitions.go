@@ -41,19 +41,15 @@ type StateDefinitions struct {
 type StateDefinitionsEdges struct {
 	// EntityKind holds the value of the entity_kind edge.
 	EntityKind *EntityKind `json:"entity_kind,omitempty"`
-	// Tenants holds the value of the tenants edge.
-	Tenants []*Tenant `json:"tenants,omitempty"`
 	// User holds the value of the user edge.
 	User []*User `json:"user,omitempty"`
-	// Workspace holds the value of the workspace edge.
-	Workspace []*Workspace `json:"workspace,omitempty"`
-	// Projects holds the value of the projects edge.
-	Projects []*Project `json:"projects,omitempty"`
+	// OrgNodes holds the value of the org_nodes edge.
+	OrgNodes []*OrgNode `json:"org_nodes,omitempty"`
 	// Subscription holds the value of the subscription edge.
 	Subscription []*Subscription `json:"subscription,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [6]bool
+	loadedTypes [4]bool
 }
 
 // EntityKindOrErr returns the EntityKind value or an error if the edge
@@ -67,46 +63,28 @@ func (e StateDefinitionsEdges) EntityKindOrErr() (*EntityKind, error) {
 	return nil, &NotLoadedError{edge: "entity_kind"}
 }
 
-// TenantsOrErr returns the Tenants value or an error if the edge
-// was not loaded in eager-loading.
-func (e StateDefinitionsEdges) TenantsOrErr() ([]*Tenant, error) {
-	if e.loadedTypes[1] {
-		return e.Tenants, nil
-	}
-	return nil, &NotLoadedError{edge: "tenants"}
-}
-
 // UserOrErr returns the User value or an error if the edge
 // was not loaded in eager-loading.
 func (e StateDefinitionsEdges) UserOrErr() ([]*User, error) {
-	if e.loadedTypes[2] {
+	if e.loadedTypes[1] {
 		return e.User, nil
 	}
 	return nil, &NotLoadedError{edge: "user"}
 }
 
-// WorkspaceOrErr returns the Workspace value or an error if the edge
+// OrgNodesOrErr returns the OrgNodes value or an error if the edge
 // was not loaded in eager-loading.
-func (e StateDefinitionsEdges) WorkspaceOrErr() ([]*Workspace, error) {
-	if e.loadedTypes[3] {
-		return e.Workspace, nil
+func (e StateDefinitionsEdges) OrgNodesOrErr() ([]*OrgNode, error) {
+	if e.loadedTypes[2] {
+		return e.OrgNodes, nil
 	}
-	return nil, &NotLoadedError{edge: "workspace"}
-}
-
-// ProjectsOrErr returns the Projects value or an error if the edge
-// was not loaded in eager-loading.
-func (e StateDefinitionsEdges) ProjectsOrErr() ([]*Project, error) {
-	if e.loadedTypes[4] {
-		return e.Projects, nil
-	}
-	return nil, &NotLoadedError{edge: "projects"}
+	return nil, &NotLoadedError{edge: "org_nodes"}
 }
 
 // SubscriptionOrErr returns the Subscription value or an error if the edge
 // was not loaded in eager-loading.
 func (e StateDefinitionsEdges) SubscriptionOrErr() ([]*Subscription, error) {
-	if e.loadedTypes[5] {
+	if e.loadedTypes[3] {
 		return e.Subscription, nil
 	}
 	return nil, &NotLoadedError{edge: "subscription"}
@@ -199,24 +177,14 @@ func (_m *StateDefinitions) QueryEntityKind() *EntityKindQuery {
 	return NewStateDefinitionsClient(_m.config).QueryEntityKind(_m)
 }
 
-// QueryTenants queries the "tenants" edge of the StateDefinitions entity.
-func (_m *StateDefinitions) QueryTenants() *TenantQuery {
-	return NewStateDefinitionsClient(_m.config).QueryTenants(_m)
-}
-
 // QueryUser queries the "user" edge of the StateDefinitions entity.
 func (_m *StateDefinitions) QueryUser() *UserQuery {
 	return NewStateDefinitionsClient(_m.config).QueryUser(_m)
 }
 
-// QueryWorkspace queries the "workspace" edge of the StateDefinitions entity.
-func (_m *StateDefinitions) QueryWorkspace() *WorkspaceQuery {
-	return NewStateDefinitionsClient(_m.config).QueryWorkspace(_m)
-}
-
-// QueryProjects queries the "projects" edge of the StateDefinitions entity.
-func (_m *StateDefinitions) QueryProjects() *ProjectQuery {
-	return NewStateDefinitionsClient(_m.config).QueryProjects(_m)
+// QueryOrgNodes queries the "org_nodes" edge of the StateDefinitions entity.
+func (_m *StateDefinitions) QueryOrgNodes() *OrgNodeQuery {
+	return NewStateDefinitionsClient(_m.config).QueryOrgNodes(_m)
 }
 
 // QuerySubscription queries the "subscription" edge of the StateDefinitions entity.

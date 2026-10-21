@@ -61,24 +61,9 @@ func TenantID(v uuid.UUID) predicate.Workspace {
 	return predicate.Workspace(sql.FieldEQ(FieldTenantID, v))
 }
 
-// Name applies equality check predicate on the "name" field. It's identical to NameEQ.
-func Name(v string) predicate.Workspace {
-	return predicate.Workspace(sql.FieldEQ(FieldName, v))
-}
-
 // Slug applies equality check predicate on the "slug" field. It's identical to SlugEQ.
 func Slug(v string) predicate.Workspace {
 	return predicate.Workspace(sql.FieldEQ(FieldSlug, v))
-}
-
-// StatusID applies equality check predicate on the "status_id" field. It's identical to StatusIDEQ.
-func StatusID(v uuid.UUID) predicate.Workspace {
-	return predicate.Workspace(sql.FieldEQ(FieldStatusID, v))
-}
-
-// CreatedBy applies equality check predicate on the "created_by" field. It's identical to CreatedByEQ.
-func CreatedBy(v uuid.UUID) predicate.Workspace {
-	return predicate.Workspace(sql.FieldEQ(FieldCreatedBy, v))
 }
 
 // CreatedAt applies equality check predicate on the "created_at" field. It's identical to CreatedAtEQ.
@@ -89,11 +74,6 @@ func CreatedAt(v time.Time) predicate.Workspace {
 // UpdatedAt applies equality check predicate on the "updated_at" field. It's identical to UpdatedAtEQ.
 func UpdatedAt(v time.Time) predicate.Workspace {
 	return predicate.Workspace(sql.FieldEQ(FieldUpdatedAt, v))
-}
-
-// DeletedAt applies equality check predicate on the "deleted_at" field. It's identical to DeletedAtEQ.
-func DeletedAt(v time.Time) predicate.Workspace {
-	return predicate.Workspace(sql.FieldEQ(FieldDeletedAt, v))
 }
 
 // TenantIDEQ applies the EQ predicate on the "tenant_id" field.
@@ -114,71 +94,6 @@ func TenantIDIn(vs ...uuid.UUID) predicate.Workspace {
 // TenantIDNotIn applies the NotIn predicate on the "tenant_id" field.
 func TenantIDNotIn(vs ...uuid.UUID) predicate.Workspace {
 	return predicate.Workspace(sql.FieldNotIn(FieldTenantID, vs...))
-}
-
-// NameEQ applies the EQ predicate on the "name" field.
-func NameEQ(v string) predicate.Workspace {
-	return predicate.Workspace(sql.FieldEQ(FieldName, v))
-}
-
-// NameNEQ applies the NEQ predicate on the "name" field.
-func NameNEQ(v string) predicate.Workspace {
-	return predicate.Workspace(sql.FieldNEQ(FieldName, v))
-}
-
-// NameIn applies the In predicate on the "name" field.
-func NameIn(vs ...string) predicate.Workspace {
-	return predicate.Workspace(sql.FieldIn(FieldName, vs...))
-}
-
-// NameNotIn applies the NotIn predicate on the "name" field.
-func NameNotIn(vs ...string) predicate.Workspace {
-	return predicate.Workspace(sql.FieldNotIn(FieldName, vs...))
-}
-
-// NameGT applies the GT predicate on the "name" field.
-func NameGT(v string) predicate.Workspace {
-	return predicate.Workspace(sql.FieldGT(FieldName, v))
-}
-
-// NameGTE applies the GTE predicate on the "name" field.
-func NameGTE(v string) predicate.Workspace {
-	return predicate.Workspace(sql.FieldGTE(FieldName, v))
-}
-
-// NameLT applies the LT predicate on the "name" field.
-func NameLT(v string) predicate.Workspace {
-	return predicate.Workspace(sql.FieldLT(FieldName, v))
-}
-
-// NameLTE applies the LTE predicate on the "name" field.
-func NameLTE(v string) predicate.Workspace {
-	return predicate.Workspace(sql.FieldLTE(FieldName, v))
-}
-
-// NameContains applies the Contains predicate on the "name" field.
-func NameContains(v string) predicate.Workspace {
-	return predicate.Workspace(sql.FieldContains(FieldName, v))
-}
-
-// NameHasPrefix applies the HasPrefix predicate on the "name" field.
-func NameHasPrefix(v string) predicate.Workspace {
-	return predicate.Workspace(sql.FieldHasPrefix(FieldName, v))
-}
-
-// NameHasSuffix applies the HasSuffix predicate on the "name" field.
-func NameHasSuffix(v string) predicate.Workspace {
-	return predicate.Workspace(sql.FieldHasSuffix(FieldName, v))
-}
-
-// NameEqualFold applies the EqualFold predicate on the "name" field.
-func NameEqualFold(v string) predicate.Workspace {
-	return predicate.Workspace(sql.FieldEqualFold(FieldName, v))
-}
-
-// NameContainsFold applies the ContainsFold predicate on the "name" field.
-func NameContainsFold(v string) predicate.Workspace {
-	return predicate.Workspace(sql.FieldContainsFold(FieldName, v))
 }
 
 // SlugEQ applies the EQ predicate on the "slug" field.
@@ -244,46 +159,6 @@ func SlugEqualFold(v string) predicate.Workspace {
 // SlugContainsFold applies the ContainsFold predicate on the "slug" field.
 func SlugContainsFold(v string) predicate.Workspace {
 	return predicate.Workspace(sql.FieldContainsFold(FieldSlug, v))
-}
-
-// StatusIDEQ applies the EQ predicate on the "status_id" field.
-func StatusIDEQ(v uuid.UUID) predicate.Workspace {
-	return predicate.Workspace(sql.FieldEQ(FieldStatusID, v))
-}
-
-// StatusIDNEQ applies the NEQ predicate on the "status_id" field.
-func StatusIDNEQ(v uuid.UUID) predicate.Workspace {
-	return predicate.Workspace(sql.FieldNEQ(FieldStatusID, v))
-}
-
-// StatusIDIn applies the In predicate on the "status_id" field.
-func StatusIDIn(vs ...uuid.UUID) predicate.Workspace {
-	return predicate.Workspace(sql.FieldIn(FieldStatusID, vs...))
-}
-
-// StatusIDNotIn applies the NotIn predicate on the "status_id" field.
-func StatusIDNotIn(vs ...uuid.UUID) predicate.Workspace {
-	return predicate.Workspace(sql.FieldNotIn(FieldStatusID, vs...))
-}
-
-// CreatedByEQ applies the EQ predicate on the "created_by" field.
-func CreatedByEQ(v uuid.UUID) predicate.Workspace {
-	return predicate.Workspace(sql.FieldEQ(FieldCreatedBy, v))
-}
-
-// CreatedByNEQ applies the NEQ predicate on the "created_by" field.
-func CreatedByNEQ(v uuid.UUID) predicate.Workspace {
-	return predicate.Workspace(sql.FieldNEQ(FieldCreatedBy, v))
-}
-
-// CreatedByIn applies the In predicate on the "created_by" field.
-func CreatedByIn(vs ...uuid.UUID) predicate.Workspace {
-	return predicate.Workspace(sql.FieldIn(FieldCreatedBy, vs...))
-}
-
-// CreatedByNotIn applies the NotIn predicate on the "created_by" field.
-func CreatedByNotIn(vs ...uuid.UUID) predicate.Workspace {
-	return predicate.Workspace(sql.FieldNotIn(FieldCreatedBy, vs...))
 }
 
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.
@@ -366,85 +241,12 @@ func UpdatedAtLTE(v time.Time) predicate.Workspace {
 	return predicate.Workspace(sql.FieldLTE(FieldUpdatedAt, v))
 }
 
-// DeletedAtEQ applies the EQ predicate on the "deleted_at" field.
-func DeletedAtEQ(v time.Time) predicate.Workspace {
-	return predicate.Workspace(sql.FieldEQ(FieldDeletedAt, v))
-}
-
-// DeletedAtNEQ applies the NEQ predicate on the "deleted_at" field.
-func DeletedAtNEQ(v time.Time) predicate.Workspace {
-	return predicate.Workspace(sql.FieldNEQ(FieldDeletedAt, v))
-}
-
-// DeletedAtIn applies the In predicate on the "deleted_at" field.
-func DeletedAtIn(vs ...time.Time) predicate.Workspace {
-	return predicate.Workspace(sql.FieldIn(FieldDeletedAt, vs...))
-}
-
-// DeletedAtNotIn applies the NotIn predicate on the "deleted_at" field.
-func DeletedAtNotIn(vs ...time.Time) predicate.Workspace {
-	return predicate.Workspace(sql.FieldNotIn(FieldDeletedAt, vs...))
-}
-
-// DeletedAtGT applies the GT predicate on the "deleted_at" field.
-func DeletedAtGT(v time.Time) predicate.Workspace {
-	return predicate.Workspace(sql.FieldGT(FieldDeletedAt, v))
-}
-
-// DeletedAtGTE applies the GTE predicate on the "deleted_at" field.
-func DeletedAtGTE(v time.Time) predicate.Workspace {
-	return predicate.Workspace(sql.FieldGTE(FieldDeletedAt, v))
-}
-
-// DeletedAtLT applies the LT predicate on the "deleted_at" field.
-func DeletedAtLT(v time.Time) predicate.Workspace {
-	return predicate.Workspace(sql.FieldLT(FieldDeletedAt, v))
-}
-
-// DeletedAtLTE applies the LTE predicate on the "deleted_at" field.
-func DeletedAtLTE(v time.Time) predicate.Workspace {
-	return predicate.Workspace(sql.FieldLTE(FieldDeletedAt, v))
-}
-
-// DeletedAtIsNil applies the IsNil predicate on the "deleted_at" field.
-func DeletedAtIsNil() predicate.Workspace {
-	return predicate.Workspace(sql.FieldIsNull(FieldDeletedAt))
-}
-
-// DeletedAtNotNil applies the NotNil predicate on the "deleted_at" field.
-func DeletedAtNotNil() predicate.Workspace {
-	return predicate.Workspace(sql.FieldNotNull(FieldDeletedAt))
-}
-
-// HasStatus applies the HasEdge predicate on the "status" edge.
-func HasStatus() predicate.Workspace {
-	return predicate.Workspace(func(s *sql.Selector) {
-		step := sqlgraph.NewStep(
-			sqlgraph.From(Table, FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, StatusTable, StatusColumn),
-		)
-		sqlgraph.HasNeighbors(s, step)
-	})
-}
-
-// HasStatusWith applies the HasEdge predicate on the "status" edge with a given conditions (other predicates).
-func HasStatusWith(preds ...predicate.StateDefinitions) predicate.Workspace {
-	return predicate.Workspace(func(s *sql.Selector) {
-		step := newStatusStep()
-		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
-			for _, p := range preds {
-				p(s)
-			}
-		})
-	})
-}
-
 // HasTenant applies the HasEdge predicate on the "tenant" edge.
 func HasTenant() predicate.Workspace {
 	return predicate.Workspace(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.Edge(sqlgraph.O2O, true, TenantTable, TenantColumn),
+			sqlgraph.Edge(sqlgraph.M2O, true, TenantTable, TenantColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
 	})
@@ -454,52 +256,6 @@ func HasTenant() predicate.Workspace {
 func HasTenantWith(preds ...predicate.Tenant) predicate.Workspace {
 	return predicate.Workspace(func(s *sql.Selector) {
 		step := newTenantStep()
-		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
-			for _, p := range preds {
-				p(s)
-			}
-		})
-	})
-}
-
-// HasCreatedby applies the HasEdge predicate on the "createdby" edge.
-func HasCreatedby() predicate.Workspace {
-	return predicate.Workspace(func(s *sql.Selector) {
-		step := sqlgraph.NewStep(
-			sqlgraph.From(Table, FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, CreatedbyTable, CreatedbyColumn),
-		)
-		sqlgraph.HasNeighbors(s, step)
-	})
-}
-
-// HasCreatedbyWith applies the HasEdge predicate on the "createdby" edge with a given conditions (other predicates).
-func HasCreatedbyWith(preds ...predicate.User) predicate.Workspace {
-	return predicate.Workspace(func(s *sql.Selector) {
-		step := newCreatedbyStep()
-		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
-			for _, p := range preds {
-				p(s)
-			}
-		})
-	})
-}
-
-// HasProjects applies the HasEdge predicate on the "projects" edge.
-func HasProjects() predicate.Workspace {
-	return predicate.Workspace(func(s *sql.Selector) {
-		step := sqlgraph.NewStep(
-			sqlgraph.From(Table, FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, ProjectsTable, ProjectsColumn),
-		)
-		sqlgraph.HasNeighbors(s, step)
-	})
-}
-
-// HasProjectsWith applies the HasEdge predicate on the "projects" edge with a given conditions (other predicates).
-func HasProjectsWith(preds ...predicate.Project) predicate.Workspace {
-	return predicate.Workspace(func(s *sql.Selector) {
-		step := newProjectsStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)

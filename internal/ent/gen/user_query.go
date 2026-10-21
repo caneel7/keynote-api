@@ -12,34 +12,29 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/caneel7/keynote-api/internal/ent/gen/orgnode"
 	"github.com/caneel7/keynote-api/internal/ent/gen/predicate"
-	"github.com/caneel7/keynote-api/internal/ent/gen/project"
-	"github.com/caneel7/keynote-api/internal/ent/gen/projectmember"
 	"github.com/caneel7/keynote-api/internal/ent/gen/statedefinitions"
-	"github.com/caneel7/keynote-api/internal/ent/gen/tenant"
-	"github.com/caneel7/keynote-api/internal/ent/gen/tenantmember"
 	"github.com/caneel7/keynote-api/internal/ent/gen/user"
 	"github.com/caneel7/keynote-api/internal/ent/gen/usercredential"
+	"github.com/caneel7/keynote-api/internal/ent/gen/usernodeassignment"
 	"github.com/caneel7/keynote-api/internal/ent/gen/usersession"
-	"github.com/caneel7/keynote-api/internal/ent/gen/workspace"
 	"github.com/google/uuid"
 )
 
 // UserQuery is the builder for querying User entities.
 type UserQuery struct {
 	config
-	ctx                *QueryContext
-	order              []user.OrderOption
-	inters             []Interceptor
-	predicates         []predicate.User
-	withCredentials    *UserCredentialQuery
-	withSessions       *UserSessionQuery
-	withState          *StateDefinitionsQuery
-	withTenant         *TenantQuery
-	withCreator        *WorkspaceQuery
-	withProjectcreator *ProjectQuery
-	withTenantrole     *TenantMemberQuery
-	withProjectrole    *ProjectMemberQuery
+	ctx                    *QueryContext
+	order                  []user.OrderOption
+	inters                 []Interceptor
+	predicates             []predicate.User
+	withCredentials        *UserCredentialQuery
+	withSessions           *UserSessionQuery
+	withState              *StateDefinitionsQuery
+	withCreatedNodes       *OrgNodeQuery
+	withNodeAssignments    *UserNodeAssignmentQuery
+	withCreatedAssignments *UserNodeAssignmentQuery
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -142,9 +137,9 @@ func (_q *UserQuery) QueryState() *StateDefinitionsQuery {
 	return query
 }
 
-// QueryTenant chains the current query on the "tenant" edge.
-func (_q *UserQuery) QueryTenant() *TenantQuery {
-	query := (&TenantClient{config: _q.config}).Query()
+// QueryCreatedNodes chains the current query on the "created_nodes" edge.
+func (_q *UserQuery) QueryCreatedNodes() *OrgNodeQuery {
+	query := (&OrgNodeClient{config: _q.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := _q.prepareQuery(ctx); err != nil {
 			return nil, err
@@ -155,8 +150,8 @@ func (_q *UserQuery) QueryTenant() *TenantQuery {
 		}
 		step := sqlgraph.NewStep(
 			sqlgraph.From(user.Table, user.FieldID, selector),
-			sqlgraph.To(tenant.Table, tenant.FieldID),
-			sqlgraph.Edge(sqlgraph.O2O, false, user.TenantTable, user.TenantColumn),
+			sqlgraph.To(orgnode.Table, orgnode.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, user.CreatedNodesTable, user.CreatedNodesColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(_q.driver.Dialect(), step)
 		return fromU, nil
@@ -164,9 +159,9 @@ func (_q *UserQuery) QueryTenant() *TenantQuery {
 	return query
 }
 
-// QueryCreator chains the current query on the "creator" edge.
-func (_q *UserQuery) QueryCreator() *WorkspaceQuery {
-	query := (&WorkspaceClient{config: _q.config}).Query()
+// QueryNodeAssignments chains the current query on the "node_assignments" edge.
+func (_q *UserQuery) QueryNodeAssignments() *UserNodeAssignmentQuery {
+	query := (&UserNodeAssignmentClient{config: _q.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := _q.prepareQuery(ctx); err != nil {
 			return nil, err
@@ -177,8 +172,8 @@ func (_q *UserQuery) QueryCreator() *WorkspaceQuery {
 		}
 		step := sqlgraph.NewStep(
 			sqlgraph.From(user.Table, user.FieldID, selector),
-			sqlgraph.To(workspace.Table, workspace.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, user.CreatorTable, user.CreatorColumn),
+			sqlgraph.To(usernodeassignment.Table, usernodeassignment.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, user.NodeAssignmentsTable, user.NodeAssignmentsColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(_q.driver.Dialect(), step)
 		return fromU, nil
@@ -186,9 +181,9 @@ func (_q *UserQuery) QueryCreator() *WorkspaceQuery {
 	return query
 }
 
-// QueryProjectcreator chains the current query on the "projectcreator" edge.
-func (_q *UserQuery) QueryProjectcreator() *ProjectQuery {
-	query := (&ProjectClient{config: _q.config}).Query()
+// QueryCreatedAssignments chains the current query on the "created_assignments" edge.
+func (_q *UserQuery) QueryCreatedAssignments() *UserNodeAssignmentQuery {
+	query := (&UserNodeAssignmentClient{config: _q.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := _q.prepareQuery(ctx); err != nil {
 			return nil, err
@@ -199,52 +194,8 @@ func (_q *UserQuery) QueryProjectcreator() *ProjectQuery {
 		}
 		step := sqlgraph.NewStep(
 			sqlgraph.From(user.Table, user.FieldID, selector),
-			sqlgraph.To(project.Table, project.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, user.ProjectcreatorTable, user.ProjectcreatorColumn),
-		)
-		fromU = sqlgraph.SetNeighbors(_q.driver.Dialect(), step)
-		return fromU, nil
-	}
-	return query
-}
-
-// QueryTenantrole chains the current query on the "tenantrole" edge.
-func (_q *UserQuery) QueryTenantrole() *TenantMemberQuery {
-	query := (&TenantMemberClient{config: _q.config}).Query()
-	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
-		if err := _q.prepareQuery(ctx); err != nil {
-			return nil, err
-		}
-		selector := _q.sqlQuery(ctx)
-		if err := selector.Err(); err != nil {
-			return nil, err
-		}
-		step := sqlgraph.NewStep(
-			sqlgraph.From(user.Table, user.FieldID, selector),
-			sqlgraph.To(tenantmember.Table, tenantmember.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, user.TenantroleTable, user.TenantroleColumn),
-		)
-		fromU = sqlgraph.SetNeighbors(_q.driver.Dialect(), step)
-		return fromU, nil
-	}
-	return query
-}
-
-// QueryProjectrole chains the current query on the "projectrole" edge.
-func (_q *UserQuery) QueryProjectrole() *ProjectMemberQuery {
-	query := (&ProjectMemberClient{config: _q.config}).Query()
-	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
-		if err := _q.prepareQuery(ctx); err != nil {
-			return nil, err
-		}
-		selector := _q.sqlQuery(ctx)
-		if err := selector.Err(); err != nil {
-			return nil, err
-		}
-		step := sqlgraph.NewStep(
-			sqlgraph.From(user.Table, user.FieldID, selector),
-			sqlgraph.To(projectmember.Table, projectmember.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, user.ProjectroleTable, user.ProjectroleColumn),
+			sqlgraph.To(usernodeassignment.Table, usernodeassignment.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, user.CreatedAssignmentsTable, user.CreatedAssignmentsColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(_q.driver.Dialect(), step)
 		return fromU, nil
@@ -439,19 +390,17 @@ func (_q *UserQuery) Clone() *UserQuery {
 		return nil
 	}
 	return &UserQuery{
-		config:             _q.config,
-		ctx:                _q.ctx.Clone(),
-		order:              append([]user.OrderOption{}, _q.order...),
-		inters:             append([]Interceptor{}, _q.inters...),
-		predicates:         append([]predicate.User{}, _q.predicates...),
-		withCredentials:    _q.withCredentials.Clone(),
-		withSessions:       _q.withSessions.Clone(),
-		withState:          _q.withState.Clone(),
-		withTenant:         _q.withTenant.Clone(),
-		withCreator:        _q.withCreator.Clone(),
-		withProjectcreator: _q.withProjectcreator.Clone(),
-		withTenantrole:     _q.withTenantrole.Clone(),
-		withProjectrole:    _q.withProjectrole.Clone(),
+		config:                 _q.config,
+		ctx:                    _q.ctx.Clone(),
+		order:                  append([]user.OrderOption{}, _q.order...),
+		inters:                 append([]Interceptor{}, _q.inters...),
+		predicates:             append([]predicate.User{}, _q.predicates...),
+		withCredentials:        _q.withCredentials.Clone(),
+		withSessions:           _q.withSessions.Clone(),
+		withState:              _q.withState.Clone(),
+		withCreatedNodes:       _q.withCreatedNodes.Clone(),
+		withNodeAssignments:    _q.withNodeAssignments.Clone(),
+		withCreatedAssignments: _q.withCreatedAssignments.Clone(),
 		// clone intermediate query.
 		sql:  _q.sql.Clone(),
 		path: _q.path,
@@ -491,58 +440,36 @@ func (_q *UserQuery) WithState(opts ...func(*StateDefinitionsQuery)) *UserQuery 
 	return _q
 }
 
-// WithTenant tells the query-builder to eager-load the nodes that are connected to
-// the "tenant" edge. The optional arguments are used to configure the query builder of the edge.
-func (_q *UserQuery) WithTenant(opts ...func(*TenantQuery)) *UserQuery {
-	query := (&TenantClient{config: _q.config}).Query()
+// WithCreatedNodes tells the query-builder to eager-load the nodes that are connected to
+// the "created_nodes" edge. The optional arguments are used to configure the query builder of the edge.
+func (_q *UserQuery) WithCreatedNodes(opts ...func(*OrgNodeQuery)) *UserQuery {
+	query := (&OrgNodeClient{config: _q.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
-	_q.withTenant = query
+	_q.withCreatedNodes = query
 	return _q
 }
 
-// WithCreator tells the query-builder to eager-load the nodes that are connected to
-// the "creator" edge. The optional arguments are used to configure the query builder of the edge.
-func (_q *UserQuery) WithCreator(opts ...func(*WorkspaceQuery)) *UserQuery {
-	query := (&WorkspaceClient{config: _q.config}).Query()
+// WithNodeAssignments tells the query-builder to eager-load the nodes that are connected to
+// the "node_assignments" edge. The optional arguments are used to configure the query builder of the edge.
+func (_q *UserQuery) WithNodeAssignments(opts ...func(*UserNodeAssignmentQuery)) *UserQuery {
+	query := (&UserNodeAssignmentClient{config: _q.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
-	_q.withCreator = query
+	_q.withNodeAssignments = query
 	return _q
 }
 
-// WithProjectcreator tells the query-builder to eager-load the nodes that are connected to
-// the "projectcreator" edge. The optional arguments are used to configure the query builder of the edge.
-func (_q *UserQuery) WithProjectcreator(opts ...func(*ProjectQuery)) *UserQuery {
-	query := (&ProjectClient{config: _q.config}).Query()
+// WithCreatedAssignments tells the query-builder to eager-load the nodes that are connected to
+// the "created_assignments" edge. The optional arguments are used to configure the query builder of the edge.
+func (_q *UserQuery) WithCreatedAssignments(opts ...func(*UserNodeAssignmentQuery)) *UserQuery {
+	query := (&UserNodeAssignmentClient{config: _q.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
-	_q.withProjectcreator = query
-	return _q
-}
-
-// WithTenantrole tells the query-builder to eager-load the nodes that are connected to
-// the "tenantrole" edge. The optional arguments are used to configure the query builder of the edge.
-func (_q *UserQuery) WithTenantrole(opts ...func(*TenantMemberQuery)) *UserQuery {
-	query := (&TenantMemberClient{config: _q.config}).Query()
-	for _, opt := range opts {
-		opt(query)
-	}
-	_q.withTenantrole = query
-	return _q
-}
-
-// WithProjectrole tells the query-builder to eager-load the nodes that are connected to
-// the "projectrole" edge. The optional arguments are used to configure the query builder of the edge.
-func (_q *UserQuery) WithProjectrole(opts ...func(*ProjectMemberQuery)) *UserQuery {
-	query := (&ProjectMemberClient{config: _q.config}).Query()
-	for _, opt := range opts {
-		opt(query)
-	}
-	_q.withProjectrole = query
+	_q.withCreatedAssignments = query
 	return _q
 }
 
@@ -624,15 +551,13 @@ func (_q *UserQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*User, e
 	var (
 		nodes       = []*User{}
 		_spec       = _q.querySpec()
-		loadedTypes = [8]bool{
+		loadedTypes = [6]bool{
 			_q.withCredentials != nil,
 			_q.withSessions != nil,
 			_q.withState != nil,
-			_q.withTenant != nil,
-			_q.withCreator != nil,
-			_q.withProjectcreator != nil,
-			_q.withTenantrole != nil,
-			_q.withProjectrole != nil,
+			_q.withCreatedNodes != nil,
+			_q.withNodeAssignments != nil,
+			_q.withCreatedAssignments != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]any, error) {
@@ -672,37 +597,26 @@ func (_q *UserQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*User, e
 			return nil, err
 		}
 	}
-	if query := _q.withTenant; query != nil {
-		if err := _q.loadTenant(ctx, query, nodes, nil,
-			func(n *User, e *Tenant) { n.Edges.Tenant = e }); err != nil {
+	if query := _q.withCreatedNodes; query != nil {
+		if err := _q.loadCreatedNodes(ctx, query, nodes,
+			func(n *User) { n.Edges.CreatedNodes = []*OrgNode{} },
+			func(n *User, e *OrgNode) { n.Edges.CreatedNodes = append(n.Edges.CreatedNodes, e) }); err != nil {
 			return nil, err
 		}
 	}
-	if query := _q.withCreator; query != nil {
-		if err := _q.loadCreator(ctx, query, nodes,
-			func(n *User) { n.Edges.Creator = []*Workspace{} },
-			func(n *User, e *Workspace) { n.Edges.Creator = append(n.Edges.Creator, e) }); err != nil {
+	if query := _q.withNodeAssignments; query != nil {
+		if err := _q.loadNodeAssignments(ctx, query, nodes,
+			func(n *User) { n.Edges.NodeAssignments = []*UserNodeAssignment{} },
+			func(n *User, e *UserNodeAssignment) { n.Edges.NodeAssignments = append(n.Edges.NodeAssignments, e) }); err != nil {
 			return nil, err
 		}
 	}
-	if query := _q.withProjectcreator; query != nil {
-		if err := _q.loadProjectcreator(ctx, query, nodes,
-			func(n *User) { n.Edges.Projectcreator = []*Project{} },
-			func(n *User, e *Project) { n.Edges.Projectcreator = append(n.Edges.Projectcreator, e) }); err != nil {
-			return nil, err
-		}
-	}
-	if query := _q.withTenantrole; query != nil {
-		if err := _q.loadTenantrole(ctx, query, nodes,
-			func(n *User) { n.Edges.Tenantrole = []*TenantMember{} },
-			func(n *User, e *TenantMember) { n.Edges.Tenantrole = append(n.Edges.Tenantrole, e) }); err != nil {
-			return nil, err
-		}
-	}
-	if query := _q.withProjectrole; query != nil {
-		if err := _q.loadProjectrole(ctx, query, nodes,
-			func(n *User) { n.Edges.Projectrole = []*ProjectMember{} },
-			func(n *User, e *ProjectMember) { n.Edges.Projectrole = append(n.Edges.Projectrole, e) }); err != nil {
+	if query := _q.withCreatedAssignments; query != nil {
+		if err := _q.loadCreatedAssignments(ctx, query, nodes,
+			func(n *User) { n.Edges.CreatedAssignments = []*UserNodeAssignment{} },
+			func(n *User, e *UserNodeAssignment) {
+				n.Edges.CreatedAssignments = append(n.Edges.CreatedAssignments, e)
+			}); err != nil {
 			return nil, err
 		}
 	}
@@ -795,18 +709,21 @@ func (_q *UserQuery) loadState(ctx context.Context, query *StateDefinitionsQuery
 	}
 	return nil
 }
-func (_q *UserQuery) loadTenant(ctx context.Context, query *TenantQuery, nodes []*User, init func(*User), assign func(*User, *Tenant)) error {
+func (_q *UserQuery) loadCreatedNodes(ctx context.Context, query *OrgNodeQuery, nodes []*User, init func(*User), assign func(*User, *OrgNode)) error {
 	fks := make([]driver.Value, 0, len(nodes))
 	nodeids := make(map[uuid.UUID]*User)
 	for i := range nodes {
 		fks = append(fks, nodes[i].ID)
 		nodeids[nodes[i].ID] = nodes[i]
+		if init != nil {
+			init(nodes[i])
+		}
 	}
 	if len(query.ctx.Fields) > 0 {
-		query.ctx.AppendFieldOnce(tenant.FieldCreatedBy)
+		query.ctx.AppendFieldOnce(orgnode.FieldCreatedBy)
 	}
-	query.Where(predicate.Tenant(func(s *sql.Selector) {
-		s.Where(sql.InValues(s.C(user.TenantColumn), fks...))
+	query.Where(predicate.OrgNode(func(s *sql.Selector) {
+		s.Where(sql.InValues(s.C(user.CreatedNodesColumn), fks...))
 	}))
 	neighbors, err := query.All(ctx)
 	if err != nil {
@@ -822,7 +739,7 @@ func (_q *UserQuery) loadTenant(ctx context.Context, query *TenantQuery, nodes [
 	}
 	return nil
 }
-func (_q *UserQuery) loadCreator(ctx context.Context, query *WorkspaceQuery, nodes []*User, init func(*User), assign func(*User, *Workspace)) error {
+func (_q *UserQuery) loadNodeAssignments(ctx context.Context, query *UserNodeAssignmentQuery, nodes []*User, init func(*User), assign func(*User, *UserNodeAssignment)) error {
 	fks := make([]driver.Value, 0, len(nodes))
 	nodeids := make(map[uuid.UUID]*User)
 	for i := range nodes {
@@ -833,70 +750,10 @@ func (_q *UserQuery) loadCreator(ctx context.Context, query *WorkspaceQuery, nod
 		}
 	}
 	if len(query.ctx.Fields) > 0 {
-		query.ctx.AppendFieldOnce(workspace.FieldCreatedBy)
+		query.ctx.AppendFieldOnce(usernodeassignment.FieldUserID)
 	}
-	query.Where(predicate.Workspace(func(s *sql.Selector) {
-		s.Where(sql.InValues(s.C(user.CreatorColumn), fks...))
-	}))
-	neighbors, err := query.All(ctx)
-	if err != nil {
-		return err
-	}
-	for _, n := range neighbors {
-		fk := n.CreatedBy
-		node, ok := nodeids[fk]
-		if !ok {
-			return fmt.Errorf(`unexpected referenced foreign-key "created_by" returned %v for node %v`, fk, n.ID)
-		}
-		assign(node, n)
-	}
-	return nil
-}
-func (_q *UserQuery) loadProjectcreator(ctx context.Context, query *ProjectQuery, nodes []*User, init func(*User), assign func(*User, *Project)) error {
-	fks := make([]driver.Value, 0, len(nodes))
-	nodeids := make(map[uuid.UUID]*User)
-	for i := range nodes {
-		fks = append(fks, nodes[i].ID)
-		nodeids[nodes[i].ID] = nodes[i]
-		if init != nil {
-			init(nodes[i])
-		}
-	}
-	if len(query.ctx.Fields) > 0 {
-		query.ctx.AppendFieldOnce(project.FieldCreatedBy)
-	}
-	query.Where(predicate.Project(func(s *sql.Selector) {
-		s.Where(sql.InValues(s.C(user.ProjectcreatorColumn), fks...))
-	}))
-	neighbors, err := query.All(ctx)
-	if err != nil {
-		return err
-	}
-	for _, n := range neighbors {
-		fk := n.CreatedBy
-		node, ok := nodeids[fk]
-		if !ok {
-			return fmt.Errorf(`unexpected referenced foreign-key "created_by" returned %v for node %v`, fk, n.ID)
-		}
-		assign(node, n)
-	}
-	return nil
-}
-func (_q *UserQuery) loadTenantrole(ctx context.Context, query *TenantMemberQuery, nodes []*User, init func(*User), assign func(*User, *TenantMember)) error {
-	fks := make([]driver.Value, 0, len(nodes))
-	nodeids := make(map[uuid.UUID]*User)
-	for i := range nodes {
-		fks = append(fks, nodes[i].ID)
-		nodeids[nodes[i].ID] = nodes[i]
-		if init != nil {
-			init(nodes[i])
-		}
-	}
-	if len(query.ctx.Fields) > 0 {
-		query.ctx.AppendFieldOnce(tenantmember.FieldUserID)
-	}
-	query.Where(predicate.TenantMember(func(s *sql.Selector) {
-		s.Where(sql.InValues(s.C(user.TenantroleColumn), fks...))
+	query.Where(predicate.UserNodeAssignment(func(s *sql.Selector) {
+		s.Where(sql.InValues(s.C(user.NodeAssignmentsColumn), fks...))
 	}))
 	neighbors, err := query.All(ctx)
 	if err != nil {
@@ -912,7 +769,7 @@ func (_q *UserQuery) loadTenantrole(ctx context.Context, query *TenantMemberQuer
 	}
 	return nil
 }
-func (_q *UserQuery) loadProjectrole(ctx context.Context, query *ProjectMemberQuery, nodes []*User, init func(*User), assign func(*User, *ProjectMember)) error {
+func (_q *UserQuery) loadCreatedAssignments(ctx context.Context, query *UserNodeAssignmentQuery, nodes []*User, init func(*User), assign func(*User, *UserNodeAssignment)) error {
 	fks := make([]driver.Value, 0, len(nodes))
 	nodeids := make(map[uuid.UUID]*User)
 	for i := range nodes {
@@ -923,20 +780,23 @@ func (_q *UserQuery) loadProjectrole(ctx context.Context, query *ProjectMemberQu
 		}
 	}
 	if len(query.ctx.Fields) > 0 {
-		query.ctx.AppendFieldOnce(projectmember.FieldUserID)
+		query.ctx.AppendFieldOnce(usernodeassignment.FieldCreatedBy)
 	}
-	query.Where(predicate.ProjectMember(func(s *sql.Selector) {
-		s.Where(sql.InValues(s.C(user.ProjectroleColumn), fks...))
+	query.Where(predicate.UserNodeAssignment(func(s *sql.Selector) {
+		s.Where(sql.InValues(s.C(user.CreatedAssignmentsColumn), fks...))
 	}))
 	neighbors, err := query.All(ctx)
 	if err != nil {
 		return err
 	}
 	for _, n := range neighbors {
-		fk := n.UserID
-		node, ok := nodeids[fk]
+		fk := n.CreatedBy
+		if fk == nil {
+			return fmt.Errorf(`foreign-key "created_by" is nil for node %v`, n.ID)
+		}
+		node, ok := nodeids[*fk]
 		if !ok {
-			return fmt.Errorf(`unexpected referenced foreign-key "user_id" returned %v for node %v`, fk, n.ID)
+			return fmt.Errorf(`unexpected referenced foreign-key "created_by" returned %v for node %v`, *fk, n.ID)
 		}
 		assign(node, n)
 	}

@@ -365,21 +365,21 @@ func HasStateWith(preds ...predicate.StateDefinitions) predicate.User {
 	})
 }
 
-// HasTenant applies the HasEdge predicate on the "tenant" edge.
-func HasTenant() predicate.User {
+// HasCreatedNodes applies the HasEdge predicate on the "created_nodes" edge.
+func HasCreatedNodes() predicate.User {
 	return predicate.User(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.Edge(sqlgraph.O2O, false, TenantTable, TenantColumn),
+			sqlgraph.Edge(sqlgraph.O2M, false, CreatedNodesTable, CreatedNodesColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
 	})
 }
 
-// HasTenantWith applies the HasEdge predicate on the "tenant" edge with a given conditions (other predicates).
-func HasTenantWith(preds ...predicate.Tenant) predicate.User {
+// HasCreatedNodesWith applies the HasEdge predicate on the "created_nodes" edge with a given conditions (other predicates).
+func HasCreatedNodesWith(preds ...predicate.OrgNode) predicate.User {
 	return predicate.User(func(s *sql.Selector) {
-		step := newTenantStep()
+		step := newCreatedNodesStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)
@@ -388,21 +388,21 @@ func HasTenantWith(preds ...predicate.Tenant) predicate.User {
 	})
 }
 
-// HasCreator applies the HasEdge predicate on the "creator" edge.
-func HasCreator() predicate.User {
+// HasNodeAssignments applies the HasEdge predicate on the "node_assignments" edge.
+func HasNodeAssignments() predicate.User {
 	return predicate.User(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, CreatorTable, CreatorColumn),
+			sqlgraph.Edge(sqlgraph.O2M, false, NodeAssignmentsTable, NodeAssignmentsColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
 	})
 }
 
-// HasCreatorWith applies the HasEdge predicate on the "creator" edge with a given conditions (other predicates).
-func HasCreatorWith(preds ...predicate.Workspace) predicate.User {
+// HasNodeAssignmentsWith applies the HasEdge predicate on the "node_assignments" edge with a given conditions (other predicates).
+func HasNodeAssignmentsWith(preds ...predicate.UserNodeAssignment) predicate.User {
 	return predicate.User(func(s *sql.Selector) {
-		step := newCreatorStep()
+		step := newNodeAssignmentsStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)
@@ -411,67 +411,21 @@ func HasCreatorWith(preds ...predicate.Workspace) predicate.User {
 	})
 }
 
-// HasProjectcreator applies the HasEdge predicate on the "projectcreator" edge.
-func HasProjectcreator() predicate.User {
+// HasCreatedAssignments applies the HasEdge predicate on the "created_assignments" edge.
+func HasCreatedAssignments() predicate.User {
 	return predicate.User(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, ProjectcreatorTable, ProjectcreatorColumn),
+			sqlgraph.Edge(sqlgraph.O2M, false, CreatedAssignmentsTable, CreatedAssignmentsColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
 	})
 }
 
-// HasProjectcreatorWith applies the HasEdge predicate on the "projectcreator" edge with a given conditions (other predicates).
-func HasProjectcreatorWith(preds ...predicate.Project) predicate.User {
+// HasCreatedAssignmentsWith applies the HasEdge predicate on the "created_assignments" edge with a given conditions (other predicates).
+func HasCreatedAssignmentsWith(preds ...predicate.UserNodeAssignment) predicate.User {
 	return predicate.User(func(s *sql.Selector) {
-		step := newProjectcreatorStep()
-		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
-			for _, p := range preds {
-				p(s)
-			}
-		})
-	})
-}
-
-// HasTenantrole applies the HasEdge predicate on the "tenantrole" edge.
-func HasTenantrole() predicate.User {
-	return predicate.User(func(s *sql.Selector) {
-		step := sqlgraph.NewStep(
-			sqlgraph.From(Table, FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, TenantroleTable, TenantroleColumn),
-		)
-		sqlgraph.HasNeighbors(s, step)
-	})
-}
-
-// HasTenantroleWith applies the HasEdge predicate on the "tenantrole" edge with a given conditions (other predicates).
-func HasTenantroleWith(preds ...predicate.TenantMember) predicate.User {
-	return predicate.User(func(s *sql.Selector) {
-		step := newTenantroleStep()
-		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
-			for _, p := range preds {
-				p(s)
-			}
-		})
-	})
-}
-
-// HasProjectrole applies the HasEdge predicate on the "projectrole" edge.
-func HasProjectrole() predicate.User {
-	return predicate.User(func(s *sql.Selector) {
-		step := sqlgraph.NewStep(
-			sqlgraph.From(Table, FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, ProjectroleTable, ProjectroleColumn),
-		)
-		sqlgraph.HasNeighbors(s, step)
-	})
-}
-
-// HasProjectroleWith applies the HasEdge predicate on the "projectrole" edge with a given conditions (other predicates).
-func HasProjectroleWith(preds ...predicate.ProjectMember) predicate.User {
-	return predicate.User(func(s *sql.Selector) {
-		step := newProjectroleStep()
+		step := newCreatedAssignmentsStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)

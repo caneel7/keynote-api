@@ -12,6 +12,9 @@ type EntityKind func(*sql.Selector)
 // Module is the predicate function for module builders.
 type Module func(*sql.Selector)
 
+// OrgNode is the predicate function for orgnode builders.
+type OrgNode func(*sql.Selector)
+
 // Permission is the predicate function for permission builders.
 type Permission func(*sql.Selector)
 
@@ -23,9 +26,6 @@ type PlanVersion func(*sql.Selector)
 
 // Project is the predicate function for project builders.
 type Project func(*sql.Selector)
-
-// ProjectMember is the predicate function for projectmember builders.
-type ProjectMember func(*sql.Selector)
 
 // Role is the predicate function for role builders.
 type Role func(*sql.Selector)
@@ -42,14 +42,14 @@ type Subscription func(*sql.Selector)
 // Tenant is the predicate function for tenant builders.
 type Tenant func(*sql.Selector)
 
-// TenantMember is the predicate function for tenantmember builders.
-type TenantMember func(*sql.Selector)
-
 // User is the predicate function for user builders.
 type User func(*sql.Selector)
 
 // UserCredential is the predicate function for usercredential builders.
 type UserCredential func(*sql.Selector)
+
+// UserNodeAssignment is the predicate function for usernodeassignment builders.
+type UserNodeAssignment func(*sql.Selector)
 
 // UserSession is the predicate function for usersession builders.
 type UserSession func(*sql.Selector)

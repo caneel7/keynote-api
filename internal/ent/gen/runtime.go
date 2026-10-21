@@ -7,19 +7,19 @@ import (
 
 	"github.com/caneel7/keynote-api/internal/ent/gen/entitykind"
 	"github.com/caneel7/keynote-api/internal/ent/gen/module"
+	"github.com/caneel7/keynote-api/internal/ent/gen/orgnode"
 	"github.com/caneel7/keynote-api/internal/ent/gen/permission"
 	"github.com/caneel7/keynote-api/internal/ent/gen/plan"
 	"github.com/caneel7/keynote-api/internal/ent/gen/planversion"
 	"github.com/caneel7/keynote-api/internal/ent/gen/project"
-	"github.com/caneel7/keynote-api/internal/ent/gen/projectmember"
 	"github.com/caneel7/keynote-api/internal/ent/gen/role"
 	"github.com/caneel7/keynote-api/internal/ent/gen/rolepermission"
 	"github.com/caneel7/keynote-api/internal/ent/gen/statedefinitions"
 	"github.com/caneel7/keynote-api/internal/ent/gen/subscription"
 	"github.com/caneel7/keynote-api/internal/ent/gen/tenant"
-	"github.com/caneel7/keynote-api/internal/ent/gen/tenantmember"
 	"github.com/caneel7/keynote-api/internal/ent/gen/user"
 	"github.com/caneel7/keynote-api/internal/ent/gen/usercredential"
+	"github.com/caneel7/keynote-api/internal/ent/gen/usernodeassignment"
 	"github.com/caneel7/keynote-api/internal/ent/gen/usersession"
 	"github.com/caneel7/keynote-api/internal/ent/gen/workspace"
 	"github.com/caneel7/keynote-api/internal/ent/schema"
@@ -78,6 +78,30 @@ func init() {
 	moduleDescID := moduleFields[0].Descriptor()
 	// module.DefaultID holds the default value on creation for the id field.
 	module.DefaultID = moduleDescID.Default.(func() uuid.UUID)
+	orgnodeFields := schema.OrgNode{}.Fields()
+	_ = orgnodeFields
+	// orgnodeDescPath is the schema descriptor for path field.
+	orgnodeDescPath := orgnodeFields[4].Descriptor()
+	// orgnode.PathValidator is a validator for the "path" field. It is called by the builders before save.
+	orgnode.PathValidator = orgnodeDescPath.Validators[0].(func(string) error)
+	// orgnodeDescName is the schema descriptor for name field.
+	orgnodeDescName := orgnodeFields[5].Descriptor()
+	// orgnode.NameValidator is a validator for the "name" field. It is called by the builders before save.
+	orgnode.NameValidator = orgnodeDescName.Validators[0].(func(string) error)
+	// orgnodeDescCreatedAt is the schema descriptor for created_at field.
+	orgnodeDescCreatedAt := orgnodeFields[8].Descriptor()
+	// orgnode.DefaultCreatedAt holds the default value on creation for the created_at field.
+	orgnode.DefaultCreatedAt = orgnodeDescCreatedAt.Default.(func() time.Time)
+	// orgnodeDescUpdatedAt is the schema descriptor for updated_at field.
+	orgnodeDescUpdatedAt := orgnodeFields[9].Descriptor()
+	// orgnode.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	orgnode.DefaultUpdatedAt = orgnodeDescUpdatedAt.Default.(func() time.Time)
+	// orgnode.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	orgnode.UpdateDefaultUpdatedAt = orgnodeDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// orgnodeDescID is the schema descriptor for id field.
+	orgnodeDescID := orgnodeFields[0].Descriptor()
+	// orgnode.DefaultID holds the default value on creation for the id field.
+	orgnode.DefaultID = orgnodeDescID.Default.(func() uuid.UUID)
 	permissionFields := schema.Permission{}.Fields()
 	_ = permissionFields
 	// permissionDescName is the schema descriptor for name field.
@@ -164,10 +188,10 @@ func init() {
 	planversion.DefaultID = planversionDescID.Default.(func() uuid.UUID)
 	projectFields := schema.Project{}.Fields()
 	_ = projectFields
-	// projectDescName is the schema descriptor for name field.
-	projectDescName := projectFields[3].Descriptor()
-	// project.NameValidator is a validator for the "name" field. It is called by the builders before save.
-	project.NameValidator = projectDescName.Validators[0].(func(string) error)
+	// projectDescKey is the schema descriptor for key field.
+	projectDescKey := projectFields[2].Descriptor()
+	// project.KeyValidator is a validator for the "key" field. It is called by the builders before save.
+	project.KeyValidator = projectDescKey.Validators[0].(func(string) error)
 	// projectDescCreatedAt is the schema descriptor for created_at field.
 	projectDescCreatedAt := projectFields[6].Descriptor()
 	// project.DefaultCreatedAt holds the default value on creation for the created_at field.
@@ -178,22 +202,6 @@ func init() {
 	project.DefaultUpdatedAt = projectDescUpdatedAt.Default.(func() time.Time)
 	// project.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
 	project.UpdateDefaultUpdatedAt = projectDescUpdatedAt.UpdateDefault.(func() time.Time)
-	// projectDescID is the schema descriptor for id field.
-	projectDescID := projectFields[0].Descriptor()
-	// project.DefaultID holds the default value on creation for the id field.
-	project.DefaultID = projectDescID.Default.(func() uuid.UUID)
-	projectmemberFields := schema.ProjectMember{}.Fields()
-	_ = projectmemberFields
-	// projectmemberDescCreatedAt is the schema descriptor for created_at field.
-	projectmemberDescCreatedAt := projectmemberFields[4].Descriptor()
-	// projectmember.DefaultCreatedAt holds the default value on creation for the created_at field.
-	projectmember.DefaultCreatedAt = projectmemberDescCreatedAt.Default.(func() time.Time)
-	// projectmemberDescUpdatedAt is the schema descriptor for updated_at field.
-	projectmemberDescUpdatedAt := projectmemberFields[5].Descriptor()
-	// projectmember.DefaultUpdatedAt holds the default value on creation for the updated_at field.
-	projectmember.DefaultUpdatedAt = projectmemberDescUpdatedAt.Default.(func() time.Time)
-	// projectmember.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
-	projectmember.UpdateDefaultUpdatedAt = projectmemberDescUpdatedAt.UpdateDefault.(func() time.Time)
 	roleFields := schema.Role{}.Fields()
 	_ = roleFields
 	// roleDescName is the schema descriptor for name field.
@@ -280,40 +288,20 @@ func init() {
 	subscription.DefaultID = subscriptionDescID.Default.(func() uuid.UUID)
 	tenantFields := schema.Tenant{}.Fields()
 	_ = tenantFields
-	// tenantDescName is the schema descriptor for name field.
-	tenantDescName := tenantFields[1].Descriptor()
-	// tenant.NameValidator is a validator for the "name" field. It is called by the builders before save.
-	tenant.NameValidator = tenantDescName.Validators[0].(func(string) error)
 	// tenantDescSlug is the schema descriptor for slug field.
-	tenantDescSlug := tenantFields[2].Descriptor()
+	tenantDescSlug := tenantFields[1].Descriptor()
 	// tenant.SlugValidator is a validator for the "slug" field. It is called by the builders before save.
 	tenant.SlugValidator = tenantDescSlug.Validators[0].(func(string) error)
 	// tenantDescCreatedAt is the schema descriptor for created_at field.
-	tenantDescCreatedAt := tenantFields[5].Descriptor()
+	tenantDescCreatedAt := tenantFields[2].Descriptor()
 	// tenant.DefaultCreatedAt holds the default value on creation for the created_at field.
 	tenant.DefaultCreatedAt = tenantDescCreatedAt.Default.(func() time.Time)
 	// tenantDescUpdatedAt is the schema descriptor for updated_at field.
-	tenantDescUpdatedAt := tenantFields[6].Descriptor()
+	tenantDescUpdatedAt := tenantFields[3].Descriptor()
 	// tenant.DefaultUpdatedAt holds the default value on creation for the updated_at field.
 	tenant.DefaultUpdatedAt = tenantDescUpdatedAt.Default.(func() time.Time)
 	// tenant.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
 	tenant.UpdateDefaultUpdatedAt = tenantDescUpdatedAt.UpdateDefault.(func() time.Time)
-	// tenantDescID is the schema descriptor for id field.
-	tenantDescID := tenantFields[0].Descriptor()
-	// tenant.DefaultID holds the default value on creation for the id field.
-	tenant.DefaultID = tenantDescID.Default.(func() uuid.UUID)
-	tenantmemberFields := schema.TenantMember{}.Fields()
-	_ = tenantmemberFields
-	// tenantmemberDescCreatedAt is the schema descriptor for created_at field.
-	tenantmemberDescCreatedAt := tenantmemberFields[3].Descriptor()
-	// tenantmember.DefaultCreatedAt holds the default value on creation for the created_at field.
-	tenantmember.DefaultCreatedAt = tenantmemberDescCreatedAt.Default.(func() time.Time)
-	// tenantmemberDescUpdatedAt is the schema descriptor for updated_at field.
-	tenantmemberDescUpdatedAt := tenantmemberFields[4].Descriptor()
-	// tenantmember.DefaultUpdatedAt holds the default value on creation for the updated_at field.
-	tenantmember.DefaultUpdatedAt = tenantmemberDescUpdatedAt.Default.(func() time.Time)
-	// tenantmember.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
-	tenantmember.UpdateDefaultUpdatedAt = tenantmemberDescUpdatedAt.UpdateDefault.(func() time.Time)
 	userFields := schema.User{}.Fields()
 	_ = userFields
 	// userDescEmail is the schema descriptor for email field.
@@ -354,6 +342,22 @@ func init() {
 	usercredentialDescID := usercredentialFields[0].Descriptor()
 	// usercredential.DefaultID holds the default value on creation for the id field.
 	usercredential.DefaultID = usercredentialDescID.Default.(func() uuid.UUID)
+	usernodeassignmentFields := schema.UserNodeAssignment{}.Fields()
+	_ = usernodeassignmentFields
+	// usernodeassignmentDescCreatedAt is the schema descriptor for created_at field.
+	usernodeassignmentDescCreatedAt := usernodeassignmentFields[6].Descriptor()
+	// usernodeassignment.DefaultCreatedAt holds the default value on creation for the created_at field.
+	usernodeassignment.DefaultCreatedAt = usernodeassignmentDescCreatedAt.Default.(func() time.Time)
+	// usernodeassignmentDescUpdatedAt is the schema descriptor for updated_at field.
+	usernodeassignmentDescUpdatedAt := usernodeassignmentFields[7].Descriptor()
+	// usernodeassignment.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	usernodeassignment.DefaultUpdatedAt = usernodeassignmentDescUpdatedAt.Default.(func() time.Time)
+	// usernodeassignment.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	usernodeassignment.UpdateDefaultUpdatedAt = usernodeassignmentDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// usernodeassignmentDescID is the schema descriptor for id field.
+	usernodeassignmentDescID := usernodeassignmentFields[0].Descriptor()
+	// usernodeassignment.DefaultID holds the default value on creation for the id field.
+	usernodeassignment.DefaultID = usernodeassignmentDescID.Default.(func() uuid.UUID)
 	usersessionFields := schema.UserSession{}.Fields()
 	_ = usersessionFields
 	// usersessionDescRefreshTokenHash is the schema descriptor for refresh_token_hash field.
@@ -380,26 +384,18 @@ func init() {
 	usersession.DefaultID = usersessionDescID.Default.(func() uuid.UUID)
 	workspaceFields := schema.Workspace{}.Fields()
 	_ = workspaceFields
-	// workspaceDescName is the schema descriptor for name field.
-	workspaceDescName := workspaceFields[2].Descriptor()
-	// workspace.NameValidator is a validator for the "name" field. It is called by the builders before save.
-	workspace.NameValidator = workspaceDescName.Validators[0].(func(string) error)
 	// workspaceDescSlug is the schema descriptor for slug field.
-	workspaceDescSlug := workspaceFields[3].Descriptor()
+	workspaceDescSlug := workspaceFields[2].Descriptor()
 	// workspace.SlugValidator is a validator for the "slug" field. It is called by the builders before save.
 	workspace.SlugValidator = workspaceDescSlug.Validators[0].(func(string) error)
 	// workspaceDescCreatedAt is the schema descriptor for created_at field.
-	workspaceDescCreatedAt := workspaceFields[6].Descriptor()
+	workspaceDescCreatedAt := workspaceFields[3].Descriptor()
 	// workspace.DefaultCreatedAt holds the default value on creation for the created_at field.
 	workspace.DefaultCreatedAt = workspaceDescCreatedAt.Default.(func() time.Time)
 	// workspaceDescUpdatedAt is the schema descriptor for updated_at field.
-	workspaceDescUpdatedAt := workspaceFields[7].Descriptor()
+	workspaceDescUpdatedAt := workspaceFields[4].Descriptor()
 	// workspace.DefaultUpdatedAt holds the default value on creation for the updated_at field.
 	workspace.DefaultUpdatedAt = workspaceDescUpdatedAt.Default.(func() time.Time)
 	// workspace.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
 	workspace.UpdateDefaultUpdatedAt = workspaceDescUpdatedAt.UpdateDefault.(func() time.Time)
-	// workspaceDescID is the schema descriptor for id field.
-	workspaceDescID := workspaceFields[0].Descriptor()
-	// workspace.DefaultID holds the default value on creation for the id field.
-	workspace.DefaultID = workspaceDescID.Default.(func() uuid.UUID)
 }

@@ -18,8 +18,8 @@ const (
 	FieldID = "id"
 	// FieldTenantID holds the string denoting the tenant_id field in the database.
 	FieldTenantID = "tenant_id"
-	// FieldProjectID holds the string denoting the project_id field in the database.
-	FieldProjectID = "project_id"
+	// FieldNodeID holds the string denoting the node_id field in the database.
+	FieldNodeID = "node_id"
 	// FieldName holds the string denoting the name field in the database.
 	FieldName = "name"
 	// FieldType holds the string denoting the type field in the database.
@@ -34,14 +34,12 @@ const (
 	FieldDeletedAt = "deleted_at"
 	// EdgeTenant holds the string denoting the tenant edge name in mutations.
 	EdgeTenant = "tenant"
-	// EdgeProject holds the string denoting the project edge name in mutations.
-	EdgeProject = "project"
+	// EdgeNode holds the string denoting the node edge name in mutations.
+	EdgeNode = "node"
 	// EdgePermissions holds the string denoting the permissions edge name in mutations.
 	EdgePermissions = "permissions"
-	// EdgeTenantrole holds the string denoting the tenantrole edge name in mutations.
-	EdgeTenantrole = "tenantrole"
-	// EdgeProjectrole holds the string denoting the projectrole edge name in mutations.
-	EdgeProjectrole = "projectrole"
+	// EdgeAssignments holds the string denoting the assignments edge name in mutations.
+	EdgeAssignments = "assignments"
 	// Table holds the table name of the role in the database.
 	Table = "roles"
 	// TenantTable is the table that holds the tenant relation/edge.
@@ -51,13 +49,13 @@ const (
 	TenantInverseTable = "tenants"
 	// TenantColumn is the table column denoting the tenant relation/edge.
 	TenantColumn = "tenant_id"
-	// ProjectTable is the table that holds the project relation/edge.
-	ProjectTable = "roles"
-	// ProjectInverseTable is the table name for the Project entity.
-	// It exists in this package in order to avoid circular dependency with the "project" package.
-	ProjectInverseTable = "projects"
-	// ProjectColumn is the table column denoting the project relation/edge.
-	ProjectColumn = "project_id"
+	// NodeTable is the table that holds the node relation/edge.
+	NodeTable = "roles"
+	// NodeInverseTable is the table name for the OrgNode entity.
+	// It exists in this package in order to avoid circular dependency with the "orgnode" package.
+	NodeInverseTable = "org_nodes"
+	// NodeColumn is the table column denoting the node relation/edge.
+	NodeColumn = "node_id"
 	// PermissionsTable is the table that holds the permissions relation/edge.
 	PermissionsTable = "role_permissions"
 	// PermissionsInverseTable is the table name for the RolePermission entity.
@@ -65,27 +63,20 @@ const (
 	PermissionsInverseTable = "role_permissions"
 	// PermissionsColumn is the table column denoting the permissions relation/edge.
 	PermissionsColumn = "role_id"
-	// TenantroleTable is the table that holds the tenantrole relation/edge.
-	TenantroleTable = "tenant_members"
-	// TenantroleInverseTable is the table name for the TenantMember entity.
-	// It exists in this package in order to avoid circular dependency with the "tenantmember" package.
-	TenantroleInverseTable = "tenant_members"
-	// TenantroleColumn is the table column denoting the tenantrole relation/edge.
-	TenantroleColumn = "role_id"
-	// ProjectroleTable is the table that holds the projectrole relation/edge.
-	ProjectroleTable = "project_members"
-	// ProjectroleInverseTable is the table name for the ProjectMember entity.
-	// It exists in this package in order to avoid circular dependency with the "projectmember" package.
-	ProjectroleInverseTable = "project_members"
-	// ProjectroleColumn is the table column denoting the projectrole relation/edge.
-	ProjectroleColumn = "role_id"
+	// AssignmentsTable is the table that holds the assignments relation/edge.
+	AssignmentsTable = "user_node_assignments"
+	// AssignmentsInverseTable is the table name for the UserNodeAssignment entity.
+	// It exists in this package in order to avoid circular dependency with the "usernodeassignment" package.
+	AssignmentsInverseTable = "user_node_assignments"
+	// AssignmentsColumn is the table column denoting the assignments relation/edge.
+	AssignmentsColumn = "role_id"
 )
 
 // Columns holds all SQL columns for role fields.
 var Columns = []string{
 	FieldID,
 	FieldTenantID,
-	FieldProjectID,
+	FieldNodeID,
 	FieldName,
 	FieldType,
 	FieldCreatedBy,
@@ -156,9 +147,9 @@ func ByTenantID(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldTenantID, opts...).ToFunc()
 }
 
-// ByProjectID orders the results by the project_id field.
-func ByProjectID(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldProjectID, opts...).ToFunc()
+// ByNodeID orders the results by the node_id field.
+func ByNodeID(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldNodeID, opts...).ToFunc()
 }
 
 // ByName orders the results by the name field.
@@ -198,10 +189,10 @@ func ByTenantField(field string, opts ...sql.OrderTermOption) OrderOption {
 	}
 }
 
-// ByProjectField orders the results by project field.
-func ByProjectField(field string, opts ...sql.OrderTermOption) OrderOption {
+// ByNodeField orders the results by node field.
+func ByNodeField(field string, opts ...sql.OrderTermOption) OrderOption {
 	return func(s *sql.Selector) {
-		sqlgraph.OrderByNeighborTerms(s, newProjectStep(), sql.OrderByField(field, opts...))
+		sqlgraph.OrderByNeighborTerms(s, newNodeStep(), sql.OrderByField(field, opts...))
 	}
 }
 
@@ -219,31 +210,17 @@ func ByPermissions(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
 	}
 }
 
-// ByTenantroleCount orders the results by tenantrole count.
-func ByTenantroleCount(opts ...sql.OrderTermOption) OrderOption {
+// ByAssignmentsCount orders the results by assignments count.
+func ByAssignmentsCount(opts ...sql.OrderTermOption) OrderOption {
 	return func(s *sql.Selector) {
-		sqlgraph.OrderByNeighborsCount(s, newTenantroleStep(), opts...)
+		sqlgraph.OrderByNeighborsCount(s, newAssignmentsStep(), opts...)
 	}
 }
 
-// ByTenantrole orders the results by tenantrole terms.
-func ByTenantrole(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+// ByAssignments orders the results by assignments terms.
+func ByAssignments(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
 	return func(s *sql.Selector) {
-		sqlgraph.OrderByNeighborTerms(s, newTenantroleStep(), append([]sql.OrderTerm{term}, terms...)...)
-	}
-}
-
-// ByProjectroleCount orders the results by projectrole count.
-func ByProjectroleCount(opts ...sql.OrderTermOption) OrderOption {
-	return func(s *sql.Selector) {
-		sqlgraph.OrderByNeighborsCount(s, newProjectroleStep(), opts...)
-	}
-}
-
-// ByProjectrole orders the results by projectrole terms.
-func ByProjectrole(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
-	return func(s *sql.Selector) {
-		sqlgraph.OrderByNeighborTerms(s, newProjectroleStep(), append([]sql.OrderTerm{term}, terms...)...)
+		sqlgraph.OrderByNeighborTerms(s, newAssignmentsStep(), append([]sql.OrderTerm{term}, terms...)...)
 	}
 }
 func newTenantStep() *sqlgraph.Step {
@@ -253,11 +230,11 @@ func newTenantStep() *sqlgraph.Step {
 		sqlgraph.Edge(sqlgraph.M2O, true, TenantTable, TenantColumn),
 	)
 }
-func newProjectStep() *sqlgraph.Step {
+func newNodeStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
-		sqlgraph.To(ProjectInverseTable, FieldID),
-		sqlgraph.Edge(sqlgraph.M2O, true, ProjectTable, ProjectColumn),
+		sqlgraph.To(NodeInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.M2O, true, NodeTable, NodeColumn),
 	)
 }
 func newPermissionsStep() *sqlgraph.Step {
@@ -267,17 +244,10 @@ func newPermissionsStep() *sqlgraph.Step {
 		sqlgraph.Edge(sqlgraph.O2M, false, PermissionsTable, PermissionsColumn),
 	)
 }
-func newTenantroleStep() *sqlgraph.Step {
+func newAssignmentsStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
-		sqlgraph.To(TenantroleInverseTable, FieldID),
-		sqlgraph.Edge(sqlgraph.O2M, false, TenantroleTable, TenantroleColumn),
-	)
-}
-func newProjectroleStep() *sqlgraph.Step {
-	return sqlgraph.NewStep(
-		sqlgraph.From(Table, FieldID),
-		sqlgraph.To(ProjectroleInverseTable, FieldID),
-		sqlgraph.Edge(sqlgraph.O2M, false, ProjectroleTable, ProjectroleColumn),
+		sqlgraph.To(AssignmentsInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, false, AssignmentsTable, AssignmentsColumn),
 	)
 }

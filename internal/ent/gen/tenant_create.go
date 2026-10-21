@@ -11,14 +11,11 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/caneel7/keynote-api/internal/ent/gen/project"
-	"github.com/caneel7/keynote-api/internal/ent/gen/projectmember"
 	"github.com/caneel7/keynote-api/internal/ent/gen/role"
 	"github.com/caneel7/keynote-api/internal/ent/gen/rolepermission"
-	"github.com/caneel7/keynote-api/internal/ent/gen/statedefinitions"
 	"github.com/caneel7/keynote-api/internal/ent/gen/subscription"
 	"github.com/caneel7/keynote-api/internal/ent/gen/tenant"
-	"github.com/caneel7/keynote-api/internal/ent/gen/tenantmember"
-	"github.com/caneel7/keynote-api/internal/ent/gen/user"
+	"github.com/caneel7/keynote-api/internal/ent/gen/usernodeassignment"
 	"github.com/caneel7/keynote-api/internal/ent/gen/workspace"
 	"github.com/google/uuid"
 )
@@ -30,27 +27,9 @@ type TenantCreate struct {
 	hooks    []Hook
 }
 
-// SetName sets the "name" field.
-func (_c *TenantCreate) SetName(v string) *TenantCreate {
-	_c.mutation.SetName(v)
-	return _c
-}
-
 // SetSlug sets the "slug" field.
 func (_c *TenantCreate) SetSlug(v string) *TenantCreate {
 	_c.mutation.SetSlug(v)
-	return _c
-}
-
-// SetStatusID sets the "status_id" field.
-func (_c *TenantCreate) SetStatusID(v uuid.UUID) *TenantCreate {
-	_c.mutation.SetStatusID(v)
-	return _c
-}
-
-// SetCreatedBy sets the "created_by" field.
-func (_c *TenantCreate) SetCreatedBy(v uuid.UUID) *TenantCreate {
-	_c.mutation.SetCreatedBy(v)
 	return _c
 }
 
@@ -82,73 +61,25 @@ func (_c *TenantCreate) SetNillableUpdatedAt(v *time.Time) *TenantCreate {
 	return _c
 }
 
-// SetDeletedAt sets the "deleted_at" field.
-func (_c *TenantCreate) SetDeletedAt(v time.Time) *TenantCreate {
-	_c.mutation.SetDeletedAt(v)
-	return _c
-}
-
-// SetNillableDeletedAt sets the "deleted_at" field if the given value is not nil.
-func (_c *TenantCreate) SetNillableDeletedAt(v *time.Time) *TenantCreate {
-	if v != nil {
-		_c.SetDeletedAt(*v)
-	}
-	return _c
-}
-
 // SetID sets the "id" field.
 func (_c *TenantCreate) SetID(v uuid.UUID) *TenantCreate {
 	_c.mutation.SetID(v)
 	return _c
 }
 
-// SetNillableID sets the "id" field if the given value is not nil.
-func (_c *TenantCreate) SetNillableID(v *uuid.UUID) *TenantCreate {
-	if v != nil {
-		_c.SetID(*v)
+// AddWorkspaceIDs adds the "workspaces" edge to the Workspace entity by IDs.
+func (_c *TenantCreate) AddWorkspaceIDs(ids ...uuid.UUID) *TenantCreate {
+	_c.mutation.AddWorkspaceIDs(ids...)
+	return _c
+}
+
+// AddWorkspaces adds the "workspaces" edges to the Workspace entity.
+func (_c *TenantCreate) AddWorkspaces(v ...*Workspace) *TenantCreate {
+	ids := make([]uuid.UUID, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
 	}
-	return _c
-}
-
-// SetStateID sets the "state" edge to the StateDefinitions entity by ID.
-func (_c *TenantCreate) SetStateID(id uuid.UUID) *TenantCreate {
-	_c.mutation.SetStateID(id)
-	return _c
-}
-
-// SetState sets the "state" edge to the StateDefinitions entity.
-func (_c *TenantCreate) SetState(v *StateDefinitions) *TenantCreate {
-	return _c.SetStateID(v.ID)
-}
-
-// SetUserID sets the "user" edge to the User entity by ID.
-func (_c *TenantCreate) SetUserID(id uuid.UUID) *TenantCreate {
-	_c.mutation.SetUserID(id)
-	return _c
-}
-
-// SetUser sets the "user" edge to the User entity.
-func (_c *TenantCreate) SetUser(v *User) *TenantCreate {
-	return _c.SetUserID(v.ID)
-}
-
-// SetWorkspaceID sets the "workspace" edge to the Workspace entity by ID.
-func (_c *TenantCreate) SetWorkspaceID(id uuid.UUID) *TenantCreate {
-	_c.mutation.SetWorkspaceID(id)
-	return _c
-}
-
-// SetNillableWorkspaceID sets the "workspace" edge to the Workspace entity by ID if the given value is not nil.
-func (_c *TenantCreate) SetNillableWorkspaceID(id *uuid.UUID) *TenantCreate {
-	if id != nil {
-		_c = _c.SetWorkspaceID(*id)
-	}
-	return _c
-}
-
-// SetWorkspace sets the "workspace" edge to the Workspace entity.
-func (_c *TenantCreate) SetWorkspace(v *Workspace) *TenantCreate {
-	return _c.SetWorkspaceID(v.ID)
+	return _c.AddWorkspaceIDs(ids...)
 }
 
 // AddProjectIDs adds the "projects" edge to the Project entity by IDs.
@@ -196,34 +127,19 @@ func (_c *TenantCreate) AddRolepermissions(v ...*RolePermission) *TenantCreate {
 	return _c.AddRolepermissionIDs(ids...)
 }
 
-// AddTenantroleIDs adds the "tenantrole" edge to the TenantMember entity by IDs.
-func (_c *TenantCreate) AddTenantroleIDs(ids ...int) *TenantCreate {
-	_c.mutation.AddTenantroleIDs(ids...)
+// AddAssignmentIDs adds the "assignments" edge to the UserNodeAssignment entity by IDs.
+func (_c *TenantCreate) AddAssignmentIDs(ids ...uuid.UUID) *TenantCreate {
+	_c.mutation.AddAssignmentIDs(ids...)
 	return _c
 }
 
-// AddTenantrole adds the "tenantrole" edges to the TenantMember entity.
-func (_c *TenantCreate) AddTenantrole(v ...*TenantMember) *TenantCreate {
-	ids := make([]int, len(v))
+// AddAssignments adds the "assignments" edges to the UserNodeAssignment entity.
+func (_c *TenantCreate) AddAssignments(v ...*UserNodeAssignment) *TenantCreate {
+	ids := make([]uuid.UUID, len(v))
 	for i := range v {
 		ids[i] = v[i].ID
 	}
-	return _c.AddTenantroleIDs(ids...)
-}
-
-// AddProjectroleIDs adds the "projectrole" edge to the ProjectMember entity by IDs.
-func (_c *TenantCreate) AddProjectroleIDs(ids ...int) *TenantCreate {
-	_c.mutation.AddProjectroleIDs(ids...)
-	return _c
-}
-
-// AddProjectrole adds the "projectrole" edges to the ProjectMember entity.
-func (_c *TenantCreate) AddProjectrole(v ...*ProjectMember) *TenantCreate {
-	ids := make([]int, len(v))
-	for i := range v {
-		ids[i] = v[i].ID
-	}
-	return _c.AddProjectroleIDs(ids...)
+	return _c.AddAssignmentIDs(ids...)
 }
 
 // AddSubscriptionIDs adds the "subscription" edge to the Subscription entity by IDs.
@@ -284,22 +200,10 @@ func (_c *TenantCreate) defaults() {
 		v := tenant.DefaultUpdatedAt()
 		_c.mutation.SetUpdatedAt(v)
 	}
-	if _, ok := _c.mutation.ID(); !ok {
-		v := tenant.DefaultID()
-		_c.mutation.SetID(v)
-	}
 }
 
 // check runs all checks and user-defined validators on the builder.
 func (_c *TenantCreate) check() error {
-	if _, ok := _c.mutation.Name(); !ok {
-		return &ValidationError{Name: "name", err: errors.New(`gen: missing required field "Tenant.name"`)}
-	}
-	if v, ok := _c.mutation.Name(); ok {
-		if err := tenant.NameValidator(v); err != nil {
-			return &ValidationError{Name: "name", err: fmt.Errorf(`gen: validator failed for field "Tenant.name": %w`, err)}
-		}
-	}
 	if _, ok := _c.mutation.Slug(); !ok {
 		return &ValidationError{Name: "slug", err: errors.New(`gen: missing required field "Tenant.slug"`)}
 	}
@@ -308,23 +212,11 @@ func (_c *TenantCreate) check() error {
 			return &ValidationError{Name: "slug", err: fmt.Errorf(`gen: validator failed for field "Tenant.slug": %w`, err)}
 		}
 	}
-	if _, ok := _c.mutation.StatusID(); !ok {
-		return &ValidationError{Name: "status_id", err: errors.New(`gen: missing required field "Tenant.status_id"`)}
-	}
-	if _, ok := _c.mutation.CreatedBy(); !ok {
-		return &ValidationError{Name: "created_by", err: errors.New(`gen: missing required field "Tenant.created_by"`)}
-	}
 	if _, ok := _c.mutation.CreatedAt(); !ok {
 		return &ValidationError{Name: "created_at", err: errors.New(`gen: missing required field "Tenant.created_at"`)}
 	}
 	if _, ok := _c.mutation.UpdatedAt(); !ok {
 		return &ValidationError{Name: "updated_at", err: errors.New(`gen: missing required field "Tenant.updated_at"`)}
-	}
-	if len(_c.mutation.StateIDs()) == 0 {
-		return &ValidationError{Name: "state", err: errors.New(`gen: missing required edge "Tenant.state"`)}
-	}
-	if len(_c.mutation.UserIDs()) == 0 {
-		return &ValidationError{Name: "user", err: errors.New(`gen: missing required edge "Tenant.user"`)}
 	}
 	return nil
 }
@@ -361,10 +253,6 @@ func (_c *TenantCreate) createSpec() (*Tenant, *sqlgraph.CreateSpec) {
 		_node.ID = id
 		_spec.ID.Value = &id
 	}
-	if value, ok := _c.mutation.Name(); ok {
-		_spec.SetField(tenant.FieldName, field.TypeString, value)
-		_node.Name = value
-	}
 	if value, ok := _c.mutation.Slug(); ok {
 		_spec.SetField(tenant.FieldSlug, field.TypeString, value)
 		_node.Slug = value
@@ -377,50 +265,12 @@ func (_c *TenantCreate) createSpec() (*Tenant, *sqlgraph.CreateSpec) {
 		_spec.SetField(tenant.FieldUpdatedAt, field.TypeTime, value)
 		_node.UpdatedAt = value
 	}
-	if value, ok := _c.mutation.DeletedAt(); ok {
-		_spec.SetField(tenant.FieldDeletedAt, field.TypeTime, value)
-		_node.DeletedAt = &value
-	}
-	if nodes := _c.mutation.StateIDs(); len(nodes) > 0 {
+	if nodes := _c.mutation.WorkspacesIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: true,
-			Table:   tenant.StateTable,
-			Columns: []string{tenant.StateColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(statedefinitions.FieldID, field.TypeUUID),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_node.StatusID = nodes[0]
-		_spec.Edges = append(_spec.Edges, edge)
-	}
-	if nodes := _c.mutation.UserIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2O,
-			Inverse: true,
-			Table:   tenant.UserTable,
-			Columns: []string{tenant.UserColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeUUID),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_node.CreatedBy = nodes[0]
-		_spec.Edges = append(_spec.Edges, edge)
-	}
-	if nodes := _c.mutation.WorkspaceIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2O,
+			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   tenant.WorkspaceTable,
-			Columns: []string{tenant.WorkspaceColumn},
+			Table:   tenant.WorkspacesTable,
+			Columns: []string{tenant.WorkspacesColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(workspace.FieldID, field.TypeUUID),
@@ -479,31 +329,15 @@ func (_c *TenantCreate) createSpec() (*Tenant, *sqlgraph.CreateSpec) {
 		}
 		_spec.Edges = append(_spec.Edges, edge)
 	}
-	if nodes := _c.mutation.TenantroleIDs(); len(nodes) > 0 {
+	if nodes := _c.mutation.AssignmentsIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   tenant.TenantroleTable,
-			Columns: []string{tenant.TenantroleColumn},
+			Table:   tenant.AssignmentsTable,
+			Columns: []string{tenant.AssignmentsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(tenantmember.FieldID, field.TypeInt),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges = append(_spec.Edges, edge)
-	}
-	if nodes := _c.mutation.ProjectroleIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   tenant.ProjectroleTable,
-			Columns: []string{tenant.ProjectroleColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(projectmember.FieldID, field.TypeInt),
+				IDSpec: sqlgraph.NewFieldSpec(usernodeassignment.FieldID, field.TypeUUID),
 			},
 		}
 		for _, k := range nodes {

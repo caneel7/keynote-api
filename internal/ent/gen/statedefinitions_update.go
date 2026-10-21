@@ -12,13 +12,11 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/caneel7/keynote-api/internal/ent/gen/entitykind"
+	"github.com/caneel7/keynote-api/internal/ent/gen/orgnode"
 	"github.com/caneel7/keynote-api/internal/ent/gen/predicate"
-	"github.com/caneel7/keynote-api/internal/ent/gen/project"
 	"github.com/caneel7/keynote-api/internal/ent/gen/statedefinitions"
 	"github.com/caneel7/keynote-api/internal/ent/gen/subscription"
-	"github.com/caneel7/keynote-api/internal/ent/gen/tenant"
 	"github.com/caneel7/keynote-api/internal/ent/gen/user"
-	"github.com/caneel7/keynote-api/internal/ent/gen/workspace"
 	"github.com/google/uuid"
 )
 
@@ -114,21 +112,6 @@ func (_u *StateDefinitionsUpdate) SetEntityKind(v *EntityKind) *StateDefinitions
 	return _u.SetEntityKindID(v.ID)
 }
 
-// AddTenantIDs adds the "tenants" edge to the Tenant entity by IDs.
-func (_u *StateDefinitionsUpdate) AddTenantIDs(ids ...uuid.UUID) *StateDefinitionsUpdate {
-	_u.mutation.AddTenantIDs(ids...)
-	return _u
-}
-
-// AddTenants adds the "tenants" edges to the Tenant entity.
-func (_u *StateDefinitionsUpdate) AddTenants(v ...*Tenant) *StateDefinitionsUpdate {
-	ids := make([]uuid.UUID, len(v))
-	for i := range v {
-		ids[i] = v[i].ID
-	}
-	return _u.AddTenantIDs(ids...)
-}
-
 // AddUserIDs adds the "user" edge to the User entity by IDs.
 func (_u *StateDefinitionsUpdate) AddUserIDs(ids ...uuid.UUID) *StateDefinitionsUpdate {
 	_u.mutation.AddUserIDs(ids...)
@@ -144,34 +127,19 @@ func (_u *StateDefinitionsUpdate) AddUser(v ...*User) *StateDefinitionsUpdate {
 	return _u.AddUserIDs(ids...)
 }
 
-// AddWorkspaceIDs adds the "workspace" edge to the Workspace entity by IDs.
-func (_u *StateDefinitionsUpdate) AddWorkspaceIDs(ids ...uuid.UUID) *StateDefinitionsUpdate {
-	_u.mutation.AddWorkspaceIDs(ids...)
+// AddOrgNodeIDs adds the "org_nodes" edge to the OrgNode entity by IDs.
+func (_u *StateDefinitionsUpdate) AddOrgNodeIDs(ids ...uuid.UUID) *StateDefinitionsUpdate {
+	_u.mutation.AddOrgNodeIDs(ids...)
 	return _u
 }
 
-// AddWorkspace adds the "workspace" edges to the Workspace entity.
-func (_u *StateDefinitionsUpdate) AddWorkspace(v ...*Workspace) *StateDefinitionsUpdate {
+// AddOrgNodes adds the "org_nodes" edges to the OrgNode entity.
+func (_u *StateDefinitionsUpdate) AddOrgNodes(v ...*OrgNode) *StateDefinitionsUpdate {
 	ids := make([]uuid.UUID, len(v))
 	for i := range v {
 		ids[i] = v[i].ID
 	}
-	return _u.AddWorkspaceIDs(ids...)
-}
-
-// AddProjectIDs adds the "projects" edge to the Project entity by IDs.
-func (_u *StateDefinitionsUpdate) AddProjectIDs(ids ...uuid.UUID) *StateDefinitionsUpdate {
-	_u.mutation.AddProjectIDs(ids...)
-	return _u
-}
-
-// AddProjects adds the "projects" edges to the Project entity.
-func (_u *StateDefinitionsUpdate) AddProjects(v ...*Project) *StateDefinitionsUpdate {
-	ids := make([]uuid.UUID, len(v))
-	for i := range v {
-		ids[i] = v[i].ID
-	}
-	return _u.AddProjectIDs(ids...)
+	return _u.AddOrgNodeIDs(ids...)
 }
 
 // AddSubscriptionIDs adds the "subscription" edge to the Subscription entity by IDs.
@@ -200,27 +168,6 @@ func (_u *StateDefinitionsUpdate) ClearEntityKind() *StateDefinitionsUpdate {
 	return _u
 }
 
-// ClearTenants clears all "tenants" edges to the Tenant entity.
-func (_u *StateDefinitionsUpdate) ClearTenants() *StateDefinitionsUpdate {
-	_u.mutation.ClearTenants()
-	return _u
-}
-
-// RemoveTenantIDs removes the "tenants" edge to Tenant entities by IDs.
-func (_u *StateDefinitionsUpdate) RemoveTenantIDs(ids ...uuid.UUID) *StateDefinitionsUpdate {
-	_u.mutation.RemoveTenantIDs(ids...)
-	return _u
-}
-
-// RemoveTenants removes "tenants" edges to Tenant entities.
-func (_u *StateDefinitionsUpdate) RemoveTenants(v ...*Tenant) *StateDefinitionsUpdate {
-	ids := make([]uuid.UUID, len(v))
-	for i := range v {
-		ids[i] = v[i].ID
-	}
-	return _u.RemoveTenantIDs(ids...)
-}
-
 // ClearUser clears all "user" edges to the User entity.
 func (_u *StateDefinitionsUpdate) ClearUser() *StateDefinitionsUpdate {
 	_u.mutation.ClearUser()
@@ -242,46 +189,25 @@ func (_u *StateDefinitionsUpdate) RemoveUser(v ...*User) *StateDefinitionsUpdate
 	return _u.RemoveUserIDs(ids...)
 }
 
-// ClearWorkspace clears all "workspace" edges to the Workspace entity.
-func (_u *StateDefinitionsUpdate) ClearWorkspace() *StateDefinitionsUpdate {
-	_u.mutation.ClearWorkspace()
+// ClearOrgNodes clears all "org_nodes" edges to the OrgNode entity.
+func (_u *StateDefinitionsUpdate) ClearOrgNodes() *StateDefinitionsUpdate {
+	_u.mutation.ClearOrgNodes()
 	return _u
 }
 
-// RemoveWorkspaceIDs removes the "workspace" edge to Workspace entities by IDs.
-func (_u *StateDefinitionsUpdate) RemoveWorkspaceIDs(ids ...uuid.UUID) *StateDefinitionsUpdate {
-	_u.mutation.RemoveWorkspaceIDs(ids...)
+// RemoveOrgNodeIDs removes the "org_nodes" edge to OrgNode entities by IDs.
+func (_u *StateDefinitionsUpdate) RemoveOrgNodeIDs(ids ...uuid.UUID) *StateDefinitionsUpdate {
+	_u.mutation.RemoveOrgNodeIDs(ids...)
 	return _u
 }
 
-// RemoveWorkspace removes "workspace" edges to Workspace entities.
-func (_u *StateDefinitionsUpdate) RemoveWorkspace(v ...*Workspace) *StateDefinitionsUpdate {
+// RemoveOrgNodes removes "org_nodes" edges to OrgNode entities.
+func (_u *StateDefinitionsUpdate) RemoveOrgNodes(v ...*OrgNode) *StateDefinitionsUpdate {
 	ids := make([]uuid.UUID, len(v))
 	for i := range v {
 		ids[i] = v[i].ID
 	}
-	return _u.RemoveWorkspaceIDs(ids...)
-}
-
-// ClearProjects clears all "projects" edges to the Project entity.
-func (_u *StateDefinitionsUpdate) ClearProjects() *StateDefinitionsUpdate {
-	_u.mutation.ClearProjects()
-	return _u
-}
-
-// RemoveProjectIDs removes the "projects" edge to Project entities by IDs.
-func (_u *StateDefinitionsUpdate) RemoveProjectIDs(ids ...uuid.UUID) *StateDefinitionsUpdate {
-	_u.mutation.RemoveProjectIDs(ids...)
-	return _u
-}
-
-// RemoveProjects removes "projects" edges to Project entities.
-func (_u *StateDefinitionsUpdate) RemoveProjects(v ...*Project) *StateDefinitionsUpdate {
-	ids := make([]uuid.UUID, len(v))
-	for i := range v {
-		ids[i] = v[i].ID
-	}
-	return _u.RemoveProjectIDs(ids...)
+	return _u.RemoveOrgNodeIDs(ids...)
 }
 
 // ClearSubscription clears all "subscription" edges to the Subscription entity.
@@ -415,51 +341,6 @@ func (_u *StateDefinitionsUpdate) sqlSave(ctx context.Context) (_node int, err e
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if _u.mutation.TenantsCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   statedefinitions.TenantsTable,
-			Columns: []string{statedefinitions.TenantsColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(tenant.FieldID, field.TypeUUID),
-			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := _u.mutation.RemovedTenantsIDs(); len(nodes) > 0 && !_u.mutation.TenantsCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   statedefinitions.TenantsTable,
-			Columns: []string{statedefinitions.TenantsColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(tenant.FieldID, field.TypeUUID),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := _u.mutation.TenantsIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   statedefinitions.TenantsTable,
-			Columns: []string{statedefinitions.TenantsColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(tenant.FieldID, field.TypeUUID),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Add = append(_spec.Edges.Add, edge)
-	}
 	if _u.mutation.UserCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
@@ -505,28 +386,28 @@ func (_u *StateDefinitionsUpdate) sqlSave(ctx context.Context) (_node int, err e
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if _u.mutation.WorkspaceCleared() {
+	if _u.mutation.OrgNodesCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   statedefinitions.WorkspaceTable,
-			Columns: []string{statedefinitions.WorkspaceColumn},
+			Table:   statedefinitions.OrgNodesTable,
+			Columns: []string{statedefinitions.OrgNodesColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(workspace.FieldID, field.TypeUUID),
+				IDSpec: sqlgraph.NewFieldSpec(orgnode.FieldID, field.TypeUUID),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := _u.mutation.RemovedWorkspaceIDs(); len(nodes) > 0 && !_u.mutation.WorkspaceCleared() {
+	if nodes := _u.mutation.RemovedOrgNodesIDs(); len(nodes) > 0 && !_u.mutation.OrgNodesCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   statedefinitions.WorkspaceTable,
-			Columns: []string{statedefinitions.WorkspaceColumn},
+			Table:   statedefinitions.OrgNodesTable,
+			Columns: []string{statedefinitions.OrgNodesColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(workspace.FieldID, field.TypeUUID),
+				IDSpec: sqlgraph.NewFieldSpec(orgnode.FieldID, field.TypeUUID),
 			},
 		}
 		for _, k := range nodes {
@@ -534,60 +415,15 @@ func (_u *StateDefinitionsUpdate) sqlSave(ctx context.Context) (_node int, err e
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := _u.mutation.WorkspaceIDs(); len(nodes) > 0 {
+	if nodes := _u.mutation.OrgNodesIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   statedefinitions.WorkspaceTable,
-			Columns: []string{statedefinitions.WorkspaceColumn},
+			Table:   statedefinitions.OrgNodesTable,
+			Columns: []string{statedefinitions.OrgNodesColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(workspace.FieldID, field.TypeUUID),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Add = append(_spec.Edges.Add, edge)
-	}
-	if _u.mutation.ProjectsCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   statedefinitions.ProjectsTable,
-			Columns: []string{statedefinitions.ProjectsColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(project.FieldID, field.TypeUUID),
-			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := _u.mutation.RemovedProjectsIDs(); len(nodes) > 0 && !_u.mutation.ProjectsCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   statedefinitions.ProjectsTable,
-			Columns: []string{statedefinitions.ProjectsColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(project.FieldID, field.TypeUUID),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := _u.mutation.ProjectsIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   statedefinitions.ProjectsTable,
-			Columns: []string{statedefinitions.ProjectsColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(project.FieldID, field.TypeUUID),
+				IDSpec: sqlgraph.NewFieldSpec(orgnode.FieldID, field.TypeUUID),
 			},
 		}
 		for _, k := range nodes {
@@ -739,21 +575,6 @@ func (_u *StateDefinitionsUpdateOne) SetEntityKind(v *EntityKind) *StateDefiniti
 	return _u.SetEntityKindID(v.ID)
 }
 
-// AddTenantIDs adds the "tenants" edge to the Tenant entity by IDs.
-func (_u *StateDefinitionsUpdateOne) AddTenantIDs(ids ...uuid.UUID) *StateDefinitionsUpdateOne {
-	_u.mutation.AddTenantIDs(ids...)
-	return _u
-}
-
-// AddTenants adds the "tenants" edges to the Tenant entity.
-func (_u *StateDefinitionsUpdateOne) AddTenants(v ...*Tenant) *StateDefinitionsUpdateOne {
-	ids := make([]uuid.UUID, len(v))
-	for i := range v {
-		ids[i] = v[i].ID
-	}
-	return _u.AddTenantIDs(ids...)
-}
-
 // AddUserIDs adds the "user" edge to the User entity by IDs.
 func (_u *StateDefinitionsUpdateOne) AddUserIDs(ids ...uuid.UUID) *StateDefinitionsUpdateOne {
 	_u.mutation.AddUserIDs(ids...)
@@ -769,34 +590,19 @@ func (_u *StateDefinitionsUpdateOne) AddUser(v ...*User) *StateDefinitionsUpdate
 	return _u.AddUserIDs(ids...)
 }
 
-// AddWorkspaceIDs adds the "workspace" edge to the Workspace entity by IDs.
-func (_u *StateDefinitionsUpdateOne) AddWorkspaceIDs(ids ...uuid.UUID) *StateDefinitionsUpdateOne {
-	_u.mutation.AddWorkspaceIDs(ids...)
+// AddOrgNodeIDs adds the "org_nodes" edge to the OrgNode entity by IDs.
+func (_u *StateDefinitionsUpdateOne) AddOrgNodeIDs(ids ...uuid.UUID) *StateDefinitionsUpdateOne {
+	_u.mutation.AddOrgNodeIDs(ids...)
 	return _u
 }
 
-// AddWorkspace adds the "workspace" edges to the Workspace entity.
-func (_u *StateDefinitionsUpdateOne) AddWorkspace(v ...*Workspace) *StateDefinitionsUpdateOne {
+// AddOrgNodes adds the "org_nodes" edges to the OrgNode entity.
+func (_u *StateDefinitionsUpdateOne) AddOrgNodes(v ...*OrgNode) *StateDefinitionsUpdateOne {
 	ids := make([]uuid.UUID, len(v))
 	for i := range v {
 		ids[i] = v[i].ID
 	}
-	return _u.AddWorkspaceIDs(ids...)
-}
-
-// AddProjectIDs adds the "projects" edge to the Project entity by IDs.
-func (_u *StateDefinitionsUpdateOne) AddProjectIDs(ids ...uuid.UUID) *StateDefinitionsUpdateOne {
-	_u.mutation.AddProjectIDs(ids...)
-	return _u
-}
-
-// AddProjects adds the "projects" edges to the Project entity.
-func (_u *StateDefinitionsUpdateOne) AddProjects(v ...*Project) *StateDefinitionsUpdateOne {
-	ids := make([]uuid.UUID, len(v))
-	for i := range v {
-		ids[i] = v[i].ID
-	}
-	return _u.AddProjectIDs(ids...)
+	return _u.AddOrgNodeIDs(ids...)
 }
 
 // AddSubscriptionIDs adds the "subscription" edge to the Subscription entity by IDs.
@@ -825,27 +631,6 @@ func (_u *StateDefinitionsUpdateOne) ClearEntityKind() *StateDefinitionsUpdateOn
 	return _u
 }
 
-// ClearTenants clears all "tenants" edges to the Tenant entity.
-func (_u *StateDefinitionsUpdateOne) ClearTenants() *StateDefinitionsUpdateOne {
-	_u.mutation.ClearTenants()
-	return _u
-}
-
-// RemoveTenantIDs removes the "tenants" edge to Tenant entities by IDs.
-func (_u *StateDefinitionsUpdateOne) RemoveTenantIDs(ids ...uuid.UUID) *StateDefinitionsUpdateOne {
-	_u.mutation.RemoveTenantIDs(ids...)
-	return _u
-}
-
-// RemoveTenants removes "tenants" edges to Tenant entities.
-func (_u *StateDefinitionsUpdateOne) RemoveTenants(v ...*Tenant) *StateDefinitionsUpdateOne {
-	ids := make([]uuid.UUID, len(v))
-	for i := range v {
-		ids[i] = v[i].ID
-	}
-	return _u.RemoveTenantIDs(ids...)
-}
-
 // ClearUser clears all "user" edges to the User entity.
 func (_u *StateDefinitionsUpdateOne) ClearUser() *StateDefinitionsUpdateOne {
 	_u.mutation.ClearUser()
@@ -867,46 +652,25 @@ func (_u *StateDefinitionsUpdateOne) RemoveUser(v ...*User) *StateDefinitionsUpd
 	return _u.RemoveUserIDs(ids...)
 }
 
-// ClearWorkspace clears all "workspace" edges to the Workspace entity.
-func (_u *StateDefinitionsUpdateOne) ClearWorkspace() *StateDefinitionsUpdateOne {
-	_u.mutation.ClearWorkspace()
+// ClearOrgNodes clears all "org_nodes" edges to the OrgNode entity.
+func (_u *StateDefinitionsUpdateOne) ClearOrgNodes() *StateDefinitionsUpdateOne {
+	_u.mutation.ClearOrgNodes()
 	return _u
 }
 
-// RemoveWorkspaceIDs removes the "workspace" edge to Workspace entities by IDs.
-func (_u *StateDefinitionsUpdateOne) RemoveWorkspaceIDs(ids ...uuid.UUID) *StateDefinitionsUpdateOne {
-	_u.mutation.RemoveWorkspaceIDs(ids...)
+// RemoveOrgNodeIDs removes the "org_nodes" edge to OrgNode entities by IDs.
+func (_u *StateDefinitionsUpdateOne) RemoveOrgNodeIDs(ids ...uuid.UUID) *StateDefinitionsUpdateOne {
+	_u.mutation.RemoveOrgNodeIDs(ids...)
 	return _u
 }
 
-// RemoveWorkspace removes "workspace" edges to Workspace entities.
-func (_u *StateDefinitionsUpdateOne) RemoveWorkspace(v ...*Workspace) *StateDefinitionsUpdateOne {
+// RemoveOrgNodes removes "org_nodes" edges to OrgNode entities.
+func (_u *StateDefinitionsUpdateOne) RemoveOrgNodes(v ...*OrgNode) *StateDefinitionsUpdateOne {
 	ids := make([]uuid.UUID, len(v))
 	for i := range v {
 		ids[i] = v[i].ID
 	}
-	return _u.RemoveWorkspaceIDs(ids...)
-}
-
-// ClearProjects clears all "projects" edges to the Project entity.
-func (_u *StateDefinitionsUpdateOne) ClearProjects() *StateDefinitionsUpdateOne {
-	_u.mutation.ClearProjects()
-	return _u
-}
-
-// RemoveProjectIDs removes the "projects" edge to Project entities by IDs.
-func (_u *StateDefinitionsUpdateOne) RemoveProjectIDs(ids ...uuid.UUID) *StateDefinitionsUpdateOne {
-	_u.mutation.RemoveProjectIDs(ids...)
-	return _u
-}
-
-// RemoveProjects removes "projects" edges to Project entities.
-func (_u *StateDefinitionsUpdateOne) RemoveProjects(v ...*Project) *StateDefinitionsUpdateOne {
-	ids := make([]uuid.UUID, len(v))
-	for i := range v {
-		ids[i] = v[i].ID
-	}
-	return _u.RemoveProjectIDs(ids...)
+	return _u.RemoveOrgNodeIDs(ids...)
 }
 
 // ClearSubscription clears all "subscription" edges to the Subscription entity.
@@ -1070,51 +834,6 @@ func (_u *StateDefinitionsUpdateOne) sqlSave(ctx context.Context) (_node *StateD
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if _u.mutation.TenantsCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   statedefinitions.TenantsTable,
-			Columns: []string{statedefinitions.TenantsColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(tenant.FieldID, field.TypeUUID),
-			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := _u.mutation.RemovedTenantsIDs(); len(nodes) > 0 && !_u.mutation.TenantsCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   statedefinitions.TenantsTable,
-			Columns: []string{statedefinitions.TenantsColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(tenant.FieldID, field.TypeUUID),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := _u.mutation.TenantsIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   statedefinitions.TenantsTable,
-			Columns: []string{statedefinitions.TenantsColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(tenant.FieldID, field.TypeUUID),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Add = append(_spec.Edges.Add, edge)
-	}
 	if _u.mutation.UserCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
@@ -1160,28 +879,28 @@ func (_u *StateDefinitionsUpdateOne) sqlSave(ctx context.Context) (_node *StateD
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if _u.mutation.WorkspaceCleared() {
+	if _u.mutation.OrgNodesCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   statedefinitions.WorkspaceTable,
-			Columns: []string{statedefinitions.WorkspaceColumn},
+			Table:   statedefinitions.OrgNodesTable,
+			Columns: []string{statedefinitions.OrgNodesColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(workspace.FieldID, field.TypeUUID),
+				IDSpec: sqlgraph.NewFieldSpec(orgnode.FieldID, field.TypeUUID),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := _u.mutation.RemovedWorkspaceIDs(); len(nodes) > 0 && !_u.mutation.WorkspaceCleared() {
+	if nodes := _u.mutation.RemovedOrgNodesIDs(); len(nodes) > 0 && !_u.mutation.OrgNodesCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   statedefinitions.WorkspaceTable,
-			Columns: []string{statedefinitions.WorkspaceColumn},
+			Table:   statedefinitions.OrgNodesTable,
+			Columns: []string{statedefinitions.OrgNodesColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(workspace.FieldID, field.TypeUUID),
+				IDSpec: sqlgraph.NewFieldSpec(orgnode.FieldID, field.TypeUUID),
 			},
 		}
 		for _, k := range nodes {
@@ -1189,60 +908,15 @@ func (_u *StateDefinitionsUpdateOne) sqlSave(ctx context.Context) (_node *StateD
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := _u.mutation.WorkspaceIDs(); len(nodes) > 0 {
+	if nodes := _u.mutation.OrgNodesIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   statedefinitions.WorkspaceTable,
-			Columns: []string{statedefinitions.WorkspaceColumn},
+			Table:   statedefinitions.OrgNodesTable,
+			Columns: []string{statedefinitions.OrgNodesColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(workspace.FieldID, field.TypeUUID),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Add = append(_spec.Edges.Add, edge)
-	}
-	if _u.mutation.ProjectsCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   statedefinitions.ProjectsTable,
-			Columns: []string{statedefinitions.ProjectsColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(project.FieldID, field.TypeUUID),
-			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := _u.mutation.RemovedProjectsIDs(); len(nodes) > 0 && !_u.mutation.ProjectsCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   statedefinitions.ProjectsTable,
-			Columns: []string{statedefinitions.ProjectsColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(project.FieldID, field.TypeUUID),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := _u.mutation.ProjectsIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   statedefinitions.ProjectsTable,
-			Columns: []string{statedefinitions.ProjectsColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(project.FieldID, field.TypeUUID),
+				IDSpec: sqlgraph.NewFieldSpec(orgnode.FieldID, field.TypeUUID),
 			},
 		}
 		for _, k := range nodes {

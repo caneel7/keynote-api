@@ -33,6 +33,18 @@ func (f ModuleFunc) Mutate(ctx context.Context, m gen.Mutation) (gen.Value, erro
 	return nil, fmt.Errorf("unexpected mutation type %T. expect *gen.ModuleMutation", m)
 }
 
+// The OrgNodeFunc type is an adapter to allow the use of ordinary
+// function as OrgNode mutator.
+type OrgNodeFunc func(context.Context, *gen.OrgNodeMutation) (gen.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f OrgNodeFunc) Mutate(ctx context.Context, m gen.Mutation) (gen.Value, error) {
+	if mv, ok := m.(*gen.OrgNodeMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *gen.OrgNodeMutation", m)
+}
+
 // The PermissionFunc type is an adapter to allow the use of ordinary
 // function as Permission mutator.
 type PermissionFunc func(context.Context, *gen.PermissionMutation) (gen.Value, error)
@@ -79,18 +91,6 @@ func (f ProjectFunc) Mutate(ctx context.Context, m gen.Mutation) (gen.Value, err
 		return f(ctx, mv)
 	}
 	return nil, fmt.Errorf("unexpected mutation type %T. expect *gen.ProjectMutation", m)
-}
-
-// The ProjectMemberFunc type is an adapter to allow the use of ordinary
-// function as ProjectMember mutator.
-type ProjectMemberFunc func(context.Context, *gen.ProjectMemberMutation) (gen.Value, error)
-
-// Mutate calls f(ctx, m).
-func (f ProjectMemberFunc) Mutate(ctx context.Context, m gen.Mutation) (gen.Value, error) {
-	if mv, ok := m.(*gen.ProjectMemberMutation); ok {
-		return f(ctx, mv)
-	}
-	return nil, fmt.Errorf("unexpected mutation type %T. expect *gen.ProjectMemberMutation", m)
 }
 
 // The RoleFunc type is an adapter to allow the use of ordinary
@@ -153,18 +153,6 @@ func (f TenantFunc) Mutate(ctx context.Context, m gen.Mutation) (gen.Value, erro
 	return nil, fmt.Errorf("unexpected mutation type %T. expect *gen.TenantMutation", m)
 }
 
-// The TenantMemberFunc type is an adapter to allow the use of ordinary
-// function as TenantMember mutator.
-type TenantMemberFunc func(context.Context, *gen.TenantMemberMutation) (gen.Value, error)
-
-// Mutate calls f(ctx, m).
-func (f TenantMemberFunc) Mutate(ctx context.Context, m gen.Mutation) (gen.Value, error) {
-	if mv, ok := m.(*gen.TenantMemberMutation); ok {
-		return f(ctx, mv)
-	}
-	return nil, fmt.Errorf("unexpected mutation type %T. expect *gen.TenantMemberMutation", m)
-}
-
 // The UserFunc type is an adapter to allow the use of ordinary
 // function as User mutator.
 type UserFunc func(context.Context, *gen.UserMutation) (gen.Value, error)
@@ -187,6 +175,18 @@ func (f UserCredentialFunc) Mutate(ctx context.Context, m gen.Mutation) (gen.Val
 		return f(ctx, mv)
 	}
 	return nil, fmt.Errorf("unexpected mutation type %T. expect *gen.UserCredentialMutation", m)
+}
+
+// The UserNodeAssignmentFunc type is an adapter to allow the use of ordinary
+// function as UserNodeAssignment mutator.
+type UserNodeAssignmentFunc func(context.Context, *gen.UserNodeAssignmentMutation) (gen.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f UserNodeAssignmentFunc) Mutate(ctx context.Context, m gen.Mutation) (gen.Value, error) {
+	if mv, ok := m.(*gen.UserNodeAssignmentMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *gen.UserNodeAssignmentMutation", m)
 }
 
 // The UserSessionFunc type is an adapter to allow the use of ordinary

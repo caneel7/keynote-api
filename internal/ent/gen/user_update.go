@@ -11,16 +11,13 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/caneel7/keynote-api/internal/ent/gen/orgnode"
 	"github.com/caneel7/keynote-api/internal/ent/gen/predicate"
-	"github.com/caneel7/keynote-api/internal/ent/gen/project"
-	"github.com/caneel7/keynote-api/internal/ent/gen/projectmember"
 	"github.com/caneel7/keynote-api/internal/ent/gen/statedefinitions"
-	"github.com/caneel7/keynote-api/internal/ent/gen/tenant"
-	"github.com/caneel7/keynote-api/internal/ent/gen/tenantmember"
 	"github.com/caneel7/keynote-api/internal/ent/gen/user"
 	"github.com/caneel7/keynote-api/internal/ent/gen/usercredential"
+	"github.com/caneel7/keynote-api/internal/ent/gen/usernodeassignment"
 	"github.com/caneel7/keynote-api/internal/ent/gen/usersession"
-	"github.com/caneel7/keynote-api/internal/ent/gen/workspace"
 	"github.com/google/uuid"
 )
 
@@ -136,83 +133,49 @@ func (_u *UserUpdate) SetState(v *StateDefinitions) *UserUpdate {
 	return _u.SetStateID(v.ID)
 }
 
-// SetTenantID sets the "tenant" edge to the Tenant entity by ID.
-func (_u *UserUpdate) SetTenantID(id uuid.UUID) *UserUpdate {
-	_u.mutation.SetTenantID(id)
+// AddCreatedNodeIDs adds the "created_nodes" edge to the OrgNode entity by IDs.
+func (_u *UserUpdate) AddCreatedNodeIDs(ids ...uuid.UUID) *UserUpdate {
+	_u.mutation.AddCreatedNodeIDs(ids...)
 	return _u
 }
 
-// SetNillableTenantID sets the "tenant" edge to the Tenant entity by ID if the given value is not nil.
-func (_u *UserUpdate) SetNillableTenantID(id *uuid.UUID) *UserUpdate {
-	if id != nil {
-		_u = _u.SetTenantID(*id)
-	}
-	return _u
-}
-
-// SetTenant sets the "tenant" edge to the Tenant entity.
-func (_u *UserUpdate) SetTenant(v *Tenant) *UserUpdate {
-	return _u.SetTenantID(v.ID)
-}
-
-// AddCreatorIDs adds the "creator" edge to the Workspace entity by IDs.
-func (_u *UserUpdate) AddCreatorIDs(ids ...uuid.UUID) *UserUpdate {
-	_u.mutation.AddCreatorIDs(ids...)
-	return _u
-}
-
-// AddCreator adds the "creator" edges to the Workspace entity.
-func (_u *UserUpdate) AddCreator(v ...*Workspace) *UserUpdate {
+// AddCreatedNodes adds the "created_nodes" edges to the OrgNode entity.
+func (_u *UserUpdate) AddCreatedNodes(v ...*OrgNode) *UserUpdate {
 	ids := make([]uuid.UUID, len(v))
 	for i := range v {
 		ids[i] = v[i].ID
 	}
-	return _u.AddCreatorIDs(ids...)
+	return _u.AddCreatedNodeIDs(ids...)
 }
 
-// AddProjectcreatorIDs adds the "projectcreator" edge to the Project entity by IDs.
-func (_u *UserUpdate) AddProjectcreatorIDs(ids ...uuid.UUID) *UserUpdate {
-	_u.mutation.AddProjectcreatorIDs(ids...)
+// AddNodeAssignmentIDs adds the "node_assignments" edge to the UserNodeAssignment entity by IDs.
+func (_u *UserUpdate) AddNodeAssignmentIDs(ids ...uuid.UUID) *UserUpdate {
+	_u.mutation.AddNodeAssignmentIDs(ids...)
 	return _u
 }
 
-// AddProjectcreator adds the "projectcreator" edges to the Project entity.
-func (_u *UserUpdate) AddProjectcreator(v ...*Project) *UserUpdate {
+// AddNodeAssignments adds the "node_assignments" edges to the UserNodeAssignment entity.
+func (_u *UserUpdate) AddNodeAssignments(v ...*UserNodeAssignment) *UserUpdate {
 	ids := make([]uuid.UUID, len(v))
 	for i := range v {
 		ids[i] = v[i].ID
 	}
-	return _u.AddProjectcreatorIDs(ids...)
+	return _u.AddNodeAssignmentIDs(ids...)
 }
 
-// AddTenantroleIDs adds the "tenantrole" edge to the TenantMember entity by IDs.
-func (_u *UserUpdate) AddTenantroleIDs(ids ...int) *UserUpdate {
-	_u.mutation.AddTenantroleIDs(ids...)
+// AddCreatedAssignmentIDs adds the "created_assignments" edge to the UserNodeAssignment entity by IDs.
+func (_u *UserUpdate) AddCreatedAssignmentIDs(ids ...uuid.UUID) *UserUpdate {
+	_u.mutation.AddCreatedAssignmentIDs(ids...)
 	return _u
 }
 
-// AddTenantrole adds the "tenantrole" edges to the TenantMember entity.
-func (_u *UserUpdate) AddTenantrole(v ...*TenantMember) *UserUpdate {
-	ids := make([]int, len(v))
+// AddCreatedAssignments adds the "created_assignments" edges to the UserNodeAssignment entity.
+func (_u *UserUpdate) AddCreatedAssignments(v ...*UserNodeAssignment) *UserUpdate {
+	ids := make([]uuid.UUID, len(v))
 	for i := range v {
 		ids[i] = v[i].ID
 	}
-	return _u.AddTenantroleIDs(ids...)
-}
-
-// AddProjectroleIDs adds the "projectrole" edge to the ProjectMember entity by IDs.
-func (_u *UserUpdate) AddProjectroleIDs(ids ...int) *UserUpdate {
-	_u.mutation.AddProjectroleIDs(ids...)
-	return _u
-}
-
-// AddProjectrole adds the "projectrole" edges to the ProjectMember entity.
-func (_u *UserUpdate) AddProjectrole(v ...*ProjectMember) *UserUpdate {
-	ids := make([]int, len(v))
-	for i := range v {
-		ids[i] = v[i].ID
-	}
-	return _u.AddProjectroleIDs(ids...)
+	return _u.AddCreatedAssignmentIDs(ids...)
 }
 
 // Mutation returns the UserMutation object of the builder.
@@ -253,94 +216,67 @@ func (_u *UserUpdate) ClearState() *UserUpdate {
 	return _u
 }
 
-// ClearTenant clears the "tenant" edge to the Tenant entity.
-func (_u *UserUpdate) ClearTenant() *UserUpdate {
-	_u.mutation.ClearTenant()
+// ClearCreatedNodes clears all "created_nodes" edges to the OrgNode entity.
+func (_u *UserUpdate) ClearCreatedNodes() *UserUpdate {
+	_u.mutation.ClearCreatedNodes()
 	return _u
 }
 
-// ClearCreator clears all "creator" edges to the Workspace entity.
-func (_u *UserUpdate) ClearCreator() *UserUpdate {
-	_u.mutation.ClearCreator()
+// RemoveCreatedNodeIDs removes the "created_nodes" edge to OrgNode entities by IDs.
+func (_u *UserUpdate) RemoveCreatedNodeIDs(ids ...uuid.UUID) *UserUpdate {
+	_u.mutation.RemoveCreatedNodeIDs(ids...)
 	return _u
 }
 
-// RemoveCreatorIDs removes the "creator" edge to Workspace entities by IDs.
-func (_u *UserUpdate) RemoveCreatorIDs(ids ...uuid.UUID) *UserUpdate {
-	_u.mutation.RemoveCreatorIDs(ids...)
-	return _u
-}
-
-// RemoveCreator removes "creator" edges to Workspace entities.
-func (_u *UserUpdate) RemoveCreator(v ...*Workspace) *UserUpdate {
+// RemoveCreatedNodes removes "created_nodes" edges to OrgNode entities.
+func (_u *UserUpdate) RemoveCreatedNodes(v ...*OrgNode) *UserUpdate {
 	ids := make([]uuid.UUID, len(v))
 	for i := range v {
 		ids[i] = v[i].ID
 	}
-	return _u.RemoveCreatorIDs(ids...)
+	return _u.RemoveCreatedNodeIDs(ids...)
 }
 
-// ClearProjectcreator clears all "projectcreator" edges to the Project entity.
-func (_u *UserUpdate) ClearProjectcreator() *UserUpdate {
-	_u.mutation.ClearProjectcreator()
+// ClearNodeAssignments clears all "node_assignments" edges to the UserNodeAssignment entity.
+func (_u *UserUpdate) ClearNodeAssignments() *UserUpdate {
+	_u.mutation.ClearNodeAssignments()
 	return _u
 }
 
-// RemoveProjectcreatorIDs removes the "projectcreator" edge to Project entities by IDs.
-func (_u *UserUpdate) RemoveProjectcreatorIDs(ids ...uuid.UUID) *UserUpdate {
-	_u.mutation.RemoveProjectcreatorIDs(ids...)
+// RemoveNodeAssignmentIDs removes the "node_assignments" edge to UserNodeAssignment entities by IDs.
+func (_u *UserUpdate) RemoveNodeAssignmentIDs(ids ...uuid.UUID) *UserUpdate {
+	_u.mutation.RemoveNodeAssignmentIDs(ids...)
 	return _u
 }
 
-// RemoveProjectcreator removes "projectcreator" edges to Project entities.
-func (_u *UserUpdate) RemoveProjectcreator(v ...*Project) *UserUpdate {
+// RemoveNodeAssignments removes "node_assignments" edges to UserNodeAssignment entities.
+func (_u *UserUpdate) RemoveNodeAssignments(v ...*UserNodeAssignment) *UserUpdate {
 	ids := make([]uuid.UUID, len(v))
 	for i := range v {
 		ids[i] = v[i].ID
 	}
-	return _u.RemoveProjectcreatorIDs(ids...)
+	return _u.RemoveNodeAssignmentIDs(ids...)
 }
 
-// ClearTenantrole clears all "tenantrole" edges to the TenantMember entity.
-func (_u *UserUpdate) ClearTenantrole() *UserUpdate {
-	_u.mutation.ClearTenantrole()
+// ClearCreatedAssignments clears all "created_assignments" edges to the UserNodeAssignment entity.
+func (_u *UserUpdate) ClearCreatedAssignments() *UserUpdate {
+	_u.mutation.ClearCreatedAssignments()
 	return _u
 }
 
-// RemoveTenantroleIDs removes the "tenantrole" edge to TenantMember entities by IDs.
-func (_u *UserUpdate) RemoveTenantroleIDs(ids ...int) *UserUpdate {
-	_u.mutation.RemoveTenantroleIDs(ids...)
+// RemoveCreatedAssignmentIDs removes the "created_assignments" edge to UserNodeAssignment entities by IDs.
+func (_u *UserUpdate) RemoveCreatedAssignmentIDs(ids ...uuid.UUID) *UserUpdate {
+	_u.mutation.RemoveCreatedAssignmentIDs(ids...)
 	return _u
 }
 
-// RemoveTenantrole removes "tenantrole" edges to TenantMember entities.
-func (_u *UserUpdate) RemoveTenantrole(v ...*TenantMember) *UserUpdate {
-	ids := make([]int, len(v))
+// RemoveCreatedAssignments removes "created_assignments" edges to UserNodeAssignment entities.
+func (_u *UserUpdate) RemoveCreatedAssignments(v ...*UserNodeAssignment) *UserUpdate {
+	ids := make([]uuid.UUID, len(v))
 	for i := range v {
 		ids[i] = v[i].ID
 	}
-	return _u.RemoveTenantroleIDs(ids...)
-}
-
-// ClearProjectrole clears all "projectrole" edges to the ProjectMember entity.
-func (_u *UserUpdate) ClearProjectrole() *UserUpdate {
-	_u.mutation.ClearProjectrole()
-	return _u
-}
-
-// RemoveProjectroleIDs removes the "projectrole" edge to ProjectMember entities by IDs.
-func (_u *UserUpdate) RemoveProjectroleIDs(ids ...int) *UserUpdate {
-	_u.mutation.RemoveProjectroleIDs(ids...)
-	return _u
-}
-
-// RemoveProjectrole removes "projectrole" edges to ProjectMember entities.
-func (_u *UserUpdate) RemoveProjectrole(v ...*ProjectMember) *UserUpdate {
-	ids := make([]int, len(v))
-	for i := range v {
-		ids[i] = v[i].ID
-	}
-	return _u.RemoveProjectroleIDs(ids...)
+	return _u.RemoveCreatedAssignmentIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -519,28 +455,44 @@ func (_u *UserUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if _u.mutation.TenantCleared() {
+	if _u.mutation.CreatedNodesCleared() {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2O,
+			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   user.TenantTable,
-			Columns: []string{user.TenantColumn},
+			Table:   user.CreatedNodesTable,
+			Columns: []string{user.CreatedNodesColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(tenant.FieldID, field.TypeUUID),
+				IDSpec: sqlgraph.NewFieldSpec(orgnode.FieldID, field.TypeUUID),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := _u.mutation.TenantIDs(); len(nodes) > 0 {
+	if nodes := _u.mutation.RemovedCreatedNodesIDs(); len(nodes) > 0 && !_u.mutation.CreatedNodesCleared() {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2O,
+			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   user.TenantTable,
-			Columns: []string{user.TenantColumn},
+			Table:   user.CreatedNodesTable,
+			Columns: []string{user.CreatedNodesColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(tenant.FieldID, field.TypeUUID),
+				IDSpec: sqlgraph.NewFieldSpec(orgnode.FieldID, field.TypeUUID),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.CreatedNodesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.CreatedNodesTable,
+			Columns: []string{user.CreatedNodesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(orgnode.FieldID, field.TypeUUID),
 			},
 		}
 		for _, k := range nodes {
@@ -548,28 +500,28 @@ func (_u *UserUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if _u.mutation.CreatorCleared() {
+	if _u.mutation.NodeAssignmentsCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   user.CreatorTable,
-			Columns: []string{user.CreatorColumn},
+			Table:   user.NodeAssignmentsTable,
+			Columns: []string{user.NodeAssignmentsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(workspace.FieldID, field.TypeUUID),
+				IDSpec: sqlgraph.NewFieldSpec(usernodeassignment.FieldID, field.TypeUUID),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := _u.mutation.RemovedCreatorIDs(); len(nodes) > 0 && !_u.mutation.CreatorCleared() {
+	if nodes := _u.mutation.RemovedNodeAssignmentsIDs(); len(nodes) > 0 && !_u.mutation.NodeAssignmentsCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   user.CreatorTable,
-			Columns: []string{user.CreatorColumn},
+			Table:   user.NodeAssignmentsTable,
+			Columns: []string{user.NodeAssignmentsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(workspace.FieldID, field.TypeUUID),
+				IDSpec: sqlgraph.NewFieldSpec(usernodeassignment.FieldID, field.TypeUUID),
 			},
 		}
 		for _, k := range nodes {
@@ -577,60 +529,15 @@ func (_u *UserUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := _u.mutation.CreatorIDs(); len(nodes) > 0 {
+	if nodes := _u.mutation.NodeAssignmentsIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   user.CreatorTable,
-			Columns: []string{user.CreatorColumn},
+			Table:   user.NodeAssignmentsTable,
+			Columns: []string{user.NodeAssignmentsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(workspace.FieldID, field.TypeUUID),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Add = append(_spec.Edges.Add, edge)
-	}
-	if _u.mutation.ProjectcreatorCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   user.ProjectcreatorTable,
-			Columns: []string{user.ProjectcreatorColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(project.FieldID, field.TypeUUID),
-			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := _u.mutation.RemovedProjectcreatorIDs(); len(nodes) > 0 && !_u.mutation.ProjectcreatorCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   user.ProjectcreatorTable,
-			Columns: []string{user.ProjectcreatorColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(project.FieldID, field.TypeUUID),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := _u.mutation.ProjectcreatorIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   user.ProjectcreatorTable,
-			Columns: []string{user.ProjectcreatorColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(project.FieldID, field.TypeUUID),
+				IDSpec: sqlgraph.NewFieldSpec(usernodeassignment.FieldID, field.TypeUUID),
 			},
 		}
 		for _, k := range nodes {
@@ -638,28 +545,28 @@ func (_u *UserUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if _u.mutation.TenantroleCleared() {
+	if _u.mutation.CreatedAssignmentsCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   user.TenantroleTable,
-			Columns: []string{user.TenantroleColumn},
+			Table:   user.CreatedAssignmentsTable,
+			Columns: []string{user.CreatedAssignmentsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(tenantmember.FieldID, field.TypeInt),
+				IDSpec: sqlgraph.NewFieldSpec(usernodeassignment.FieldID, field.TypeUUID),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := _u.mutation.RemovedTenantroleIDs(); len(nodes) > 0 && !_u.mutation.TenantroleCleared() {
+	if nodes := _u.mutation.RemovedCreatedAssignmentsIDs(); len(nodes) > 0 && !_u.mutation.CreatedAssignmentsCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   user.TenantroleTable,
-			Columns: []string{user.TenantroleColumn},
+			Table:   user.CreatedAssignmentsTable,
+			Columns: []string{user.CreatedAssignmentsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(tenantmember.FieldID, field.TypeInt),
+				IDSpec: sqlgraph.NewFieldSpec(usernodeassignment.FieldID, field.TypeUUID),
 			},
 		}
 		for _, k := range nodes {
@@ -667,60 +574,15 @@ func (_u *UserUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := _u.mutation.TenantroleIDs(); len(nodes) > 0 {
+	if nodes := _u.mutation.CreatedAssignmentsIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   user.TenantroleTable,
-			Columns: []string{user.TenantroleColumn},
+			Table:   user.CreatedAssignmentsTable,
+			Columns: []string{user.CreatedAssignmentsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(tenantmember.FieldID, field.TypeInt),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Add = append(_spec.Edges.Add, edge)
-	}
-	if _u.mutation.ProjectroleCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   user.ProjectroleTable,
-			Columns: []string{user.ProjectroleColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(projectmember.FieldID, field.TypeInt),
-			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := _u.mutation.RemovedProjectroleIDs(); len(nodes) > 0 && !_u.mutation.ProjectroleCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   user.ProjectroleTable,
-			Columns: []string{user.ProjectroleColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(projectmember.FieldID, field.TypeInt),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := _u.mutation.ProjectroleIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   user.ProjectroleTable,
-			Columns: []string{user.ProjectroleColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(projectmember.FieldID, field.TypeInt),
+				IDSpec: sqlgraph.NewFieldSpec(usernodeassignment.FieldID, field.TypeUUID),
 			},
 		}
 		for _, k := range nodes {
@@ -847,83 +709,49 @@ func (_u *UserUpdateOne) SetState(v *StateDefinitions) *UserUpdateOne {
 	return _u.SetStateID(v.ID)
 }
 
-// SetTenantID sets the "tenant" edge to the Tenant entity by ID.
-func (_u *UserUpdateOne) SetTenantID(id uuid.UUID) *UserUpdateOne {
-	_u.mutation.SetTenantID(id)
+// AddCreatedNodeIDs adds the "created_nodes" edge to the OrgNode entity by IDs.
+func (_u *UserUpdateOne) AddCreatedNodeIDs(ids ...uuid.UUID) *UserUpdateOne {
+	_u.mutation.AddCreatedNodeIDs(ids...)
 	return _u
 }
 
-// SetNillableTenantID sets the "tenant" edge to the Tenant entity by ID if the given value is not nil.
-func (_u *UserUpdateOne) SetNillableTenantID(id *uuid.UUID) *UserUpdateOne {
-	if id != nil {
-		_u = _u.SetTenantID(*id)
-	}
-	return _u
-}
-
-// SetTenant sets the "tenant" edge to the Tenant entity.
-func (_u *UserUpdateOne) SetTenant(v *Tenant) *UserUpdateOne {
-	return _u.SetTenantID(v.ID)
-}
-
-// AddCreatorIDs adds the "creator" edge to the Workspace entity by IDs.
-func (_u *UserUpdateOne) AddCreatorIDs(ids ...uuid.UUID) *UserUpdateOne {
-	_u.mutation.AddCreatorIDs(ids...)
-	return _u
-}
-
-// AddCreator adds the "creator" edges to the Workspace entity.
-func (_u *UserUpdateOne) AddCreator(v ...*Workspace) *UserUpdateOne {
+// AddCreatedNodes adds the "created_nodes" edges to the OrgNode entity.
+func (_u *UserUpdateOne) AddCreatedNodes(v ...*OrgNode) *UserUpdateOne {
 	ids := make([]uuid.UUID, len(v))
 	for i := range v {
 		ids[i] = v[i].ID
 	}
-	return _u.AddCreatorIDs(ids...)
+	return _u.AddCreatedNodeIDs(ids...)
 }
 
-// AddProjectcreatorIDs adds the "projectcreator" edge to the Project entity by IDs.
-func (_u *UserUpdateOne) AddProjectcreatorIDs(ids ...uuid.UUID) *UserUpdateOne {
-	_u.mutation.AddProjectcreatorIDs(ids...)
+// AddNodeAssignmentIDs adds the "node_assignments" edge to the UserNodeAssignment entity by IDs.
+func (_u *UserUpdateOne) AddNodeAssignmentIDs(ids ...uuid.UUID) *UserUpdateOne {
+	_u.mutation.AddNodeAssignmentIDs(ids...)
 	return _u
 }
 
-// AddProjectcreator adds the "projectcreator" edges to the Project entity.
-func (_u *UserUpdateOne) AddProjectcreator(v ...*Project) *UserUpdateOne {
+// AddNodeAssignments adds the "node_assignments" edges to the UserNodeAssignment entity.
+func (_u *UserUpdateOne) AddNodeAssignments(v ...*UserNodeAssignment) *UserUpdateOne {
 	ids := make([]uuid.UUID, len(v))
 	for i := range v {
 		ids[i] = v[i].ID
 	}
-	return _u.AddProjectcreatorIDs(ids...)
+	return _u.AddNodeAssignmentIDs(ids...)
 }
 
-// AddTenantroleIDs adds the "tenantrole" edge to the TenantMember entity by IDs.
-func (_u *UserUpdateOne) AddTenantroleIDs(ids ...int) *UserUpdateOne {
-	_u.mutation.AddTenantroleIDs(ids...)
+// AddCreatedAssignmentIDs adds the "created_assignments" edge to the UserNodeAssignment entity by IDs.
+func (_u *UserUpdateOne) AddCreatedAssignmentIDs(ids ...uuid.UUID) *UserUpdateOne {
+	_u.mutation.AddCreatedAssignmentIDs(ids...)
 	return _u
 }
 
-// AddTenantrole adds the "tenantrole" edges to the TenantMember entity.
-func (_u *UserUpdateOne) AddTenantrole(v ...*TenantMember) *UserUpdateOne {
-	ids := make([]int, len(v))
+// AddCreatedAssignments adds the "created_assignments" edges to the UserNodeAssignment entity.
+func (_u *UserUpdateOne) AddCreatedAssignments(v ...*UserNodeAssignment) *UserUpdateOne {
+	ids := make([]uuid.UUID, len(v))
 	for i := range v {
 		ids[i] = v[i].ID
 	}
-	return _u.AddTenantroleIDs(ids...)
-}
-
-// AddProjectroleIDs adds the "projectrole" edge to the ProjectMember entity by IDs.
-func (_u *UserUpdateOne) AddProjectroleIDs(ids ...int) *UserUpdateOne {
-	_u.mutation.AddProjectroleIDs(ids...)
-	return _u
-}
-
-// AddProjectrole adds the "projectrole" edges to the ProjectMember entity.
-func (_u *UserUpdateOne) AddProjectrole(v ...*ProjectMember) *UserUpdateOne {
-	ids := make([]int, len(v))
-	for i := range v {
-		ids[i] = v[i].ID
-	}
-	return _u.AddProjectroleIDs(ids...)
+	return _u.AddCreatedAssignmentIDs(ids...)
 }
 
 // Mutation returns the UserMutation object of the builder.
@@ -964,94 +792,67 @@ func (_u *UserUpdateOne) ClearState() *UserUpdateOne {
 	return _u
 }
 
-// ClearTenant clears the "tenant" edge to the Tenant entity.
-func (_u *UserUpdateOne) ClearTenant() *UserUpdateOne {
-	_u.mutation.ClearTenant()
+// ClearCreatedNodes clears all "created_nodes" edges to the OrgNode entity.
+func (_u *UserUpdateOne) ClearCreatedNodes() *UserUpdateOne {
+	_u.mutation.ClearCreatedNodes()
 	return _u
 }
 
-// ClearCreator clears all "creator" edges to the Workspace entity.
-func (_u *UserUpdateOne) ClearCreator() *UserUpdateOne {
-	_u.mutation.ClearCreator()
+// RemoveCreatedNodeIDs removes the "created_nodes" edge to OrgNode entities by IDs.
+func (_u *UserUpdateOne) RemoveCreatedNodeIDs(ids ...uuid.UUID) *UserUpdateOne {
+	_u.mutation.RemoveCreatedNodeIDs(ids...)
 	return _u
 }
 
-// RemoveCreatorIDs removes the "creator" edge to Workspace entities by IDs.
-func (_u *UserUpdateOne) RemoveCreatorIDs(ids ...uuid.UUID) *UserUpdateOne {
-	_u.mutation.RemoveCreatorIDs(ids...)
-	return _u
-}
-
-// RemoveCreator removes "creator" edges to Workspace entities.
-func (_u *UserUpdateOne) RemoveCreator(v ...*Workspace) *UserUpdateOne {
+// RemoveCreatedNodes removes "created_nodes" edges to OrgNode entities.
+func (_u *UserUpdateOne) RemoveCreatedNodes(v ...*OrgNode) *UserUpdateOne {
 	ids := make([]uuid.UUID, len(v))
 	for i := range v {
 		ids[i] = v[i].ID
 	}
-	return _u.RemoveCreatorIDs(ids...)
+	return _u.RemoveCreatedNodeIDs(ids...)
 }
 
-// ClearProjectcreator clears all "projectcreator" edges to the Project entity.
-func (_u *UserUpdateOne) ClearProjectcreator() *UserUpdateOne {
-	_u.mutation.ClearProjectcreator()
+// ClearNodeAssignments clears all "node_assignments" edges to the UserNodeAssignment entity.
+func (_u *UserUpdateOne) ClearNodeAssignments() *UserUpdateOne {
+	_u.mutation.ClearNodeAssignments()
 	return _u
 }
 
-// RemoveProjectcreatorIDs removes the "projectcreator" edge to Project entities by IDs.
-func (_u *UserUpdateOne) RemoveProjectcreatorIDs(ids ...uuid.UUID) *UserUpdateOne {
-	_u.mutation.RemoveProjectcreatorIDs(ids...)
+// RemoveNodeAssignmentIDs removes the "node_assignments" edge to UserNodeAssignment entities by IDs.
+func (_u *UserUpdateOne) RemoveNodeAssignmentIDs(ids ...uuid.UUID) *UserUpdateOne {
+	_u.mutation.RemoveNodeAssignmentIDs(ids...)
 	return _u
 }
 
-// RemoveProjectcreator removes "projectcreator" edges to Project entities.
-func (_u *UserUpdateOne) RemoveProjectcreator(v ...*Project) *UserUpdateOne {
+// RemoveNodeAssignments removes "node_assignments" edges to UserNodeAssignment entities.
+func (_u *UserUpdateOne) RemoveNodeAssignments(v ...*UserNodeAssignment) *UserUpdateOne {
 	ids := make([]uuid.UUID, len(v))
 	for i := range v {
 		ids[i] = v[i].ID
 	}
-	return _u.RemoveProjectcreatorIDs(ids...)
+	return _u.RemoveNodeAssignmentIDs(ids...)
 }
 
-// ClearTenantrole clears all "tenantrole" edges to the TenantMember entity.
-func (_u *UserUpdateOne) ClearTenantrole() *UserUpdateOne {
-	_u.mutation.ClearTenantrole()
+// ClearCreatedAssignments clears all "created_assignments" edges to the UserNodeAssignment entity.
+func (_u *UserUpdateOne) ClearCreatedAssignments() *UserUpdateOne {
+	_u.mutation.ClearCreatedAssignments()
 	return _u
 }
 
-// RemoveTenantroleIDs removes the "tenantrole" edge to TenantMember entities by IDs.
-func (_u *UserUpdateOne) RemoveTenantroleIDs(ids ...int) *UserUpdateOne {
-	_u.mutation.RemoveTenantroleIDs(ids...)
+// RemoveCreatedAssignmentIDs removes the "created_assignments" edge to UserNodeAssignment entities by IDs.
+func (_u *UserUpdateOne) RemoveCreatedAssignmentIDs(ids ...uuid.UUID) *UserUpdateOne {
+	_u.mutation.RemoveCreatedAssignmentIDs(ids...)
 	return _u
 }
 
-// RemoveTenantrole removes "tenantrole" edges to TenantMember entities.
-func (_u *UserUpdateOne) RemoveTenantrole(v ...*TenantMember) *UserUpdateOne {
-	ids := make([]int, len(v))
+// RemoveCreatedAssignments removes "created_assignments" edges to UserNodeAssignment entities.
+func (_u *UserUpdateOne) RemoveCreatedAssignments(v ...*UserNodeAssignment) *UserUpdateOne {
+	ids := make([]uuid.UUID, len(v))
 	for i := range v {
 		ids[i] = v[i].ID
 	}
-	return _u.RemoveTenantroleIDs(ids...)
-}
-
-// ClearProjectrole clears all "projectrole" edges to the ProjectMember entity.
-func (_u *UserUpdateOne) ClearProjectrole() *UserUpdateOne {
-	_u.mutation.ClearProjectrole()
-	return _u
-}
-
-// RemoveProjectroleIDs removes the "projectrole" edge to ProjectMember entities by IDs.
-func (_u *UserUpdateOne) RemoveProjectroleIDs(ids ...int) *UserUpdateOne {
-	_u.mutation.RemoveProjectroleIDs(ids...)
-	return _u
-}
-
-// RemoveProjectrole removes "projectrole" edges to ProjectMember entities.
-func (_u *UserUpdateOne) RemoveProjectrole(v ...*ProjectMember) *UserUpdateOne {
-	ids := make([]int, len(v))
-	for i := range v {
-		ids[i] = v[i].ID
-	}
-	return _u.RemoveProjectroleIDs(ids...)
+	return _u.RemoveCreatedAssignmentIDs(ids...)
 }
 
 // Where appends a list predicates to the UserUpdate builder.
@@ -1260,28 +1061,44 @@ func (_u *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if _u.mutation.TenantCleared() {
+	if _u.mutation.CreatedNodesCleared() {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2O,
+			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   user.TenantTable,
-			Columns: []string{user.TenantColumn},
+			Table:   user.CreatedNodesTable,
+			Columns: []string{user.CreatedNodesColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(tenant.FieldID, field.TypeUUID),
+				IDSpec: sqlgraph.NewFieldSpec(orgnode.FieldID, field.TypeUUID),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := _u.mutation.TenantIDs(); len(nodes) > 0 {
+	if nodes := _u.mutation.RemovedCreatedNodesIDs(); len(nodes) > 0 && !_u.mutation.CreatedNodesCleared() {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2O,
+			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   user.TenantTable,
-			Columns: []string{user.TenantColumn},
+			Table:   user.CreatedNodesTable,
+			Columns: []string{user.CreatedNodesColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(tenant.FieldID, field.TypeUUID),
+				IDSpec: sqlgraph.NewFieldSpec(orgnode.FieldID, field.TypeUUID),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.CreatedNodesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.CreatedNodesTable,
+			Columns: []string{user.CreatedNodesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(orgnode.FieldID, field.TypeUUID),
 			},
 		}
 		for _, k := range nodes {
@@ -1289,28 +1106,28 @@ func (_u *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if _u.mutation.CreatorCleared() {
+	if _u.mutation.NodeAssignmentsCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   user.CreatorTable,
-			Columns: []string{user.CreatorColumn},
+			Table:   user.NodeAssignmentsTable,
+			Columns: []string{user.NodeAssignmentsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(workspace.FieldID, field.TypeUUID),
+				IDSpec: sqlgraph.NewFieldSpec(usernodeassignment.FieldID, field.TypeUUID),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := _u.mutation.RemovedCreatorIDs(); len(nodes) > 0 && !_u.mutation.CreatorCleared() {
+	if nodes := _u.mutation.RemovedNodeAssignmentsIDs(); len(nodes) > 0 && !_u.mutation.NodeAssignmentsCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   user.CreatorTable,
-			Columns: []string{user.CreatorColumn},
+			Table:   user.NodeAssignmentsTable,
+			Columns: []string{user.NodeAssignmentsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(workspace.FieldID, field.TypeUUID),
+				IDSpec: sqlgraph.NewFieldSpec(usernodeassignment.FieldID, field.TypeUUID),
 			},
 		}
 		for _, k := range nodes {
@@ -1318,60 +1135,15 @@ func (_u *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) {
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := _u.mutation.CreatorIDs(); len(nodes) > 0 {
+	if nodes := _u.mutation.NodeAssignmentsIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   user.CreatorTable,
-			Columns: []string{user.CreatorColumn},
+			Table:   user.NodeAssignmentsTable,
+			Columns: []string{user.NodeAssignmentsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(workspace.FieldID, field.TypeUUID),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Add = append(_spec.Edges.Add, edge)
-	}
-	if _u.mutation.ProjectcreatorCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   user.ProjectcreatorTable,
-			Columns: []string{user.ProjectcreatorColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(project.FieldID, field.TypeUUID),
-			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := _u.mutation.RemovedProjectcreatorIDs(); len(nodes) > 0 && !_u.mutation.ProjectcreatorCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   user.ProjectcreatorTable,
-			Columns: []string{user.ProjectcreatorColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(project.FieldID, field.TypeUUID),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := _u.mutation.ProjectcreatorIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   user.ProjectcreatorTable,
-			Columns: []string{user.ProjectcreatorColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(project.FieldID, field.TypeUUID),
+				IDSpec: sqlgraph.NewFieldSpec(usernodeassignment.FieldID, field.TypeUUID),
 			},
 		}
 		for _, k := range nodes {
@@ -1379,28 +1151,28 @@ func (_u *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if _u.mutation.TenantroleCleared() {
+	if _u.mutation.CreatedAssignmentsCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   user.TenantroleTable,
-			Columns: []string{user.TenantroleColumn},
+			Table:   user.CreatedAssignmentsTable,
+			Columns: []string{user.CreatedAssignmentsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(tenantmember.FieldID, field.TypeInt),
+				IDSpec: sqlgraph.NewFieldSpec(usernodeassignment.FieldID, field.TypeUUID),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := _u.mutation.RemovedTenantroleIDs(); len(nodes) > 0 && !_u.mutation.TenantroleCleared() {
+	if nodes := _u.mutation.RemovedCreatedAssignmentsIDs(); len(nodes) > 0 && !_u.mutation.CreatedAssignmentsCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   user.TenantroleTable,
-			Columns: []string{user.TenantroleColumn},
+			Table:   user.CreatedAssignmentsTable,
+			Columns: []string{user.CreatedAssignmentsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(tenantmember.FieldID, field.TypeInt),
+				IDSpec: sqlgraph.NewFieldSpec(usernodeassignment.FieldID, field.TypeUUID),
 			},
 		}
 		for _, k := range nodes {
@@ -1408,60 +1180,15 @@ func (_u *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) {
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := _u.mutation.TenantroleIDs(); len(nodes) > 0 {
+	if nodes := _u.mutation.CreatedAssignmentsIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   user.TenantroleTable,
-			Columns: []string{user.TenantroleColumn},
+			Table:   user.CreatedAssignmentsTable,
+			Columns: []string{user.CreatedAssignmentsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(tenantmember.FieldID, field.TypeInt),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Add = append(_spec.Edges.Add, edge)
-	}
-	if _u.mutation.ProjectroleCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   user.ProjectroleTable,
-			Columns: []string{user.ProjectroleColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(projectmember.FieldID, field.TypeInt),
-			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := _u.mutation.RemovedProjectroleIDs(); len(nodes) > 0 && !_u.mutation.ProjectroleCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   user.ProjectroleTable,
-			Columns: []string{user.ProjectroleColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(projectmember.FieldID, field.TypeInt),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := _u.mutation.ProjectroleIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   user.ProjectroleTable,
-			Columns: []string{user.ProjectroleColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(projectmember.FieldID, field.TypeInt),
+				IDSpec: sqlgraph.NewFieldSpec(usernodeassignment.FieldID, field.TypeUUID),
 			},
 		}
 		for _, k := range nodes {

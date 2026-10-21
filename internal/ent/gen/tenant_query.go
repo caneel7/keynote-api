@@ -14,14 +14,11 @@ import (
 	"entgo.io/ent/schema/field"
 	"github.com/caneel7/keynote-api/internal/ent/gen/predicate"
 	"github.com/caneel7/keynote-api/internal/ent/gen/project"
-	"github.com/caneel7/keynote-api/internal/ent/gen/projectmember"
 	"github.com/caneel7/keynote-api/internal/ent/gen/role"
 	"github.com/caneel7/keynote-api/internal/ent/gen/rolepermission"
-	"github.com/caneel7/keynote-api/internal/ent/gen/statedefinitions"
 	"github.com/caneel7/keynote-api/internal/ent/gen/subscription"
 	"github.com/caneel7/keynote-api/internal/ent/gen/tenant"
-	"github.com/caneel7/keynote-api/internal/ent/gen/tenantmember"
-	"github.com/caneel7/keynote-api/internal/ent/gen/user"
+	"github.com/caneel7/keynote-api/internal/ent/gen/usernodeassignment"
 	"github.com/caneel7/keynote-api/internal/ent/gen/workspace"
 	"github.com/google/uuid"
 )
@@ -33,14 +30,11 @@ type TenantQuery struct {
 	order               []tenant.OrderOption
 	inters              []Interceptor
 	predicates          []predicate.Tenant
-	withState           *StateDefinitionsQuery
-	withUser            *UserQuery
-	withWorkspace       *WorkspaceQuery
+	withWorkspaces      *WorkspaceQuery
 	withProjects        *ProjectQuery
 	withRoles           *RoleQuery
 	withRolepermissions *RolePermissionQuery
-	withTenantrole      *TenantMemberQuery
-	withProjectrole     *ProjectMemberQuery
+	withAssignments     *UserNodeAssignmentQuery
 	withSubscription    *SubscriptionQuery
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
@@ -78,52 +72,8 @@ func (_q *TenantQuery) Order(o ...tenant.OrderOption) *TenantQuery {
 	return _q
 }
 
-// QueryState chains the current query on the "state" edge.
-func (_q *TenantQuery) QueryState() *StateDefinitionsQuery {
-	query := (&StateDefinitionsClient{config: _q.config}).Query()
-	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
-		if err := _q.prepareQuery(ctx); err != nil {
-			return nil, err
-		}
-		selector := _q.sqlQuery(ctx)
-		if err := selector.Err(); err != nil {
-			return nil, err
-		}
-		step := sqlgraph.NewStep(
-			sqlgraph.From(tenant.Table, tenant.FieldID, selector),
-			sqlgraph.To(statedefinitions.Table, statedefinitions.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, tenant.StateTable, tenant.StateColumn),
-		)
-		fromU = sqlgraph.SetNeighbors(_q.driver.Dialect(), step)
-		return fromU, nil
-	}
-	return query
-}
-
-// QueryUser chains the current query on the "user" edge.
-func (_q *TenantQuery) QueryUser() *UserQuery {
-	query := (&UserClient{config: _q.config}).Query()
-	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
-		if err := _q.prepareQuery(ctx); err != nil {
-			return nil, err
-		}
-		selector := _q.sqlQuery(ctx)
-		if err := selector.Err(); err != nil {
-			return nil, err
-		}
-		step := sqlgraph.NewStep(
-			sqlgraph.From(tenant.Table, tenant.FieldID, selector),
-			sqlgraph.To(user.Table, user.FieldID),
-			sqlgraph.Edge(sqlgraph.O2O, true, tenant.UserTable, tenant.UserColumn),
-		)
-		fromU = sqlgraph.SetNeighbors(_q.driver.Dialect(), step)
-		return fromU, nil
-	}
-	return query
-}
-
-// QueryWorkspace chains the current query on the "workspace" edge.
-func (_q *TenantQuery) QueryWorkspace() *WorkspaceQuery {
+// QueryWorkspaces chains the current query on the "workspaces" edge.
+func (_q *TenantQuery) QueryWorkspaces() *WorkspaceQuery {
 	query := (&WorkspaceClient{config: _q.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := _q.prepareQuery(ctx); err != nil {
@@ -136,7 +86,7 @@ func (_q *TenantQuery) QueryWorkspace() *WorkspaceQuery {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(tenant.Table, tenant.FieldID, selector),
 			sqlgraph.To(workspace.Table, workspace.FieldID),
-			sqlgraph.Edge(sqlgraph.O2O, false, tenant.WorkspaceTable, tenant.WorkspaceColumn),
+			sqlgraph.Edge(sqlgraph.O2M, false, tenant.WorkspacesTable, tenant.WorkspacesColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(_q.driver.Dialect(), step)
 		return fromU, nil
@@ -210,9 +160,9 @@ func (_q *TenantQuery) QueryRolepermissions() *RolePermissionQuery {
 	return query
 }
 
-// QueryTenantrole chains the current query on the "tenantrole" edge.
-func (_q *TenantQuery) QueryTenantrole() *TenantMemberQuery {
-	query := (&TenantMemberClient{config: _q.config}).Query()
+// QueryAssignments chains the current query on the "assignments" edge.
+func (_q *TenantQuery) QueryAssignments() *UserNodeAssignmentQuery {
+	query := (&UserNodeAssignmentClient{config: _q.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := _q.prepareQuery(ctx); err != nil {
 			return nil, err
@@ -223,30 +173,8 @@ func (_q *TenantQuery) QueryTenantrole() *TenantMemberQuery {
 		}
 		step := sqlgraph.NewStep(
 			sqlgraph.From(tenant.Table, tenant.FieldID, selector),
-			sqlgraph.To(tenantmember.Table, tenantmember.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, tenant.TenantroleTable, tenant.TenantroleColumn),
-		)
-		fromU = sqlgraph.SetNeighbors(_q.driver.Dialect(), step)
-		return fromU, nil
-	}
-	return query
-}
-
-// QueryProjectrole chains the current query on the "projectrole" edge.
-func (_q *TenantQuery) QueryProjectrole() *ProjectMemberQuery {
-	query := (&ProjectMemberClient{config: _q.config}).Query()
-	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
-		if err := _q.prepareQuery(ctx); err != nil {
-			return nil, err
-		}
-		selector := _q.sqlQuery(ctx)
-		if err := selector.Err(); err != nil {
-			return nil, err
-		}
-		step := sqlgraph.NewStep(
-			sqlgraph.From(tenant.Table, tenant.FieldID, selector),
-			sqlgraph.To(projectmember.Table, projectmember.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, tenant.ProjectroleTable, tenant.ProjectroleColumn),
+			sqlgraph.To(usernodeassignment.Table, usernodeassignment.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, tenant.AssignmentsTable, tenant.AssignmentsColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(_q.driver.Dialect(), step)
 		return fromU, nil
@@ -468,14 +396,11 @@ func (_q *TenantQuery) Clone() *TenantQuery {
 		order:               append([]tenant.OrderOption{}, _q.order...),
 		inters:              append([]Interceptor{}, _q.inters...),
 		predicates:          append([]predicate.Tenant{}, _q.predicates...),
-		withState:           _q.withState.Clone(),
-		withUser:            _q.withUser.Clone(),
-		withWorkspace:       _q.withWorkspace.Clone(),
+		withWorkspaces:      _q.withWorkspaces.Clone(),
 		withProjects:        _q.withProjects.Clone(),
 		withRoles:           _q.withRoles.Clone(),
 		withRolepermissions: _q.withRolepermissions.Clone(),
-		withTenantrole:      _q.withTenantrole.Clone(),
-		withProjectrole:     _q.withProjectrole.Clone(),
+		withAssignments:     _q.withAssignments.Clone(),
 		withSubscription:    _q.withSubscription.Clone(),
 		// clone intermediate query.
 		sql:  _q.sql.Clone(),
@@ -483,36 +408,14 @@ func (_q *TenantQuery) Clone() *TenantQuery {
 	}
 }
 
-// WithState tells the query-builder to eager-load the nodes that are connected to
-// the "state" edge. The optional arguments are used to configure the query builder of the edge.
-func (_q *TenantQuery) WithState(opts ...func(*StateDefinitionsQuery)) *TenantQuery {
-	query := (&StateDefinitionsClient{config: _q.config}).Query()
-	for _, opt := range opts {
-		opt(query)
-	}
-	_q.withState = query
-	return _q
-}
-
-// WithUser tells the query-builder to eager-load the nodes that are connected to
-// the "user" edge. The optional arguments are used to configure the query builder of the edge.
-func (_q *TenantQuery) WithUser(opts ...func(*UserQuery)) *TenantQuery {
-	query := (&UserClient{config: _q.config}).Query()
-	for _, opt := range opts {
-		opt(query)
-	}
-	_q.withUser = query
-	return _q
-}
-
-// WithWorkspace tells the query-builder to eager-load the nodes that are connected to
-// the "workspace" edge. The optional arguments are used to configure the query builder of the edge.
-func (_q *TenantQuery) WithWorkspace(opts ...func(*WorkspaceQuery)) *TenantQuery {
+// WithWorkspaces tells the query-builder to eager-load the nodes that are connected to
+// the "workspaces" edge. The optional arguments are used to configure the query builder of the edge.
+func (_q *TenantQuery) WithWorkspaces(opts ...func(*WorkspaceQuery)) *TenantQuery {
 	query := (&WorkspaceClient{config: _q.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
-	_q.withWorkspace = query
+	_q.withWorkspaces = query
 	return _q
 }
 
@@ -549,25 +452,14 @@ func (_q *TenantQuery) WithRolepermissions(opts ...func(*RolePermissionQuery)) *
 	return _q
 }
 
-// WithTenantrole tells the query-builder to eager-load the nodes that are connected to
-// the "tenantrole" edge. The optional arguments are used to configure the query builder of the edge.
-func (_q *TenantQuery) WithTenantrole(opts ...func(*TenantMemberQuery)) *TenantQuery {
-	query := (&TenantMemberClient{config: _q.config}).Query()
+// WithAssignments tells the query-builder to eager-load the nodes that are connected to
+// the "assignments" edge. The optional arguments are used to configure the query builder of the edge.
+func (_q *TenantQuery) WithAssignments(opts ...func(*UserNodeAssignmentQuery)) *TenantQuery {
+	query := (&UserNodeAssignmentClient{config: _q.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
-	_q.withTenantrole = query
-	return _q
-}
-
-// WithProjectrole tells the query-builder to eager-load the nodes that are connected to
-// the "projectrole" edge. The optional arguments are used to configure the query builder of the edge.
-func (_q *TenantQuery) WithProjectrole(opts ...func(*ProjectMemberQuery)) *TenantQuery {
-	query := (&ProjectMemberClient{config: _q.config}).Query()
-	for _, opt := range opts {
-		opt(query)
-	}
-	_q.withProjectrole = query
+	_q.withAssignments = query
 	return _q
 }
 
@@ -588,12 +480,12 @@ func (_q *TenantQuery) WithSubscription(opts ...func(*SubscriptionQuery)) *Tenan
 // Example:
 //
 //	var v []struct {
-//		Name string `json:"name,omitempty"`
+//		Slug string `json:"slug,omitempty"`
 //		Count int `json:"count,omitempty"`
 //	}
 //
 //	client.Tenant.Query().
-//		GroupBy(tenant.FieldName).
+//		GroupBy(tenant.FieldSlug).
 //		Aggregate(gen.Count()).
 //		Scan(ctx, &v)
 func (_q *TenantQuery) GroupBy(field string, fields ...string) *TenantGroupBy {
@@ -611,11 +503,11 @@ func (_q *TenantQuery) GroupBy(field string, fields ...string) *TenantGroupBy {
 // Example:
 //
 //	var v []struct {
-//		Name string `json:"name,omitempty"`
+//		Slug string `json:"slug,omitempty"`
 //	}
 //
 //	client.Tenant.Query().
-//		Select(tenant.FieldName).
+//		Select(tenant.FieldSlug).
 //		Scan(ctx, &v)
 func (_q *TenantQuery) Select(fields ...string) *TenantSelect {
 	_q.ctx.Fields = append(_q.ctx.Fields, fields...)
@@ -660,15 +552,12 @@ func (_q *TenantQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Tenan
 	var (
 		nodes       = []*Tenant{}
 		_spec       = _q.querySpec()
-		loadedTypes = [9]bool{
-			_q.withState != nil,
-			_q.withUser != nil,
-			_q.withWorkspace != nil,
+		loadedTypes = [6]bool{
+			_q.withWorkspaces != nil,
 			_q.withProjects != nil,
 			_q.withRoles != nil,
 			_q.withRolepermissions != nil,
-			_q.withTenantrole != nil,
-			_q.withProjectrole != nil,
+			_q.withAssignments != nil,
 			_q.withSubscription != nil,
 		}
 	)
@@ -690,21 +579,10 @@ func (_q *TenantQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Tenan
 	if len(nodes) == 0 {
 		return nodes, nil
 	}
-	if query := _q.withState; query != nil {
-		if err := _q.loadState(ctx, query, nodes, nil,
-			func(n *Tenant, e *StateDefinitions) { n.Edges.State = e }); err != nil {
-			return nil, err
-		}
-	}
-	if query := _q.withUser; query != nil {
-		if err := _q.loadUser(ctx, query, nodes, nil,
-			func(n *Tenant, e *User) { n.Edges.User = e }); err != nil {
-			return nil, err
-		}
-	}
-	if query := _q.withWorkspace; query != nil {
-		if err := _q.loadWorkspace(ctx, query, nodes, nil,
-			func(n *Tenant, e *Workspace) { n.Edges.Workspace = e }); err != nil {
+	if query := _q.withWorkspaces; query != nil {
+		if err := _q.loadWorkspaces(ctx, query, nodes,
+			func(n *Tenant) { n.Edges.Workspaces = []*Workspace{} },
+			func(n *Tenant, e *Workspace) { n.Edges.Workspaces = append(n.Edges.Workspaces, e) }); err != nil {
 			return nil, err
 		}
 	}
@@ -729,17 +607,10 @@ func (_q *TenantQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Tenan
 			return nil, err
 		}
 	}
-	if query := _q.withTenantrole; query != nil {
-		if err := _q.loadTenantrole(ctx, query, nodes,
-			func(n *Tenant) { n.Edges.Tenantrole = []*TenantMember{} },
-			func(n *Tenant, e *TenantMember) { n.Edges.Tenantrole = append(n.Edges.Tenantrole, e) }); err != nil {
-			return nil, err
-		}
-	}
-	if query := _q.withProjectrole; query != nil {
-		if err := _q.loadProjectrole(ctx, query, nodes,
-			func(n *Tenant) { n.Edges.Projectrole = []*ProjectMember{} },
-			func(n *Tenant, e *ProjectMember) { n.Edges.Projectrole = append(n.Edges.Projectrole, e) }); err != nil {
+	if query := _q.withAssignments; query != nil {
+		if err := _q.loadAssignments(ctx, query, nodes,
+			func(n *Tenant) { n.Edges.Assignments = []*UserNodeAssignment{} },
+			func(n *Tenant, e *UserNodeAssignment) { n.Edges.Assignments = append(n.Edges.Assignments, e) }); err != nil {
 			return nil, err
 		}
 	}
@@ -753,76 +624,21 @@ func (_q *TenantQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Tenan
 	return nodes, nil
 }
 
-func (_q *TenantQuery) loadState(ctx context.Context, query *StateDefinitionsQuery, nodes []*Tenant, init func(*Tenant), assign func(*Tenant, *StateDefinitions)) error {
-	ids := make([]uuid.UUID, 0, len(nodes))
-	nodeids := make(map[uuid.UUID][]*Tenant)
-	for i := range nodes {
-		fk := nodes[i].StatusID
-		if _, ok := nodeids[fk]; !ok {
-			ids = append(ids, fk)
-		}
-		nodeids[fk] = append(nodeids[fk], nodes[i])
-	}
-	if len(ids) == 0 {
-		return nil
-	}
-	query.Where(statedefinitions.IDIn(ids...))
-	neighbors, err := query.All(ctx)
-	if err != nil {
-		return err
-	}
-	for _, n := range neighbors {
-		nodes, ok := nodeids[n.ID]
-		if !ok {
-			return fmt.Errorf(`unexpected foreign-key "status_id" returned %v`, n.ID)
-		}
-		for i := range nodes {
-			assign(nodes[i], n)
-		}
-	}
-	return nil
-}
-func (_q *TenantQuery) loadUser(ctx context.Context, query *UserQuery, nodes []*Tenant, init func(*Tenant), assign func(*Tenant, *User)) error {
-	ids := make([]uuid.UUID, 0, len(nodes))
-	nodeids := make(map[uuid.UUID][]*Tenant)
-	for i := range nodes {
-		fk := nodes[i].CreatedBy
-		if _, ok := nodeids[fk]; !ok {
-			ids = append(ids, fk)
-		}
-		nodeids[fk] = append(nodeids[fk], nodes[i])
-	}
-	if len(ids) == 0 {
-		return nil
-	}
-	query.Where(user.IDIn(ids...))
-	neighbors, err := query.All(ctx)
-	if err != nil {
-		return err
-	}
-	for _, n := range neighbors {
-		nodes, ok := nodeids[n.ID]
-		if !ok {
-			return fmt.Errorf(`unexpected foreign-key "created_by" returned %v`, n.ID)
-		}
-		for i := range nodes {
-			assign(nodes[i], n)
-		}
-	}
-	return nil
-}
-func (_q *TenantQuery) loadWorkspace(ctx context.Context, query *WorkspaceQuery, nodes []*Tenant, init func(*Tenant), assign func(*Tenant, *Workspace)) error {
+func (_q *TenantQuery) loadWorkspaces(ctx context.Context, query *WorkspaceQuery, nodes []*Tenant, init func(*Tenant), assign func(*Tenant, *Workspace)) error {
 	fks := make([]driver.Value, 0, len(nodes))
 	nodeids := make(map[uuid.UUID]*Tenant)
 	for i := range nodes {
 		fks = append(fks, nodes[i].ID)
 		nodeids[nodes[i].ID] = nodes[i]
+		if init != nil {
+			init(nodes[i])
+		}
 	}
 	if len(query.ctx.Fields) > 0 {
 		query.ctx.AppendFieldOnce(workspace.FieldTenantID)
 	}
 	query.Where(predicate.Workspace(func(s *sql.Selector) {
-		s.Where(sql.InValues(s.C(tenant.WorkspaceColumn), fks...))
+		s.Where(sql.InValues(s.C(tenant.WorkspacesColumn), fks...))
 	}))
 	neighbors, err := query.All(ctx)
 	if err != nil {
@@ -931,7 +747,7 @@ func (_q *TenantQuery) loadRolepermissions(ctx context.Context, query *RolePermi
 	}
 	return nil
 }
-func (_q *TenantQuery) loadTenantrole(ctx context.Context, query *TenantMemberQuery, nodes []*Tenant, init func(*Tenant), assign func(*Tenant, *TenantMember)) error {
+func (_q *TenantQuery) loadAssignments(ctx context.Context, query *UserNodeAssignmentQuery, nodes []*Tenant, init func(*Tenant), assign func(*Tenant, *UserNodeAssignment)) error {
 	fks := make([]driver.Value, 0, len(nodes))
 	nodeids := make(map[uuid.UUID]*Tenant)
 	for i := range nodes {
@@ -942,40 +758,10 @@ func (_q *TenantQuery) loadTenantrole(ctx context.Context, query *TenantMemberQu
 		}
 	}
 	if len(query.ctx.Fields) > 0 {
-		query.ctx.AppendFieldOnce(tenantmember.FieldTenantID)
+		query.ctx.AppendFieldOnce(usernodeassignment.FieldTenantID)
 	}
-	query.Where(predicate.TenantMember(func(s *sql.Selector) {
-		s.Where(sql.InValues(s.C(tenant.TenantroleColumn), fks...))
-	}))
-	neighbors, err := query.All(ctx)
-	if err != nil {
-		return err
-	}
-	for _, n := range neighbors {
-		fk := n.TenantID
-		node, ok := nodeids[fk]
-		if !ok {
-			return fmt.Errorf(`unexpected referenced foreign-key "tenant_id" returned %v for node %v`, fk, n.ID)
-		}
-		assign(node, n)
-	}
-	return nil
-}
-func (_q *TenantQuery) loadProjectrole(ctx context.Context, query *ProjectMemberQuery, nodes []*Tenant, init func(*Tenant), assign func(*Tenant, *ProjectMember)) error {
-	fks := make([]driver.Value, 0, len(nodes))
-	nodeids := make(map[uuid.UUID]*Tenant)
-	for i := range nodes {
-		fks = append(fks, nodes[i].ID)
-		nodeids[nodes[i].ID] = nodes[i]
-		if init != nil {
-			init(nodes[i])
-		}
-	}
-	if len(query.ctx.Fields) > 0 {
-		query.ctx.AppendFieldOnce(projectmember.FieldTenantID)
-	}
-	query.Where(predicate.ProjectMember(func(s *sql.Selector) {
-		s.Where(sql.InValues(s.C(tenant.ProjectroleColumn), fks...))
+	query.Where(predicate.UserNodeAssignment(func(s *sql.Selector) {
+		s.Where(sql.InValues(s.C(tenant.AssignmentsColumn), fks...))
 	}))
 	neighbors, err := query.All(ctx)
 	if err != nil {
@@ -1046,12 +832,6 @@ func (_q *TenantQuery) querySpec() *sqlgraph.QuerySpec {
 			if fields[i] != tenant.FieldID {
 				_spec.Node.Columns = append(_spec.Node.Columns, fields[i])
 			}
-		}
-		if _q.withState != nil {
-			_spec.Node.AddColumnOnce(tenant.FieldStatusID)
-		}
-		if _q.withUser != nil {
-			_spec.Node.AddColumnOnce(tenant.FieldCreatedBy)
 		}
 	}
 	if ps := _q.predicates; len(ps) > 0 {
